@@ -28,8 +28,8 @@ AFirstPersonCharacter::AFirstPersonCharacter() {
 	// GetMesh() returns the default character mesh, not visible to player but visible to engine
 	GetMesh()->SetOwnerNoSee(true); // Not visible to player
 	GetMesh()->FirstPersonPrimitiveType = EFirstPersonPrimitiveType::WorldSpaceRepresentation; // Render separate from environment, bit not visible to camera
-	GetCharacterMovement()->BrakingDecelerationFalling = 1500.0f;
-	GetCharacterMovement()->AirControl = 0.5f;
+	GetCharacterMovement()->BrakingDecelerationFalling = 750.0f;
+	GetCharacterMovement()->AirControl = 0.25f;
 }
 
 void AFirstPersonCharacter::BeginPlay() {
