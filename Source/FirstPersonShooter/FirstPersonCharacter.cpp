@@ -10,21 +10,19 @@
 // Sets default values can always change in blueprint
 AFirstPersonCharacter::AFirstPersonCharacter() {
 	GetCapsuleComponent()->InitCapsuleSize(34.0f, 90.0f);
-	// FirstPersonMesh is the mesh visible to the player in first person, doesn't clip with environment on camera
-	FirstPersonMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("First Person Mesh"));
-	FirstPersonMesh->SetupAttachment(GetMesh());
-	FirstPersonMesh->SetOnlyOwnerSee(true); // Only visible to player
-	FirstPersonMesh->FirstPersonPrimitiveType = EFirstPersonPrimitiveType::FirstPerson; // Render separate from environment, but visible to camera
-	FirstPersonMesh->SetCollisionProfileName(FName("NoCollision"));
 	PlayerCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("Player Camera"));
-	PlayerCamera->SetupAttachment(FirstPersonMesh);
-	// If attach to head then certain bones need to be fixed by control rig, see First Person Template
-	//PlayerCamera->SetupAttachment(FirstPersonMesh, FName("head"));
+	PlayerCamera->SetupAttachment(GetMesh());;
 	PlayerCamera->bUsePawnControlRotation = true;
 	PlayerCamera->bEnableFirstPersonFieldOfView = true;
 	PlayerCamera->bEnableFirstPersonScale = true;
 	PlayerCamera->FirstPersonFieldOfView = 70.0f;
 	PlayerCamera->FirstPersonScale = 0.6f;
+	// FirstPersonMesh is the mesh visible to the player in first person, doesn't clip with environment on camera
+	FirstPersonMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("First Person Mesh"));
+	FirstPersonMesh->SetupAttachment(PlayerCamera);
+	FirstPersonMesh->SetOnlyOwnerSee(true); // Only visible to player
+	FirstPersonMesh->FirstPersonPrimitiveType = EFirstPersonPrimitiveType::FirstPerson; // Render separate from environment, but visible to camera
+	FirstPersonMesh->SetCollisionProfileName(FName("NoCollision"));
 	// GetMesh() returns the default character mesh, not visible to player but visible to engine
 	GetMesh()->SetOwnerNoSee(true); // Not visible to player
 	GetMesh()->FirstPersonPrimitiveType = EFirstPersonPrimitiveType::WorldSpaceRepresentation; // Render separate from environment, bit not visible to camera
