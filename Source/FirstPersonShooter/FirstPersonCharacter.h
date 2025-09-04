@@ -8,17 +8,36 @@ UCLASS(Abstract)
 class FIRSTPERSONSHOOTER_API AFirstPersonCharacter : public ACharacter {
 	GENERATED_BODY()
 
+	bool bIsPressingSprint = false;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	class USkeletalMeshComponent* FirstPersonMesh; // What the player can see in first person, won't clip with environment
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* PlayerCamera;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Movement", meta = (ClampMin = 0f, ClampMax = 1f, AllowPrivateAccess = "true", ToolTip = "Deadzone for movement key to be considered pressed"))
+	float MovementDeadzone = 0.05f;
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Walk", meta = (ClampMin = 400.0f, ClampMax = 600.0f, Units = "cm/s", AllowPrivateAccess = "true", ToolTip = "The base movement speed of the character when walking forwards"))
 	float BaseWalkSpeed = 500.0f;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Walk", meta = (ClampMin = 350.0f, ClampMax = 550.0f, Units = "cm/s", AllowPrivateAccess = "true", ToolTip = "The movement speed of the character when walking diagonally forwards"))
+	float DiagonalWalkSpeed = 450.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Walk", meta = (ClampMin = 325.0f, ClampMax = 525.0f, Units = "cm/s", AllowPrivateAccess = "true", ToolTip = "The movement speed of the character when walking sideways"))
+	float StrafeWalkSpeed = 425.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Walk", meta = (ClampMin = 300.0f, ClampMax = 500.0f, Units = "cm/s", AllowPrivateAccess = "true", ToolTip = "The movement speed of the character when walking backwards"))
+	float BackwardsWalkSpeed = 400.0f;
+
+	
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Sprint", meta = (ClampMin = 750.0f, ClampMax = 850.0f, Units = "cm/s", AllowPrivateAccess = "true", ToolTip = "The base movement speed of the character when sprinting forwards"))
 	float BaseSprintSpeed = 800.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Sprint", meta = (ClampMin = 700.0f, ClampMax = 800.0f, Units = "cm/s", AllowPrivateAccess = "true", ToolTip = "The base movement speed of the character when sprinting forwards"))
+	float DiagonalSprintSpeed = 750.0f;
 
 	protected:
 		UPROPERTY(EditAnywhere, Category = "Input")
@@ -64,4 +83,7 @@ class FIRSTPERSONSHOOTER_API AFirstPersonCharacter : public ACharacter {
 
 		UFUNCTION(BlueprintCallable, Category = "Input")
 		virtual void DoSprintEnd();
+
+	private:
+		float GetMaxMovementSpeed(const float Right, const float Forward);
 };

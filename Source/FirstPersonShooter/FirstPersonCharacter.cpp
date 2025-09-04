@@ -34,7 +34,7 @@ AFirstPersonCharacter::AFirstPersonCharacter() {
 
 void AFirstPersonCharacter::BeginPlay() {
 	Super::BeginPlay();
-	//GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
+	GetCharacterMovement()->MaxWalkSpeed = BaseWalkSpeed;
 }
 
 void AFirstPersonCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) {
@@ -61,6 +61,7 @@ void AFirstPersonCharacter::Look(const FInputActionValue& Value) {
 
 void AFirstPersonCharacter::DoMove(const float Right, const float Forward) {
 	if (!GetController()) return;
+	GetCharacterMovement()->MaxWalkSpeed = GetMaxMovementSpeed(Right, Forward);
 	AddMovementInput(GetActorRightVector(), Right);
 	AddMovementInput(GetActorForwardVector(), Forward);
 }
@@ -75,7 +76,18 @@ void AFirstPersonCharacter::DoJumpStart() { Jump(); }
 
 void AFirstPersonCharacter::DoJumpEnd() { StopJumping(); }
 
+// Are we even going to do aiming? Or are we going to do hip fire?
 // TODO: Don't allow sprint while aiming (also if possible maybe immediately sprint as they release aim)
-void AFirstPersonCharacter::DoSprintStart() { /*GetCharacterMovement()->MaxWalkSpeed = SprintSpeed;*/ }
+void AFirstPersonCharacter::DoSprintStart() { bIsPressingSprint = true; }
 
-void AFirstPersonCharacter::DoSprintEnd() { /*GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;*/ }
+void AFirstPersonCharacter::DoSprintEnd() { bIsPressingSprint = false; }
+
+float AFirstPersonCharacter::GetMaxMovementSpeed(const float Right, const float Forward) {
+	if (Forward < -MovementDeadzone) return BackwardsWalkSpeed;
+	float SqrRight = Right * Right;
+	float SqrForward = Forward * Forward;
+	float SqrMovementDeadzone = MovementDeadzone * MovementDeadzone;
+	if (SqrForward < SqrMovementDeadzone && SqrRight > SqrMovementDeadzone) return StrafeWalkSpeed;
+	if (SqrForward > SqrMovementDeadzone && SqrRight > SqrMovementDeadzone) return bIsPressingSprint ? DiagonalSprintSpeed : DiagonalWalkSpeed;
+	return bIsPressingSprint ? BaseSprintSpeed : BaseWalkSpeed;
+}
