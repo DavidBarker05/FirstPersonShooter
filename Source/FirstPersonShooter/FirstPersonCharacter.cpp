@@ -34,7 +34,7 @@ AFirstPersonCharacter::AFirstPersonCharacter() {
 
 void AFirstPersonCharacter::BeginPlay() {
 	Super::BeginPlay();
-	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
+	//GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
 }
 
 void AFirstPersonCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) {
@@ -76,6 +76,6 @@ void AFirstPersonCharacter::DoJumpStart() { Jump(); }
 void AFirstPersonCharacter::DoJumpEnd() { StopJumping(); }
 
 // TODO: Don't allow sprint while aiming (also if possible maybe immediately sprint as they release aim)
-void AFirstPersonCharacter::DoSprintStart() { GetCharacterMovement()->MaxWalkSpeed = SprintSpeed; }
+void AFirstPersonCharacter::DoSprintStart() { /*GetCharacterMovement()->MaxWalkSpeed = SprintSpeed;*/ }
 
-void AFirstPersonCharacter::DoSprintEnd() { GetCharacterMovement()->MaxWalkSpeed = WalkSpeed; }
+void AFirstPersonCharacter::DoSprintEnd() { /*GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;*/ }
