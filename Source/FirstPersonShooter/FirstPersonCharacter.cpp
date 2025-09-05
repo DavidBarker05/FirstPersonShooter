@@ -6,9 +6,11 @@
 #include "EnhancedInputComponent.h"
 #include "InputActionValue.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Kismet/KismetMathLibrary.h"
 
 // Sets default values can always change in blueprint
 AFirstPersonCharacter::AFirstPersonCharacter() {
+	PrimaryActorTick.bCanEverTick = true;
 	GetCapsuleComponent()->InitCapsuleSize(34.0f, 90.0f);
 	PlayerCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("Player Camera"));
 	PlayerCamera->SetupAttachment(GetMesh());;
@@ -33,6 +35,13 @@ AFirstPersonCharacter::AFirstPersonCharacter() {
 void AFirstPersonCharacter::BeginPlay() {
 	Super::BeginPlay();
 	GetCharacterMovement()->MaxWalkSpeed = BaseWalkSpeed;
+	HeadCameraOffset = CalculateHeadCameraOffset();
+	HeadUpCameraAngle = CalculateHeadUpCameraAngle();
+}
+
+void AFirstPersonCharacter::Tick(float DeltaSeconds) {
+	Super::Tick(DeltaSeconds);
+	MoveCameraToHead();
 }
 
 void AFirstPersonCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) {
@@ -79,6 +88,28 @@ void AFirstPersonCharacter::DoJumpEnd() { StopJumping(); }
 void AFirstPersonCharacter::DoSprintStart() { bIsPressingSprint = true; }
 
 void AFirstPersonCharacter::DoSprintEnd() { bIsPressingSprint = false; }
+
+FVector AFirstPersonCharacter::CalculateHeadCameraOffset() {
+	FVector CameraLocation = PlayerCamera->GetComponentLocation();
+	FVector HeadLocation = GetMesh()->GetBoneLocation(FName("Head"));
+	return UKismetMathLibrary::Subtract_VectorVector(CameraLocation, HeadLocation);
+}
+
+float AFirstPersonCharacter::CalculateHeadUpCameraAngle() {
+	FVector NormHeadCameraOffset = UKismetMathLibrary::Normal(HeadCameraOffset);
+	FVector HeadUp = GetMesh()->GetBoneQuaternion(FName("Head")).GetUpVector();
+	FVector NormHeadUp = UKismetMathLibrary::Normal(HeadUp);
+	float DotHeadUpCamera = UKismetMathLibrary::Dot_VectorVector(NormHeadCameraOffset, NormHeadUp);
+	return UKismetMathLibrary::DegAcos(DotHeadUpCamera);
+}
+
+void AFirstPersonCharacter::MoveCameraToHead() {
+	FVector HeadUp = GetMesh()->GetBoneQuaternion(FName("Head")).GetUpVector();
+	FVector RotatedHeadCameraOffset = UKismetMathLibrary::RotateAngleAxis(HeadCameraOffset, HeadUpCameraAngle, HeadUp);
+	FVector DesiredCameraPos = UKismetMathLibrary::Add_VectorVector(GetMesh()->GetBoneLocation(FName("Head")), RotatedHeadCameraOffset);
+	float SqrDist = UKismetMathLibrary::Vector_DistanceSquared(PlayerCamera->GetComponentLocation(), DesiredCameraPos);
+	if (SqrDist >= CameraMoveThreshold * CameraMoveThreshold) PlayerCamera->SetWorldLocation(DesiredCameraPos);
+}
 
 float AFirstPersonCharacter::GetMaxMovementSpeed(const float Right, const float Forward) {
 	if (Forward < -MovementDeadzone) return BackwardsWalkSpeed;

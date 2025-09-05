@@ -8,6 +8,8 @@ UCLASS(Abstract)
 class FIRSTPERSONSHOOTER_API AFirstPersonCharacter : public ACharacter {
 	GENERATED_BODY()
 
+	FVector HeadCameraOffset;
+	float HeadUpCameraAngle;
 	bool bIsPressingSprint = false;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
@@ -15,6 +17,9 @@ class FIRSTPERSONSHOOTER_API AFirstPersonCharacter : public ACharacter {
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* PlayerCamera;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Camera", meta = (ClampMin = 0.1f, AllowPrivateAccess = "true", ToolTip = "The minimum distance the camera needs to be from the head bone to move there (stop head bobbing)"))
+	float CameraMoveThreshold = 5.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Movement", meta = (ClampMin = 0f, ClampMax = 1f, AllowPrivateAccess = "true", ToolTip = "Deadzone for movement key to be considered pressed"))
 	float MovementDeadzone = 0.05f;
@@ -30,8 +35,6 @@ class FIRSTPERSONSHOOTER_API AFirstPersonCharacter : public ACharacter {
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Walk", meta = (ClampMin = 300.0f, ClampMax = 500.0f, Units = "cm/s", AllowPrivateAccess = "true", ToolTip = "The movement speed of the character when walking backwards"))
 	float BackwardsWalkSpeed = 400.0f;
-
-	
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Sprint", meta = (ClampMin = 750.0f, ClampMax = 850.0f, Units = "cm/s", AllowPrivateAccess = "true", ToolTip = "The base movement speed of the character when sprinting forwards"))
 	float BaseSprintSpeed = 800.0f;
@@ -58,6 +61,10 @@ class FIRSTPERSONSHOOTER_API AFirstPersonCharacter : public ACharacter {
 	protected:
 		virtual void BeginPlay() override;
 
+	public:
+		virtual void Tick(float DeltaSeconds) override;
+
+	protected:
 		virtual void SetupPlayerInputComponent(class UInputComponent* InputComponent) override;
 
 	protected:
@@ -85,5 +92,11 @@ class FIRSTPERSONSHOOTER_API AFirstPersonCharacter : public ACharacter {
 		virtual void DoSprintEnd();
 
 	private:
+		FVector CalculateHeadCameraOffset();
+
+		float CalculateHeadUpCameraAngle();
+
+		void MoveCameraToHead();
+
 		float GetMaxMovementSpeed(const float Right, const float Forward);
 };
