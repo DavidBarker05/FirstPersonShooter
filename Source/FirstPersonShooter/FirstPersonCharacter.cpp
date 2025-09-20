@@ -35,13 +35,11 @@ AFirstPersonCharacter::AFirstPersonCharacter() {
 void AFirstPersonCharacter::BeginPlay() {
 	Super::BeginPlay();
 	GetCharacterMovement()->MaxWalkSpeed = BaseWalkSpeed;
-	HeadCameraOffset = CalculateHeadCameraOffset();
-	HeadUpCameraAngle = CalculateHeadUpCameraAngle();
 }
 
 void AFirstPersonCharacter::Tick(float DeltaSeconds) {
 	Super::Tick(DeltaSeconds);
-	MoveCameraToHead();
+	MoveCameraToSocket();
 }
 
 void AFirstPersonCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) {
@@ -69,6 +67,8 @@ void AFirstPersonCharacter::Look(const FInputActionValue& Value) {
 void AFirstPersonCharacter::DoMove(const float Right, const float Forward) {
 	if (!GetController()) return;
 	GetCharacterMovement()->MaxWalkSpeed = GetMaxMovementSpeed(Right, Forward);
+	bIsMovingLeft = Right < -MovementDeadzone;
+	bIsMovingRight = Right > MovementDeadzone;
 	AddMovementInput(GetActorRightVector(), Right);
 	AddMovementInput(GetActorForwardVector(), Forward);
 }
@@ -89,26 +89,14 @@ void AFirstPersonCharacter::DoSprintStart() { bIsPressingSprint = true; }
 
 void AFirstPersonCharacter::DoSprintEnd() { bIsPressingSprint = false; }
 
-FVector AFirstPersonCharacter::CalculateHeadCameraOffset() {
-	FVector CameraLocation = PlayerCamera->GetComponentLocation();
-	FVector HeadLocation = GetMesh()->GetBoneLocation(FName("Head"));
-	return UKismetMathLibrary::Subtract_VectorVector(CameraLocation, HeadLocation);
-}
-
-float AFirstPersonCharacter::CalculateHeadUpCameraAngle() {
-	FVector NormHeadCameraOffset = UKismetMathLibrary::Normal(HeadCameraOffset);
-	FVector HeadUp = GetMesh()->GetBoneQuaternion(FName("Head")).GetUpVector();
-	FVector NormHeadUp = UKismetMathLibrary::Normal(HeadUp);
-	float DotHeadUpCamera = UKismetMathLibrary::Dot_VectorVector(NormHeadCameraOffset, NormHeadUp);
-	return UKismetMathLibrary::DegAcos(DotHeadUpCamera);
-}
-
-void AFirstPersonCharacter::MoveCameraToHead() {
-	FVector HeadUp = GetMesh()->GetBoneQuaternion(FName("Head")).GetUpVector();
-	FVector RotatedHeadCameraOffset = UKismetMathLibrary::RotateAngleAxis(HeadCameraOffset, HeadUpCameraAngle, HeadUp);
-	FVector DesiredCameraPos = UKismetMathLibrary::Add_VectorVector(GetMesh()->GetBoneLocation(FName("Head")), RotatedHeadCameraOffset);
-	float SqrDist = UKismetMathLibrary::Vector_DistanceSquared(PlayerCamera->GetComponentLocation(), DesiredCameraPos);
-	if (SqrDist >= CameraMoveThreshold * CameraMoveThreshold) PlayerCamera->SetWorldLocation(DesiredCameraPos);
+void AFirstPersonCharacter::MoveCameraToSocket() {
+	FVector CamPos = PlayerCamera->GetComponentLocation();
+	FVector CamSocketPos = GetMesh()->GetSocketLocation(FName("CameraSocket"));
+	float SqrDist = FVector::DistSquared(CamPos, CamSocketPos);
+	float SqrCamMoveThresh = CameraMoveThreshold * CameraMoveThreshold;
+	if (SqrDist < SqrCamMoveThresh) return;
+	float Alpha = FMath::Clamp(SqrDist / (9.0f * SqrCamMoveThresh), 0.0f, 1.0f);
+	PlayerCamera->SetWorldLocation(UKismetMathLibrary::VLerp(CamPos, CamSocketPos, Alpha));
 }
 
 float AFirstPersonCharacter::GetMaxMovementSpeed(const float Right, const float Forward) {
@@ -116,7 +104,8 @@ float AFirstPersonCharacter::GetMaxMovementSpeed(const float Right, const float 
 	float SqrRight = Right * Right;
 	float SqrForward = Forward * Forward;
 	float SqrMovementDeadzone = MovementDeadzone * MovementDeadzone;
+	bool bIsFalling = GetCharacterMovement()->IsFalling();
 	if (SqrForward < SqrMovementDeadzone && SqrRight > SqrMovementDeadzone) return StrafeWalkSpeed;
-	if (SqrForward > SqrMovementDeadzone && SqrRight > SqrMovementDeadzone) return bIsPressingSprint ? DiagonalSprintSpeed : DiagonalWalkSpeed;
-	return bIsPressingSprint ? BaseSprintSpeed : BaseWalkSpeed;
+	if (SqrForward > SqrMovementDeadzone && SqrRight > SqrMovementDeadzone) return bIsPressingSprint && !bIsFalling ? DiagonalSprintSpeed : DiagonalWalkSpeed;
+	return bIsPressingSprint && !bIsFalling ? BaseSprintSpeed : BaseWalkSpeed;
 }

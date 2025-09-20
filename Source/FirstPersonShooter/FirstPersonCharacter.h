@@ -8,8 +8,6 @@ UCLASS(Abstract)
 class FIRSTPERSONSHOOTER_API AFirstPersonCharacter : public ACharacter {
 	GENERATED_BODY()
 
-	FVector HeadCameraOffset;
-	float HeadUpCameraAngle;
 	bool bIsPressingSprint = false;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
@@ -41,6 +39,12 @@ class FIRSTPERSONSHOOTER_API AFirstPersonCharacter : public ACharacter {
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Sprint", meta = (ClampMin = 700.0f, ClampMax = 800.0f, Units = "cm/s", AllowPrivateAccess = "true", ToolTip = "The base movement speed of the character when sprinting forwards"))
 	float DiagonalSprintSpeed = 750.0f;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPrivateAccess = "true", ToolTip = "Indicates if the character is moving to the left"))
+	bool bIsMovingLeft = false;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPrivateAccess = "true", ToolTip = "Indicates if the character is moving to the right"))
+	bool bIsMovingRight = false;
 
 	protected:
 		UPROPERTY(EditAnywhere, Category = "Input")
@@ -92,11 +96,7 @@ class FIRSTPERSONSHOOTER_API AFirstPersonCharacter : public ACharacter {
 		virtual void DoSprintEnd();
 
 	private:
-		FVector CalculateHeadCameraOffset();
-
-		float CalculateHeadUpCameraAngle();
-
-		void MoveCameraToHead();
+		void MoveCameraToSocket();
 
 		float GetMaxMovementSpeed(const float Right, const float Forward);
 };
