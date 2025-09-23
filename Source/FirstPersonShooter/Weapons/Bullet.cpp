@@ -1,7 +1,8 @@
 #include "Weapons/Bullet.h"
 #include "GameFramework/ProjectileMovementComponent.h"
-#include "Kismet/KismetSystemLibrary.h"
 #include "FirstPersonCharacter.h"
+#include "CharacterHealthComponent.h"
+#include "Kismet/KismetSystemLibrary.h"
 
 ABullet::ABullet() {
 	PrimaryActorTick.bCanEverTick = true;
@@ -22,9 +23,7 @@ void ABullet::Tick(float DeltaTime) {
 	Super::Tick(DeltaTime);
 	FHitResult OutHit;
 	if (CheckForHit(OutHit)) {
-		if (AFirstPersonCharacter* FirstPersonCharacter = Cast<AFirstPersonCharacter>(OutHit.GetActor())) {
-			// TODO: Damage player
-		}
+		if (AFirstPersonCharacter* FirstPersonCharacter = Cast<AFirstPersonCharacter>(OutHit.GetActor())) FirstPersonCharacter->GetCharacterHealthComponent()->TakeDamage(Damage);
 		GetWorld()->DestroyActor(this);
 	}
 	LastPosition = GetActorLocation();

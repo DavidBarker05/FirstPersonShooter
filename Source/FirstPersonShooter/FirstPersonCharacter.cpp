@@ -1,8 +1,9 @@
 #include "FirstPersonCharacter.h"
 #include "Animation/AnimInstance.h"
-#include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "Camera/CameraComponent.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "CharacterHealthComponent.h"
 #include "EnhancedInputComponent.h"
 #include "InputActionValue.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -30,6 +31,7 @@ AFirstPersonCharacter::AFirstPersonCharacter() {
 	GetMesh()->FirstPersonPrimitiveType = EFirstPersonPrimitiveType::WorldSpaceRepresentation; // Render separate from environment, bit not visible to camera
 	GetCharacterMovement()->BrakingDecelerationFalling = 750.0f;
 	GetCharacterMovement()->AirControl = 0.25f;
+	CharacterHealthComponent = CreateDefaultSubobject<UCharacterHealthComponent>(TEXT("Character Health Component"));
 }
 
 void AFirstPersonCharacter::BeginPlay() {
@@ -109,3 +111,5 @@ float AFirstPersonCharacter::GetMaxMovementSpeed(const float Right, const float 
 	if (SqrForward > SqrMovementDeadzone && SqrRight > SqrMovementDeadzone) return bIsPressingSprint && !bIsFalling ? DiagonalSprintSpeed : DiagonalWalkSpeed;
 	return bIsPressingSprint && !bIsFalling ? BaseSprintSpeed : BaseWalkSpeed;
 }
+
+UCharacterHealthComponent* AFirstPersonCharacter::GetCharacterHealthComponent() { return CharacterHealthComponent; }

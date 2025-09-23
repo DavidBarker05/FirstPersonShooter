@@ -16,6 +16,9 @@ class FIRSTPERSONSHOOTER_API AFirstPersonCharacter : public ACharacter {
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* PlayerCamera;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
+	class UCharacterHealthComponent* CharacterHealthComponent;
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Camera", meta = (ClampMin = 0.1f, AllowPrivateAccess = "true", ToolTip = "The minimum distance the camera needs to be from the head bone to move there (stop head bobbing)"))
 	float CameraMoveThreshold = 5.0f;
 
@@ -99,4 +102,7 @@ class FIRSTPERSONSHOOTER_API AFirstPersonCharacter : public ACharacter {
 		void MoveCameraToSocket();
 
 		float GetMaxMovementSpeed(const float Right, const float Forward);
+
+	public:
+		class UCharacterHealthComponent* GetCharacterHealthComponent();
 };
