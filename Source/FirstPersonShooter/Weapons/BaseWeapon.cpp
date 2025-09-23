@@ -1,26 +1,13 @@
 #include "Weapons/BaseWeapon.h"
-#include "Weapons/Bullet.h"
+#include "Weapons/WeaponShootComponent.h"
 
 ABaseWeapon::ABaseWeapon() {
 	WeaponMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Weapon Mesh"));
 	WeaponMesh->SetCollisionProfileName(FName("NoCollision"));
 	WeaponMesh->SetupAttachment(RootComponent);
+	WeaponShootComponent = CreateDefaultSubobject<UWeaponShootComponent>(TEXT("Weapon Shoot Component"));
 }
 
-void ABaseWeapon::Shoot(const FTransform SpawnTransform) {
-	if (!bCanShoot) return;
-	FActorSpawnParameters SpawnParams;
-	SpawnParams.Owner = this;
-	SpawnParams.Instigator = GetInstigator();
-	ABullet* Bullet = GetWorld()->SpawnActor<ABullet>(BulletBlueprint, SpawnTransform, SpawnParams);
-	if (!Bullet) return;
-	Bullet->SetDamage(GunDamage);
-	Bullet->SetInitialSpeed(BulletSpeed);
-	Bullet->SetCharacterToIgnore(OwningCharacter);
-	bCanShoot = false;
-	GetWorldTimerManager().SetTimer(ShootCooldownHandle, this, &ABaseWeapon::ResetShot, TimeBetweenShots, false);
-}
+void ABaseWeapon::Shoot(const FTransform SpawnTransform) { WeaponShootComponent->Shoot(SpawnTransform); }
 
-void ABaseWeapon::SetOwningCharacter(ACharacter* Character) { OwningCharacter = Character; }
-
-void ABaseWeapon::ResetShot() { bCanShoot = true; }
+void ABaseWeapon::SetOwningCharacter(ACharacter* Character) { if (Character) WeaponShootComponent->OwningCharacter = Character; }
