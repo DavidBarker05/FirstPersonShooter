@@ -13,4 +13,4 @@ void ARifleWeapon::Shoot(const FTransform SpawnTransform) {
 	Super::Shoot(SpawnTransform);
 }
 
-void ARifleWeapon::AddAmmo(int32 Ammo) { CurrentAmmo = FMath::Clamp(CurrentAmmo + Ammo, 0, MaxAmmo); }
+void ARifleWeapon::AddAmmo() { CurrentAmmo = FMath::Clamp(CurrentAmmo + AmmoPickUpAmount, 0, MaxAmmo); }

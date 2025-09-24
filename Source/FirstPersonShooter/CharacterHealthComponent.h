@@ -14,7 +14,7 @@ class FIRSTPERSONSHOOTER_API UCharacterHealthComponent : public UActorComponent 
 	bool bIsDead = false;
 
 	public:
-		const int32 MAX_HEALTH = 100;
+		static const int32 MaxHealth = 100;
 
 	protected:
 		UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Spawning", meta = (ClampMin = 0.0f, ClampMax = 5.0f, Units = "s", AllowPrivateAccess = "true"))

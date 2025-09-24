@@ -15,27 +15,27 @@ class FIRSTPERSONSHOOTER_API UWeaponShootComponent : public UActorComponent {
 		UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Character", meta = (AllowPrivateAccess = "true"))
 		ACharacter* OwningCharacter;
 
-		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shooting", meta = (ClampMin = 0.01f, ClampMax = 2.0f, Units = "s", AllowPrivateAccess = "true"))
+		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapons", meta = (ClampMin = 0.01f, ClampMax = 2.0f, Units = "s", AllowPrivateAccess = "true"))
 		float TimeBetweenShots;
 
-		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shooting", meta = (ClampMin = 0, ClampMax = 15, AllowPrivateAccess = "true"))
+		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapons", meta = (ClampMin = 0, ClampMax = 15, AllowPrivateAccess = "true"))
 		int32 GunDamage;
 
-		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shooting", meta = (ClampMin = 1000.0f, ClampMax = 5000.0f, Units = "cm/s", AllowPrivateAccess = "true"))
+		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapons", meta = (ClampMin = 1000.0f, ClampMax = 5000.0f, Units = "cm/s", AllowPrivateAccess = "true"))
 		float BulletSpeed;
 
 	protected:
-		UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Shooting", meta = (AllowPrivateAccess = "true"))
+		UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapons", meta = (AllowPrivateAccess = "true"))
 		TSubclassOf<class ABullet> BulletBlueprint;
 
 	public:
 		UWeaponShootComponent();
 
 	public:
-		UFUNCTION(BlueprintCallable)
+		UFUNCTION(BlueprintCallable, Category = "Weapons")
 		virtual void Shoot(const FTransform SpawnTransform);
 
 	protected:
-		UFUNCTION(BlueprintCallable)
+		UFUNCTION(BlueprintCallable, Category = "Weapons")
 		void ResetShot();
 };

@@ -29,13 +29,13 @@ class FIRSTPERSONSHOOTER_API ABullet : public AActor {
 		virtual void Tick(float DeltaTime) override;
 
 	public:
-		UFUNCTION(BlueprintCallable)
+		UFUNCTION(BlueprintCallable, Category = "Weapons")
 		void SetDamage(const int32 _Damage);
 
-		UFUNCTION(BlueprintCallable)
+		UFUNCTION(BlueprintCallable, Category = "Weapons")
 		void SetInitialSpeed(const float Speed);
 
-		UFUNCTION(BlueprintCallable)
+		UFUNCTION(BlueprintCallable, Category = "Weapons")
 		void SetCharacterToIgnore(ACharacter* Character);
 
 	private:

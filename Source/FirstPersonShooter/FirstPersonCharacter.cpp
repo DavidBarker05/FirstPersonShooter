@@ -4,12 +4,13 @@
 #include "Camera/CameraComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "CharacterHealthComponent.h"
+#include "GameFramework/SpringArmComponent.h"
+#include "Weapons/WeaponHolderComponent.h"
 #include "EnhancedInputComponent.h"
 #include "InputActionValue.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 
-// Sets default values can always change in blueprint
 AFirstPersonCharacter::AFirstPersonCharacter() {
 	PrimaryActorTick.bCanEverTick = true;
 	GetCapsuleComponent()->InitCapsuleSize(34.0f, 90.0f);
@@ -20,18 +21,21 @@ AFirstPersonCharacter::AFirstPersonCharacter() {
 	PlayerCamera->bEnableFirstPersonScale = true;
 	PlayerCamera->FirstPersonFieldOfView = 70.0f;
 	PlayerCamera->FirstPersonScale = 0.6f;
-	// FirstPersonMesh is the mesh visible to the player in first person, doesn't clip with environment on camera
 	FirstPersonMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("First Person Mesh"));
 	FirstPersonMesh->SetupAttachment(PlayerCamera);
-	FirstPersonMesh->SetOnlyOwnerSee(true); // Only visible to player
-	FirstPersonMesh->FirstPersonPrimitiveType = EFirstPersonPrimitiveType::FirstPerson; // Render separate from environment, but visible to camera
+	FirstPersonMesh->SetOnlyOwnerSee(true);
+	FirstPersonMesh->FirstPersonPrimitiveType = EFirstPersonPrimitiveType::FirstPerson;
 	FirstPersonMesh->SetCollisionProfileName(FName("NoCollision"));
-	// GetMesh() returns the default character mesh, not visible to player but visible to engine
-	GetMesh()->SetOwnerNoSee(true); // Not visible to player
-	GetMesh()->FirstPersonPrimitiveType = EFirstPersonPrimitiveType::WorldSpaceRepresentation; // Render separate from environment, bit not visible to camera
+	GetMesh()->SetOwnerNoSee(true);
+	GetMesh()->FirstPersonPrimitiveType = EFirstPersonPrimitiveType::WorldSpaceRepresentation;
 	GetCharacterMovement()->BrakingDecelerationFalling = 750.0f;
 	GetCharacterMovement()->AirControl = 0.25f;
 	CharacterHealthComponent = CreateDefaultSubobject<UCharacterHealthComponent>(TEXT("Character Health Component"));
+	WeaponHolderComponent = CreateDefaultSubobject<UWeaponHolderComponent>(TEXT("Weapon Holder Component"));
+	BulletSpawnOffset = CreateDefaultSubobject<USpringArmComponent>(TEXT("Bullet Spawn Offset"));
+	BulletSpawnOffset->SetupAttachment(PlayerCamera);
+	BulletSpawnTransform = CreateDefaultSubobject<USceneComponent>(TEXT("Bullet Spawn Transform"));
+	BulletSpawnTransform->SetupAttachment(BulletSpawnOffset, USpringArmComponent::SocketName);
 }
 
 void AFirstPersonCharacter::BeginPlay() {
@@ -53,6 +57,8 @@ void AFirstPersonCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInp
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &AFirstPersonCharacter::DoJumpEnd);
 		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Started, this, &AFirstPersonCharacter::DoSprintStart);
 		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Completed, this, &AFirstPersonCharacter::DoSprintEnd);
+		EnhancedInputComponent->BindAction(ShootAction, ETriggerEvent::Started, this, &AFirstPersonCharacter::DoShootStart);
+		EnhancedInputComponent->BindAction(ShootAction, ETriggerEvent::Completed, this, &AFirstPersonCharacter::DoShootEnd);
 	}
 }
 
@@ -85,11 +91,19 @@ void AFirstPersonCharacter::DoJumpStart() { Jump(); }
 
 void AFirstPersonCharacter::DoJumpEnd() { StopJumping(); }
 
-// Are we even going to do aiming? Or are we going to do hip fire?
-// TODO: Don't allow sprint while aiming (also if possible maybe immediately sprint as they release aim)
 void AFirstPersonCharacter::DoSprintStart() { bIsPressingSprint = true; }
 
 void AFirstPersonCharacter::DoSprintEnd() { bIsPressingSprint = false; }
+
+void AFirstPersonCharacter::DoShootStart() {
+	if (bIsPressingShoot) return;
+	bIsPressingShoot = true;
+	if (GetCharacterMovement()->MaxWalkSpeed == BaseSprintSpeed || GetCharacterMovement()->MaxWalkSpeed == DiagonalSprintSpeed || GetCharacterMovement()->IsFalling()) return;
+	BulletSpawnOffset->TargetArmLength = -FVector::DistXY(PlayerCamera->GetComponentLocation(), FirstPersonMesh->GetSocketLocation(FName("WeaponSocket")));
+	WeaponHolderComponent->Shoot(BulletSpawnTransform->GetComponentTransform());
+}
+
+void AFirstPersonCharacter::DoShootEnd() { bIsPressingShoot = false; }
 
 void AFirstPersonCharacter::MoveCameraToSocket() {
 	FVector CamPos = PlayerCamera->GetComponentLocation();
@@ -106,10 +120,12 @@ float AFirstPersonCharacter::GetMaxMovementSpeed(const float Right, const float 
 	float SqrRight = Right * Right;
 	float SqrForward = Forward * Forward;
 	float SqrMovementDeadzone = MovementDeadzone * MovementDeadzone;
-	bool bIsFalling = GetCharacterMovement()->IsFalling();
 	if (SqrForward < SqrMovementDeadzone && SqrRight > SqrMovementDeadzone) return StrafeWalkSpeed;
+	bool bIsFalling = GetCharacterMovement()->IsFalling();
 	if (SqrForward > SqrMovementDeadzone && SqrRight > SqrMovementDeadzone) return bIsPressingSprint && !bIsFalling ? DiagonalSprintSpeed : DiagonalWalkSpeed;
 	return bIsPressingSprint && !bIsFalling ? BaseSprintSpeed : BaseWalkSpeed;
 }
 
 UCharacterHealthComponent* AFirstPersonCharacter::GetCharacterHealthComponent() { return CharacterHealthComponent; }
+
+USkeletalMeshComponent* AFirstPersonCharacter::GetFirstPersonMesh() { return FirstPersonMesh; }

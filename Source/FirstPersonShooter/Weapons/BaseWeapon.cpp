@@ -11,3 +11,5 @@ ABaseWeapon::ABaseWeapon() {
 void ABaseWeapon::Shoot(const FTransform SpawnTransform) { WeaponShootComponent->Shoot(SpawnTransform); }
 
 void ABaseWeapon::SetOwningCharacter(ACharacter* Character) { if (Character) WeaponShootComponent->OwningCharacter = Character; }
+
+UStaticMeshComponent* ABaseWeapon::GetWeaponMesh() { return WeaponMesh; }
