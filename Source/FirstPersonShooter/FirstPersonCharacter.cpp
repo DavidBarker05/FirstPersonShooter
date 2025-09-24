@@ -59,6 +59,8 @@ void AFirstPersonCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInp
 		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Completed, this, &AFirstPersonCharacter::DoSprintEnd);
 		EnhancedInputComponent->BindAction(ShootAction, ETriggerEvent::Started, this, &AFirstPersonCharacter::DoShootStart);
 		EnhancedInputComponent->BindAction(ShootAction, ETriggerEvent::Completed, this, &AFirstPersonCharacter::DoShootEnd);
+		EnhancedInputComponent->BindAction(WeaponOneSelectAction, ETriggerEvent::Started, this, &AFirstPersonCharacter::DoSelectWeaponOne);
+		EnhancedInputComponent->BindAction(WeaponTwoSelectAction, ETriggerEvent::Started, this, &AFirstPersonCharacter::DoSelectWeaponTwo);
 	}
 }
 
@@ -104,6 +106,10 @@ void AFirstPersonCharacter::DoShootStart() {
 }
 
 void AFirstPersonCharacter::DoShootEnd() { bIsPressingShoot = false; }
+
+void AFirstPersonCharacter::DoSelectWeaponOne() { WeaponHolderComponent->EquipPistol(); }
+
+void AFirstPersonCharacter::DoSelectWeaponTwo() { WeaponHolderComponent->EquipRifle(); }
 
 void AFirstPersonCharacter::MoveCameraToSocket() {
 	FVector CamPos = PlayerCamera->GetComponentLocation();

@@ -123,6 +123,12 @@ class FIRSTPERSONSHOOTER_API AFirstPersonCharacter : public ACharacter {
 		UFUNCTION(BlueprintCallable, Category = "Input")
 		virtual void DoShootEnd();
 
+		UFUNCTION(BlueprintCallable, Category = "Input")
+		virtual void DoSelectWeaponOne();
+
+		UFUNCTION(BlueprintCallable, Category = "Input")
+		virtual void DoSelectWeaponTwo();
+
 	private:
 		void MoveCameraToSocket();
 
