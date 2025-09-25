@@ -142,4 +142,6 @@ float AFirstPersonCharacter::GetMaxMovementSpeed(const float Right, const float 
 
 UCharacterHealthComponent* AFirstPersonCharacter::GetCharacterHealthComponent() { return CharacterHealthComponent; }
 
+UWeaponHolderComponent* AFirstPersonCharacter::GetWeaponHolderComponent() { return WeaponHolderComponent; }
+
 USkeletalMeshComponent* AFirstPersonCharacter::GetFirstPersonMesh() { return FirstPersonMesh; }
