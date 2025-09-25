@@ -32,7 +32,7 @@ class FIRSTPERSONSHOOTER_API AFirstPersonCharacter : public ACharacter {
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Camera", meta = (ClampMin = 0.1f, AllowPrivateAccess = "true", ToolTip = "The minimum distance the camera needs to be from the head bone to move there (stop head bobbing)"))
 	float CameraMoveThreshold = 5.0f;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Movement", meta = (ClampMin = 0f, ClampMax = 1f, AllowPrivateAccess = "true", ToolTip = "Deadzone for movement key to be considered pressed"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Movement", meta = (ClampMin = 0.0f, ClampMax = 1.0f, AllowPrivateAccess = "true", ToolTip = "Deadzone for movement key to be considered pressed"))
 	float MovementDeadzone = 0.05f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Movement", meta = (ClampMin = 400.0f, ClampMax = 600.0f, Units = "cm/s", AllowPrivateAccess = "true", ToolTip = "The base movement speed of the character when walking forwards"))
@@ -58,6 +58,9 @@ class FIRSTPERSONSHOOTER_API AFirstPersonCharacter : public ACharacter {
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement", meta = (AllowPrivateAccess = "true", ToolTip = "Indicates if the character is moving to the right"))
 	bool bIsMovingRight = false;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapons", meta = (ClampMin = 0.0f, Units = "deg", AllowPrivateAccess = "true"))
+	float MovementBulletSpread = 3.0f;
 
 	protected:
 		UPROPERTY(EditAnywhere, Category = "Input")

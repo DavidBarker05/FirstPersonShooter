@@ -102,7 +102,15 @@ void AFirstPersonCharacter::DoShootStart() {
 	bIsPressingShoot = true;
 	if (GetCharacterMovement()->MaxWalkSpeed == BaseSprintSpeed || GetCharacterMovement()->MaxWalkSpeed == DiagonalSprintSpeed || GetCharacterMovement()->IsFalling()) return;
 	BulletSpawnOffset->TargetArmLength = -FVector::DistXY(PlayerCamera->GetComponentLocation(), FirstPersonMesh->GetSocketLocation(FName("WeaponSocket")));
-	WeaponHolderComponent->Shoot(BulletSpawnTransform->GetComponentTransform());
+	FTransform SpawnTransform(BulletSpawnTransform->GetComponentTransform());
+	if (GetCharacterMovement()->Velocity.SizeSquared2D() > 1.0f) {
+		FVector ForwardVector = SpawnTransform.GetRotation().GetForwardVector();
+		float SpreadRadians = FMath::DegreesToRadians(MovementBulletSpread);
+		FVector ShootDirection = FMath::VRandCone(ForwardVector, SpreadRadians);
+		FRotator ShootRotation = ShootDirection.Rotation();
+		SpawnTransform.SetRotation(ShootRotation.Quaternion());
+	}
+	WeaponHolderComponent->Shoot(SpawnTransform);
 }
 
 void AFirstPersonCharacter::DoShootEnd() { bIsPressingShoot = false; }
