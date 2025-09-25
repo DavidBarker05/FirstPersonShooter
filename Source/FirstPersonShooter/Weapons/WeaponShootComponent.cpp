@@ -5,7 +5,7 @@
 UWeaponShootComponent::UWeaponShootComponent() : TimeBetweenShots(0.01f), GunDamage(0), BulletSpeed(1000.0f) { }
 
 void UWeaponShootComponent::Shoot(const FTransform SpawnTransform) {
-	if (!bCanShoot) return;
+	if (!bCanShoot || !BulletBlueprint) return;
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.Owner = GetOwner();
 	SpawnParams.Instigator = GetOwner()->GetInstigator();

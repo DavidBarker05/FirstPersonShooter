@@ -48,7 +48,7 @@ void UWeaponHolderComponent::CreateWeapons() {
 
 void UWeaponHolderComponent::CreateWeapon(FActorSpawnParameters& SpawnParams, FAttachmentTransformRules& AttachRules, TSubclassOf<class ABaseWeapon> WeaponBlueprint, class ABaseWeapon* Weapon, bool bIsFirstPerson) {
 	USkeletalMeshComponent* AttachMesh = bIsFirstPerson ? OwnerFirstPersonMesh : OwnerMesh;
-	if (!AttachMesh) return;
+	if (!AttachMesh || !WeaponBlueprint) return;
 	Weapon = GetOwner()->GetWorld()->SpawnActor<ABaseWeapon>(WeaponBlueprint, SpawnParams);
 	Weapon->AttachToComponent(AttachMesh, AttachRules, FName("WeaponSocket"));
 	Weapon->GetWeaponMesh()->FirstPersonPrimitiveType = bIsFirstPerson ? EFirstPersonPrimitiveType::FirstPerson : EFirstPersonPrimitiveType::WorldSpaceRepresentation;
