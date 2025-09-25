@@ -11,6 +11,8 @@ void UCharacterHealthComponent::BeginPlay() {
 
 int UCharacterHealthComponent::GetCurrentHealth() { return CurrentHealth; }
 
+int UCharacterHealthComponent::GetMaxHealth() { return MaxHealth; }
+
 void UCharacterHealthComponent::TakeDamage(int32 Damage) {
 	if (bIsImmune || bIsDead) return;
 	Damage = FMath::Abs(Damage);

@@ -27,13 +27,16 @@ class FIRSTPERSONSHOOTER_API UCharacterHealthComponent : public UActorComponent 
 		virtual void BeginPlay() override;
 
 	public:
-		UFUNCTION(BlueprintCallable)
+		UFUNCTION(BlueprintCallable, Category = "Health")
 		int GetCurrentHealth();
 
-		UFUNCTION(BlueprintCallable)
+		UFUNCTION(BlueprintCallable, Category = "Health")
+		int GetMaxHealth();
+
+		UFUNCTION(BlueprintCallable, Category = "Health")
 		void TakeDamage(int32 Damage);
 
-		UFUNCTION(BlueprintCallable)
+		UFUNCTION(BlueprintCallable, Category = "Health")
 		void ReceiveHealth(int32 Health);
 
 	private:
