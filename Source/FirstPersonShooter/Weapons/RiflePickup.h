@@ -15,6 +15,7 @@ class FIRSTPERSONSHOOTER_API ARiflePickup : public AActor {
 	UStaticMeshComponent* RifleMesh;
 
 	public:
+		UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 		class ARiflePickupSpawner* Spawner;
 	
 	public:

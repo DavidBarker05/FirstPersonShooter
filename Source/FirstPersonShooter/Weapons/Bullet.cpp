@@ -34,6 +34,8 @@ void ABullet::SetDamage(const int32 _Damage) { Damage = _Damage; }
 void ABullet::SetInitialSpeed(const float Speed) {
 	ProjectileMovementComponent->InitialSpeed = Speed;
 	ProjectileMovementComponent->MaxSpeed = Speed;
+	ProjectileMovementComponent->Velocity = GetActorForwardVector() * Speed;
+	ProjectileMovementComponent->Activate(true);
 }
 
 void ABullet::SetCharacterToIgnore(ACharacter* Character) { CharacterToIgnore = Character; }

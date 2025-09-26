@@ -8,6 +8,7 @@ UWeaponShootComponent::UWeaponShootComponent() : TimeBetweenShots(0.01f), GunDam
 void UWeaponShootComponent::BeginPlay() {
 	Super::BeginPlay();
 	RecoilTimer = RecoilTime;
+	bCanShoot = true;
 }
 
 void UWeaponShootComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) {

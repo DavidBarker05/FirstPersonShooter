@@ -3,6 +3,8 @@
 #include "GameFramework/Controller.h"
 
 ABaseWeapon::ABaseWeapon() {
+	Root = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
+	SetRootComponent(Root);
 	WeaponMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Weapon Mesh"));
 	WeaponMesh->SetCollisionProfileName(FName("NoCollision"));
 	WeaponMesh->SetupAttachment(RootComponent);

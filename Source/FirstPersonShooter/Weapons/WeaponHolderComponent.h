@@ -20,10 +20,10 @@ class FIRSTPERSONSHOOTER_API UWeaponHolderComponent : public UActorComponent {
 	bool bHasRifle = false;
 
 	protected:
-		UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapons", meta = (AllowPrivateAccess = "true"))
+		UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapons", meta = (AllowPrivateAccess = "true"))
 		TSubclassOf<class APistolWeapon> PistolBlueprint;
 
-		UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapons", meta = (AllowPrivateAccess = "true"))
+		UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapons", meta = (AllowPrivateAccess = "true"))
 		TSubclassOf<class ARifleWeapon> RifleBlueprint;
 
 		UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapons", meta = (AllowPrivateAccess = "true"))
@@ -59,6 +59,6 @@ class FIRSTPERSONSHOOTER_API UWeaponHolderComponent : public UActorComponent {
 
 	private:
 		void CreateWeapons();
-		void CreateWeapon(FActorSpawnParameters& SpawnParams, FAttachmentTransformRules& AttachRules, TSubclassOf<class ABaseWeapon> WeaponBlueprint, class ABaseWeapon* Weapon, bool bIsFirstPerson);
+		class ABaseWeapon* CreateWeapon(FActorSpawnParameters& SpawnParams, FAttachmentTransformRules& AttachRules, TSubclassOf<class ABaseWeapon> WeaponBlueprint, bool bIsFirstPerson);
 		void SwitchWeapon();
 };

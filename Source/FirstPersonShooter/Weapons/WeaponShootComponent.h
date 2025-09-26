@@ -33,7 +33,7 @@ class FIRSTPERSONSHOOTER_API UWeaponShootComponent : public UActorComponent {
 		float VerticalRecoil;
 
 	protected:
-		UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapons", meta = (AllowPrivateAccess = "true"))
+		UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapons", meta = (AllowPrivateAccess = "true"))
 		TSubclassOf<class ABullet> BulletBlueprint;
 
 		UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapons", meta = (ClampMin = 0.0f, ClampMax = 1.0f, Units = "s", AllowPrivateAccess = "true"))

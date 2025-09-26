@@ -16,6 +16,7 @@ ARiflePickup::ARiflePickup() {
 }
 
 void ARiflePickup::OnComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) {
+	UE_LOG(LogTemp, Warning, TEXT("Overlap with %s"), *OtherActor->GetName());
 	if (AFirstPersonCharacter* FirstPersonCharacter = Cast<AFirstPersonCharacter>(OtherActor)) {
 		FirstPersonCharacter->GetWeaponHolderComponent()->PickUpRifle();
 		if (Spawner) Spawner->SpawnNewPickupAfterDelay();

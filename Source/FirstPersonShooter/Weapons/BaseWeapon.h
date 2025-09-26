@@ -10,6 +10,9 @@ class FIRSTPERSONSHOOTER_API ABaseWeapon : public AActor {
 	
 	protected:
 		UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
+		USceneComponent* Root;
+
+		UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 		UStaticMeshComponent* WeaponMesh;
 
 		UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))

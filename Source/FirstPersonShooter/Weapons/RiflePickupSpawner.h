@@ -16,7 +16,7 @@ class FIRSTPERSONSHOOTER_API ARiflePickupSpawner : public AActor {
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Spawning", meta = (AllowPrivateAccess = "true"))
 	USceneComponent* SpawnTransform;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Spawning", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Spawning", meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<class ARiflePickup> RiflePickupBlueprint;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawning", meta = (ClampMin = 1.0f, Units = "s", AllowPrivateAccess = "true"))
@@ -32,5 +32,6 @@ class FIRSTPERSONSHOOTER_API ARiflePickupSpawner : public AActor {
 		void SpawnPickup();
 
 	public:
+		UFUNCTION(BlueprintCallable)
 		void SpawnNewPickupAfterDelay();
 };
