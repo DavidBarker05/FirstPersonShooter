@@ -49,6 +49,9 @@ class FIRSTPERSONSHOOTER_API UWeaponHolderComponent : public UActorComponent {
 		UFUNCTION(BlueprintCallable, Category = "Weapons")
 		void EquipRifle();
 
+		UFUNCTION(BlueprintCallable, Category = "Weapons")
+		class ARifleWeapon* GetRifle();
+
 	private:
 		void CreateWeapons();
 		void CreateWeapon(FActorSpawnParameters& SpawnParams, FAttachmentTransformRules& AttachRules, TSubclassOf<class ABaseWeapon> WeaponBlueprint, class ABaseWeapon* Weapon, bool bIsFirstPerson);

@@ -44,6 +44,8 @@ void UWeaponHolderComponent::EquipPistol() { if (bIsHoldingRifle) SwitchWeapon()
 
 void UWeaponHolderComponent::EquipRifle() { if (bHasRifle && !bIsHoldingRifle) SwitchWeapon(); }
 
+ARifleWeapon* UWeaponHolderComponent::GetRifle() { return Rifle; }
+
 void UWeaponHolderComponent::CreateWeapons() {
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.Owner = GetOwner();
