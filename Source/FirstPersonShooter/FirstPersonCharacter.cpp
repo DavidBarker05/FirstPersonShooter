@@ -47,7 +47,6 @@ void AFirstPersonCharacter::BeginPlay() {
 
 void AFirstPersonCharacter::Tick(float DeltaSeconds) {
 	Super::Tick(DeltaSeconds);
-	MoveCameraToSocket();
 	UpdateBulletSpawnPos();
 }
 
@@ -105,19 +104,9 @@ void AFirstPersonCharacter::DoSelectWeaponOne() { WeaponHolderComponent->EquipPi
 
 void AFirstPersonCharacter::DoSelectWeaponTwo() { WeaponHolderComponent->EquipRifle(); }
 
-void AFirstPersonCharacter::MoveCameraToSocket() {
-	FVector CamPos = PlayerCamera->GetComponentLocation();
-	FVector CamSocketPos = GetMesh()->GetSocketLocation(FName("CameraSocket"));
-	float SqrDist = FVector::DistSquared(CamPos, CamSocketPos);
-	float SqrCamMoveThresh = CameraMoveThreshold * CameraMoveThreshold;
-	if (SqrDist < SqrCamMoveThresh) return;
-	float Alpha = FMath::Clamp(SqrDist / (9.0f * SqrCamMoveThresh), 0.0f, 1.0f);
-	PlayerCamera->SetWorldLocation(UKismetMathLibrary::VLerp(CamPos, CamSocketPos, Alpha));
-}
-
 void AFirstPersonCharacter::UpdateBulletSpawnPos() {
-	float CamToWeaponSocketDistFP = FVector::DistXY(PlayerCamera->GetComponentLocation(), FirstPersonMesh->GetSocketLocation(FName("WeaponSocket")));
-	float CamToWeaponSocketDistTP = FVector::DistXY(PlayerCamera->GetComponentLocation(), GetMesh()->GetSocketLocation(FName("WeaponSocket")));
+	float CamToWeaponSocketDistFP = FVector::Dist(PlayerCamera->GetComponentLocation(), FirstPersonMesh->GetSocketLocation(FName("WeaponSocket")));
+	float CamToWeaponSocketDistTP = FVector::Dist(PlayerCamera->GetComponentLocation(), GetMesh()->GetSocketLocation(FName("WeaponSocket")));
 	float CamToWeaponSocketAvgDist = (CamToWeaponSocketDistFP + CamToWeaponSocketDistTP) / 2.0f;
 	BulletSpawnOffset->TargetArmLength = -CamToWeaponSocketAvgDist;
 }
