@@ -15,6 +15,8 @@ class FIRSTPERSONSHOOTER_API UWeaponHolderComponent : public UActorComponent {
 	class APistolWeapon* PistolFirstPerson;
 	class ARifleWeapon* Rifle;
 	class ARifleWeapon* RifleFirstPerson;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapons", meta = (AllowPrivateAccess = "true"))
 	bool bHasRifle = false;
 
 	protected:
@@ -38,7 +40,7 @@ class FIRSTPERSONSHOOTER_API UWeaponHolderComponent : public UActorComponent {
 
 	public:
 		UFUNCTION(BlueprintCallable, Category = "Weapons")
-		void Shoot(const FTransform& SpawnTransform);
+		bool Shoot(const FTransform& SpawnTransform, class AController* Controller);
 
 		UFUNCTION(BlueprintCallable, Category = "Weapons")
 		void PickUpRifle();
@@ -48,6 +50,9 @@ class FIRSTPERSONSHOOTER_API UWeaponHolderComponent : public UActorComponent {
 
 		UFUNCTION(BlueprintCallable, Category = "Weapons")
 		void EquipRifle();
+
+		UFUNCTION(BlueprintCallable, Category = "Weapons")
+		class APistolWeapon* GetPistol();
 
 		UFUNCTION(BlueprintCallable, Category = "Weapons")
 		class ARifleWeapon* GetRifle();

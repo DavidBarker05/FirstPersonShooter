@@ -1,5 +1,6 @@
 #include "Weapons/BaseWeapon.h"
 #include "Weapons/WeaponShootComponent.h"
+#include "GameFramework/Controller.h"
 
 ABaseWeapon::ABaseWeapon() {
 	WeaponMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Weapon Mesh"));
@@ -8,7 +9,7 @@ ABaseWeapon::ABaseWeapon() {
 	WeaponShootComponent = CreateDefaultSubobject<UWeaponShootComponent>(TEXT("Weapon Shoot Component"));
 }
 
-void ABaseWeapon::Shoot(const FTransform& SpawnTransform) { WeaponShootComponent->Shoot(SpawnTransform); }
+bool ABaseWeapon::Shoot(const FTransform& SpawnTransform, AController* Controller) { return WeaponShootComponent->Shoot(SpawnTransform, Controller); }
 
 void ABaseWeapon::SetOwningCharacter(ACharacter* Character) { if (Character) WeaponShootComponent->OwningCharacter = Character; }
 

@@ -3,12 +3,13 @@
 #include "Components/CapsuleComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "CharacterHealthComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Weapons/WeaponHolderComponent.h"
 #include "EnhancedInputComponent.h"
 #include "InputActionValue.h"
-#include "GameFramework/CharacterMovementComponent.h"
+#include "GameFramework/PlayerController.h"
 #include "Kismet/KismetMathLibrary.h"
 
 AFirstPersonCharacter::AFirstPersonCharacter() {
@@ -98,7 +99,7 @@ void AFirstPersonCharacter::DoSprintStart() { bIsPressingSprint = true; }
 
 void AFirstPersonCharacter::DoSprintEnd() { bIsPressingSprint = false; }
 
-void AFirstPersonCharacter::DoShoot() { WeaponHolderComponent->Shoot(BulletSpawnTransform->GetComponentTransform()); }
+void AFirstPersonCharacter::DoShoot() { WeaponHolderComponent->Shoot(BulletSpawnTransform->GetComponentTransform(), GetController()); }
 
 void AFirstPersonCharacter::DoSelectWeaponOne() { WeaponHolderComponent->EquipPistol(); }
 

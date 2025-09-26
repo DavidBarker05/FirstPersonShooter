@@ -5,6 +5,7 @@
 #include "Weapons/PistolWeapon.h"
 #include "Weapons/RifleWeapon.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "GameFramework/Controller.h"
 
 UWeaponHolderComponent::UWeaponHolderComponent() {
 	if (AFirstPersonCharacter* FirstPersonCharacter = Cast<AFirstPersonCharacter>(GetOwner())) {
@@ -20,19 +21,21 @@ void UWeaponHolderComponent::BeginPlay() {
 	EquipPistol();
 }
 
-void UWeaponHolderComponent::Shoot(const FTransform& SpawnTransform) {
+bool UWeaponHolderComponent::Shoot(const FTransform& SpawnTransform, AController* Controller) {
 	if (AFirstPersonCharacter* FirstPersonCharacter = Cast<AFirstPersonCharacter>(GetOwner())) {
-		if (!CurrentWeapon || FirstPersonCharacter->GetCharacterMovement()->MaxWalkSpeed > FirstPersonCharacter->GetFastestWalkSpeed() || FirstPersonCharacter->GetCharacterMovement()->IsFalling()) return;
+		UCharacterMovementComponent* CharacterMovement = FirstPersonCharacter->GetCharacterMovement();
+		if (!CurrentWeapon || CharacterMovement->MaxWalkSpeed > FirstPersonCharacter->GetFastestWalkSpeed() || CharacterMovement->IsFalling()) return false;
 		FTransform BulletSpawnTransform(SpawnTransform);
-		if (FirstPersonCharacter->GetCharacterMovement()->Velocity.SizeSquared2D() > 1.0f) {
+		if (CharacterMovement->Velocity.SizeSquared2D() > 1.0f) {
 			FVector ForwardVector = BulletSpawnTransform.GetRotation().GetForwardVector();
 			float SpreadRadians = FMath::DegreesToRadians(MovementBulletSpread);
 			FVector ShootDirection = FMath::VRandCone(ForwardVector, SpreadRadians);
 			FRotator ShootRotation = ShootDirection.Rotation();
 			BulletSpawnTransform.SetRotation(ShootRotation.Quaternion());
 		}
-		CurrentWeapon->Shoot(BulletSpawnTransform);
+		return CurrentWeapon->Shoot(BulletSpawnTransform, Controller);
 	}
+	return false;
 }
 
 void UWeaponHolderComponent::PickUpRifle() {
@@ -43,6 +46,8 @@ void UWeaponHolderComponent::PickUpRifle() {
 void UWeaponHolderComponent::EquipPistol() { if (bIsHoldingRifle) SwitchWeapon(); }
 
 void UWeaponHolderComponent::EquipRifle() { if (bHasRifle && !bIsHoldingRifle) SwitchWeapon(); }
+
+APistolWeapon* UWeaponHolderComponent::GetPistol() { return Pistol; }
 
 ARifleWeapon* UWeaponHolderComponent::GetRifle() { return Rifle; }
 

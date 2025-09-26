@@ -20,7 +20,7 @@ class FIRSTPERSONSHOOTER_API ABaseWeapon : public AActor {
 
 	public:
 		UFUNCTION(BlueprintCallable, Category = "Weapons")
-		virtual void Shoot(const FTransform& SpawnTransform);
+		virtual bool Shoot(const FTransform& SpawnTransform, class AController* Controller);
 
 		UFUNCTION(BlueprintCallable, Category = "Character")
 		void SetOwningCharacter(ACharacter* Character);
