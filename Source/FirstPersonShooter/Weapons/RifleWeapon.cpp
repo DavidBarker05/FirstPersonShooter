@@ -7,7 +7,7 @@ ARifleWeapon::ARifleWeapon() {
 	WeaponShootComponent->BulletSpeed = 4000.0f;
 }
 
-void ARifleWeapon::Shoot(const FTransform SpawnTransform) {
+void ARifleWeapon::Shoot(const FTransform& SpawnTransform) {
 	if (CurrentAmmo <= 0) return;
 	--CurrentAmmo;
 	Super::Shoot(SpawnTransform);

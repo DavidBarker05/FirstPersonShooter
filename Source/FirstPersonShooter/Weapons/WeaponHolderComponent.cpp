@@ -4,6 +4,7 @@
 #include "Weapons/BaseWeapon.h"
 #include "Weapons/PistolWeapon.h"
 #include "Weapons/RifleWeapon.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 UWeaponHolderComponent::UWeaponHolderComponent() {
 	if (AFirstPersonCharacter* FirstPersonCharacter = Cast<AFirstPersonCharacter>(GetOwner())) {
@@ -19,7 +20,20 @@ void UWeaponHolderComponent::BeginPlay() {
 	EquipPistol();
 }
 
-void UWeaponHolderComponent::Shoot(FTransform SpawnTransform) { if (CurrentWeapon) CurrentWeapon->Shoot(SpawnTransform); }
+void UWeaponHolderComponent::Shoot(const FTransform& SpawnTransform) {
+	if (AFirstPersonCharacter* FirstPersonCharacter = Cast<AFirstPersonCharacter>(GetOwner())) {
+		if (!CurrentWeapon || FirstPersonCharacter->GetCharacterMovement()->MaxWalkSpeed > FirstPersonCharacter->GetFastestWalkSpeed() || FirstPersonCharacter->GetCharacterMovement()->IsFalling()) return;
+		FTransform BulletSpawnTransform(SpawnTransform);
+		if (FirstPersonCharacter->GetCharacterMovement()->Velocity.SizeSquared2D() > 1.0f) {
+			FVector ForwardVector = BulletSpawnTransform.GetRotation().GetForwardVector();
+			float SpreadRadians = FMath::DegreesToRadians(MovementBulletSpread);
+			FVector ShootDirection = FMath::VRandCone(ForwardVector, SpreadRadians);
+			FRotator ShootRotation = ShootDirection.Rotation();
+			BulletSpawnTransform.SetRotation(ShootRotation.Quaternion());
+		}
+		CurrentWeapon->Shoot(BulletSpawnTransform);
+	}
+}
 
 void UWeaponHolderComponent::PickUpRifle() {
 	bHasRifle = true;

@@ -27,6 +27,9 @@ class FIRSTPERSONSHOOTER_API UWeaponHolderComponent : public UActorComponent {
 		UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapons", meta = (AllowPrivateAccess = "true"))
 		bool bIsHoldingRifle = false;
 
+		UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapons", meta = (ClampMin = 0.0f, Units = "deg", AllowPrivateAccess = "true"))
+		float MovementBulletSpread = 3.0f;
+
 	public:
 		UWeaponHolderComponent();
 
@@ -35,7 +38,7 @@ class FIRSTPERSONSHOOTER_API UWeaponHolderComponent : public UActorComponent {
 
 	public:
 		UFUNCTION(BlueprintCallable, Category = "Weapons")
-		void Shoot(FTransform SpawnTransform);
+		void Shoot(const FTransform& SpawnTransform);
 
 		UFUNCTION(BlueprintCallable, Category = "Weapons")
 		void PickUpRifle();

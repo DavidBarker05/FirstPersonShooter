@@ -8,7 +8,7 @@ ABaseWeapon::ABaseWeapon() {
 	WeaponShootComponent = CreateDefaultSubobject<UWeaponShootComponent>(TEXT("Weapon Shoot Component"));
 }
 
-void ABaseWeapon::Shoot(const FTransform SpawnTransform) { WeaponShootComponent->Shoot(SpawnTransform); }
+void ABaseWeapon::Shoot(const FTransform& SpawnTransform) { WeaponShootComponent->Shoot(SpawnTransform); }
 
 void ABaseWeapon::SetOwningCharacter(ACharacter* Character) { if (Character) WeaponShootComponent->OwningCharacter = Character; }
 

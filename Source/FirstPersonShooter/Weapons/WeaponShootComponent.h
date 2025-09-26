@@ -33,7 +33,7 @@ class FIRSTPERSONSHOOTER_API UWeaponShootComponent : public UActorComponent {
 
 	public:
 		UFUNCTION(BlueprintCallable, Category = "Weapons")
-		virtual void Shoot(const FTransform SpawnTransform);
+		virtual void Shoot(const FTransform& SpawnTransform);
 
 	protected:
 		UFUNCTION(BlueprintCallable, Category = "Weapons")

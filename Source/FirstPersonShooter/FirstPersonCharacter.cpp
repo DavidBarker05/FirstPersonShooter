@@ -41,11 +41,13 @@ AFirstPersonCharacter::AFirstPersonCharacter() {
 void AFirstPersonCharacter::BeginPlay() {
 	Super::BeginPlay();
 	GetCharacterMovement()->MaxWalkSpeed = BaseWalkSpeed;
+	bIsPressingSprint = false;
 }
 
 void AFirstPersonCharacter::Tick(float DeltaSeconds) {
 	Super::Tick(DeltaSeconds);
 	MoveCameraToSocket();
+	UpdateBulletSpawnPos();
 }
 
 void AFirstPersonCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) {
@@ -57,8 +59,7 @@ void AFirstPersonCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInp
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &AFirstPersonCharacter::DoJumpEnd);
 		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Started, this, &AFirstPersonCharacter::DoSprintStart);
 		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Completed, this, &AFirstPersonCharacter::DoSprintEnd);
-		EnhancedInputComponent->BindAction(ShootAction, ETriggerEvent::Started, this, &AFirstPersonCharacter::DoShootStart);
-		EnhancedInputComponent->BindAction(ShootAction, ETriggerEvent::Completed, this, &AFirstPersonCharacter::DoShootEnd);
+		EnhancedInputComponent->BindAction(ShootAction, ETriggerEvent::Started, this, &AFirstPersonCharacter::DoShoot);
 		EnhancedInputComponent->BindAction(WeaponOneSelectAction, ETriggerEvent::Started, this, &AFirstPersonCharacter::DoSelectWeaponOne);
 		EnhancedInputComponent->BindAction(WeaponTwoSelectAction, ETriggerEvent::Started, this, &AFirstPersonCharacter::DoSelectWeaponTwo);
 	}
@@ -97,26 +98,7 @@ void AFirstPersonCharacter::DoSprintStart() { bIsPressingSprint = true; }
 
 void AFirstPersonCharacter::DoSprintEnd() { bIsPressingSprint = false; }
 
-void AFirstPersonCharacter::DoShootStart() {
-	if (bIsPressingShoot) return;
-	bIsPressingShoot = true;
-	if (GetCharacterMovement()->MaxWalkSpeed == BaseSprintSpeed || GetCharacterMovement()->MaxWalkSpeed == DiagonalSprintSpeed || GetCharacterMovement()->IsFalling()) return;
-	float CamToWeaponSocketDistFP = FVector::DistXY(PlayerCamera->GetComponentLocation(), FirstPersonMesh->GetSocketLocation(FName("WeaponSocket")));
-	float CamToWeaponSocketDistTP = FVector::DistXY(PlayerCamera->GetComponentLocation(), GetMesh()->GetSocketLocation(FName("WeaponSocket")));
-	float CamToWeaponSocketDistAvg = (CamToWeaponSocketDistFP + CamToWeaponSocketDistTP) / 2.0f;
-	BulletSpawnOffset->TargetArmLength = -CamToWeaponSocketDistAvg;
-	FTransform SpawnTransform(BulletSpawnTransform->GetComponentTransform());
-	if (GetCharacterMovement()->Velocity.SizeSquared2D() > 1.0f) {
-		FVector ForwardVector = SpawnTransform.GetRotation().GetForwardVector();
-		float SpreadRadians = FMath::DegreesToRadians(MovementBulletSpread);
-		FVector ShootDirection = FMath::VRandCone(ForwardVector, SpreadRadians);
-		FRotator ShootRotation = ShootDirection.Rotation();
-		SpawnTransform.SetRotation(ShootRotation.Quaternion());
-	}
-	WeaponHolderComponent->Shoot(SpawnTransform);
-}
-
-void AFirstPersonCharacter::DoShootEnd() { bIsPressingShoot = false; }
+void AFirstPersonCharacter::DoShoot() { WeaponHolderComponent->Shoot(BulletSpawnTransform->GetComponentTransform()); }
 
 void AFirstPersonCharacter::DoSelectWeaponOne() { WeaponHolderComponent->EquipPistol(); }
 
@@ -130,6 +112,13 @@ void AFirstPersonCharacter::MoveCameraToSocket() {
 	if (SqrDist < SqrCamMoveThresh) return;
 	float Alpha = FMath::Clamp(SqrDist / (9.0f * SqrCamMoveThresh), 0.0f, 1.0f);
 	PlayerCamera->SetWorldLocation(UKismetMathLibrary::VLerp(CamPos, CamSocketPos, Alpha));
+}
+
+void AFirstPersonCharacter::UpdateBulletSpawnPos() {
+	float CamToWeaponSocketDistFP = FVector::DistXY(PlayerCamera->GetComponentLocation(), FirstPersonMesh->GetSocketLocation(FName("WeaponSocket")));
+	float CamToWeaponSocketDistTP = FVector::DistXY(PlayerCamera->GetComponentLocation(), GetMesh()->GetSocketLocation(FName("WeaponSocket")));
+	float CamToWeaponSocketAvgDist = (CamToWeaponSocketDistFP + CamToWeaponSocketDistTP) / 2.0f;
+	BulletSpawnOffset->TargetArmLength = -CamToWeaponSocketAvgDist;
 }
 
 float AFirstPersonCharacter::GetMaxMovementSpeed(const float Right, const float Forward) {
@@ -148,3 +137,5 @@ UCharacterHealthComponent* AFirstPersonCharacter::GetCharacterHealthComponent() 
 UWeaponHolderComponent* AFirstPersonCharacter::GetWeaponHolderComponent() { return WeaponHolderComponent; }
 
 USkeletalMeshComponent* AFirstPersonCharacter::GetFirstPersonMesh() { return FirstPersonMesh; }
+
+float AFirstPersonCharacter::GetFastestWalkSpeed() { return BaseWalkSpeed; }

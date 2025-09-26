@@ -22,7 +22,7 @@ class FIRSTPERSONSHOOTER_API ARifleWeapon : public ABaseWeapon {
 		ARifleWeapon();
 
 	public:
-		virtual void Shoot(const FTransform SpawnTransform) override;
+		virtual void Shoot(const FTransform& SpawnTransform) override;
 
 		UFUNCTION(BlueprintCallable)
 		void AddAmmo();

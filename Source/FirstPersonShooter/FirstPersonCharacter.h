@@ -9,7 +9,6 @@ class FIRSTPERSONSHOOTER_API AFirstPersonCharacter : public ACharacter {
 	GENERATED_BODY()
 
 	bool bIsPressingSprint = false;
-	bool bIsPressingShoot = false;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	class USkeletalMeshComponent* FirstPersonMesh;
@@ -58,9 +57,6 @@ class FIRSTPERSONSHOOTER_API AFirstPersonCharacter : public ACharacter {
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement", meta = (AllowPrivateAccess = "true", ToolTip = "Indicates if the character is moving to the right"))
 	bool bIsMovingRight = false;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapons", meta = (ClampMin = 0.0f, Units = "deg", AllowPrivateAccess = "true"))
-	float MovementBulletSpread = 3.0f;
 
 	protected:
 		UPROPERTY(EditAnywhere, Category = "Input")
@@ -121,10 +117,7 @@ class FIRSTPERSONSHOOTER_API AFirstPersonCharacter : public ACharacter {
 		virtual void DoSprintEnd();
 
 		UFUNCTION(BlueprintCallable, Category = "Input")
-		virtual void DoShootStart();
-
-		UFUNCTION(BlueprintCallable, Category = "Input")
-		virtual void DoShootEnd();
+		virtual void DoShoot();
 
 		UFUNCTION(BlueprintCallable, Category = "Input")
 		virtual void DoSelectWeaponOne();
@@ -134,6 +127,8 @@ class FIRSTPERSONSHOOTER_API AFirstPersonCharacter : public ACharacter {
 
 	private:
 		void MoveCameraToSocket();
+
+		void UpdateBulletSpawnPos();
 
 		float GetMaxMovementSpeed(const float Right, const float Forward);
 
@@ -146,4 +141,7 @@ class FIRSTPERSONSHOOTER_API AFirstPersonCharacter : public ACharacter {
 
 		UFUNCTION(BlueprintCallable, Category = "Components")
 		class USkeletalMeshComponent* GetFirstPersonMesh();
+
+		UFUNCTION(BlueprintCallable, Category = "Movement")
+		float GetFastestWalkSpeed();
 };
