@@ -26,7 +26,7 @@ class FIRSTPERSONSHOOTER_API UWeaponShootComponent : public UActorComponent {
 		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapons", meta = (ClampMin = 0, ClampMax = 15, AllowPrivateAccess = "true"))
 		int32 GunDamage;
 
-		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapons", meta = (ClampMin = 1000.0f, ClampMax = 5000.0f, Units = "cm/s", AllowPrivateAccess = "true"))
+		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapons", meta = (ClampMin = 1000.0f, ClampMax = 10000.0f, Units = "cm/s", AllowPrivateAccess = "true"))
 		float BulletSpeed;
 
 		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapons", meta = (ClampMin = 0.0f, ClampMax = 5.0f, Units = "deg", AllowPrivateAccess = "true"))

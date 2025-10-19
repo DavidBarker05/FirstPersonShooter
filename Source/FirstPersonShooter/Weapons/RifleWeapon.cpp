@@ -5,7 +5,7 @@
 ARifleWeapon::ARifleWeapon() {
 	WeaponShootComponent->TimeBetweenShots = 0.5f;
 	WeaponShootComponent->GunDamage = 12;
-	WeaponShootComponent->BulletSpeed = 4000.0f;
+	WeaponShootComponent->BulletSpeed = 8000.0f;
 	WeaponShootComponent->VerticalRecoil = 2.0f;
 }
 
