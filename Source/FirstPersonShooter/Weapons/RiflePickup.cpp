@@ -15,11 +15,16 @@ ARiflePickup::ARiflePickup() {
 	RifleMesh->SetCollisionProfileName(FName("NoCollision"));
 }
 
-void ARiflePickup::OnComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) {
-	UE_LOG(LogTemp, Warning, TEXT("Overlap with %s"), *OtherActor->GetName());
-	if (AFirstPersonCharacter* FirstPersonCharacter = Cast<AFirstPersonCharacter>(OtherActor)) {
+void ARiflePickup::OnComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) { OnPickup_Implementation(OtherActor); }
+
+void ARiflePickup::OnPickup_Implementation(AActor* CollidedActor) {
+	if (AFirstPersonCharacter* FirstPersonCharacter = Cast<AFirstPersonCharacter>(CollidedActor)) {
 		FirstPersonCharacter->GetWeaponHolderComponent()->PickUpRifle();
-		if (Spawner) Spawner->SpawnNewPickupAfterDelay();
-		GetWorld()->DestroyActor(this);
+		Respawn_Implementation();
 	}
+}
+
+void ARiflePickup::Respawn_Implementation() {
+	if (Spawner) Spawner->SpawnNewPickupAfterDelay();
+	GetWorld()->DestroyActor(this);
 }

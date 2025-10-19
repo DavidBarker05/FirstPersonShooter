@@ -14,7 +14,9 @@ public class FirstPersonShooter : ModuleRules
 		
 		PublicIncludePaths.AddRange(new string[] {
 			"FirstPersonShooter",
-			"FirstPersonShooter/Weapons"
+			"FirstPersonShooter/Weapons",
+			"FirstPersonShooter/Interfaces",
+			"FirstPersonShooter/Events"
 		});
 
 		// Uncomment if you are using Slate UI

@@ -11,16 +11,20 @@ ARiflePickupSpawner::ARiflePickupSpawner() {
 
 void ARiflePickupSpawner::BeginPlay() {
 	Super::BeginPlay();
-	SpawnPickup();
+	Spawn_Implementation(RiflePickupBlueprint);
 }
 
+void ARiflePickupSpawner::SpawnNewPickupAfterDelay() {
+	FTimerDelegate RespawnDelegate;
+	RespawnDelegate.BindUFunction(this, FName("Spawn_Implementation"), RiflePickupBlueprint);
+	GetWorldTimerManager().SetTimer(RespawnHandle, RespawnDelegate, RespawnDelay, false);
+}
 
-void ARiflePickupSpawner::SpawnPickup() {
-	if (!RiflePickupBlueprint) return;
+void ARiflePickupSpawner::Spawn_Implementation(TSubclassOf<AActor> ActorToSpawn) {
+	if (!ActorToSpawn) return;
+	if (!ActorToSpawn->ImplementsInterface(URespawnable::StaticClass())) return;
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.Owner = this;
-	ARiflePickup* RiflePickup = GetWorld()->SpawnActor<ARiflePickup>(RiflePickupBlueprint, SpawnTransform->GetComponentTransform(), SpawnParams);
-	if (RiflePickup) RiflePickup->Spawner = this;
+	AActor* SpawnedActor = GetWorld()->SpawnActor<AActor>(ActorToSpawn, SpawnTransform->GetComponentTransform(), SpawnParams);
+	if (ARiflePickup* RiflePickup = Cast<ARiflePickup>(SpawnedActor)) RiflePickup->Spawner = this;
 }
-
-void ARiflePickupSpawner::SpawnNewPickupAfterDelay() { GetWorldTimerManager().SetTimer(RespawnHandle, this, &ARiflePickupSpawner::SpawnPickup, RespawnDelay, false); }

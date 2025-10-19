@@ -2,10 +2,11 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Interfaces/Spawner.h"
 #include "RiflePickupSpawner.generated.h"
 
 UCLASS(Abstract)
-class FIRSTPERSONSHOOTER_API ARiflePickupSpawner : public AActor {
+class FIRSTPERSONSHOOTER_API ARiflePickupSpawner : public AActor, public ISpawner {
 	GENERATED_BODY()
 
 	FTimerHandle RespawnHandle;
@@ -28,10 +29,11 @@ class FIRSTPERSONSHOOTER_API ARiflePickupSpawner : public AActor {
 	protected:
 		virtual void BeginPlay() override;
 
-	private:
-		void SpawnPickup();
-
 	public:
 		UFUNCTION(BlueprintCallable)
 		void SpawnNewPickupAfterDelay();
+
+	protected:
+		UFUNCTION()
+		void Spawn_Implementation(TSubclassOf<AActor> ActorToSpawn) override;
 };
