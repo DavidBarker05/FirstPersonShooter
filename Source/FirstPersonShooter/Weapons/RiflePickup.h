@@ -21,6 +21,7 @@ class FIRSTPERSONSHOOTER_API ARiflePickup : public AActor {
 	public:
 		ARiflePickup();
 
-	private:
+	protected:
+		UFUNCTION()
 		void OnComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 };
