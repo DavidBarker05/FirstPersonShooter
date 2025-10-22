@@ -12,6 +12,8 @@
 #include "GameFramework/PlayerController.h"
 #include "Kismet/KismetMathLibrary.h"
 
+EVENTS_TO_LISTEN_TO(RiflePickupEvent)
+
 AFirstPersonCharacter::AFirstPersonCharacter() {
 	PrimaryActorTick.bCanEverTick = true;
 	GetCapsuleComponent()->InitCapsuleSize(34.0f, 90.0f);
@@ -41,8 +43,14 @@ AFirstPersonCharacter::AFirstPersonCharacter() {
 
 void AFirstPersonCharacter::BeginPlay() {
 	Super::BeginPlay();
+	SUBSCRIBE_TO_EVENTS();
 	GetCharacterMovement()->MaxWalkSpeed = BaseWalkSpeed;
 	bIsPressingSprint = false;
+}
+
+void AFirstPersonCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason) {
+	Super::EndPlay(EndPlayReason);
+	UNSUBSCRIBE_FROM_EVENTS();
 }
 
 void AFirstPersonCharacter::Tick(float DeltaSeconds) {
@@ -129,3 +137,12 @@ UWeaponHolderComponent* AFirstPersonCharacter::GetWeaponHolderComponent() { retu
 USkeletalMeshComponent* AFirstPersonCharacter::GetFirstPersonMesh() { return FirstPersonMesh; }
 
 float AFirstPersonCharacter::GetFastestWalkSpeed() { return BaseWalkSpeed; }
+
+void AFirstPersonCharacter::OnEventReceived_Implementation(FName EventName, const TArray<FEventData>& Params) {
+	if (EventName.IsEqual("RiflePickupEvent")) {
+		if (Params.Num() != 1) return;
+		if (AActor* CollidedActor = Params[0].Get<FUObjectStruct>()->CastAs<AActor>()) {
+			if (CollidedActor == this) WeaponHolderComponent->PickUpRifle();
+		}
+	}
+}

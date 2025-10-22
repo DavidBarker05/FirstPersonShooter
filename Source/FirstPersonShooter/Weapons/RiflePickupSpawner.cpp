@@ -2,6 +2,8 @@
 #include "Weapons/RiflePickup.h"
 #include "Events/EventBus.h"
 
+EVENTS_TO_LISTEN_TO(RespawnEvent)
+
 ARiflePickupSpawner::ARiflePickupSpawner() {
 	SpawnerBase = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Spawner Base"));
 	SetRootComponent(SpawnerBase);
@@ -12,17 +14,13 @@ ARiflePickupSpawner::ARiflePickupSpawner() {
 
 void ARiflePickupSpawner::BeginPlay() {
 	Super::BeginPlay();
+	SUBSCRIBE_TO_EVENTS();
 	Spawn_Implementation(RiflePickupBlueprint);
-	if (UEventBus* EventBus = GetGameInstance()->GetSubsystem<UEventBus>()) {
-		EventBus->AddListener("RespawnEvent", this);
-	}
 }
 
 void ARiflePickupSpawner::EndPlay(const EEndPlayReason::Type EndPlayReason) {
 	Super::EndPlay(EndPlayReason);
-	if (UEventBus* EventBus = GetGameInstance()->GetSubsystem<UEventBus>()) {
-		EventBus->RemoveListener("RespawnEvent", this);
-	}
+	UNSUBSCRIBE_FROM_EVENTS();
 }
 
 void ARiflePickupSpawner::SpawnNewPickupAfterDelay() {

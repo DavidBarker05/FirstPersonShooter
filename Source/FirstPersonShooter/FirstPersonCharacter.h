@@ -2,10 +2,11 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "Events/EventListener.h"
 #include "FirstPersonCharacter.generated.h"
 
 UCLASS(Abstract)
-class FIRSTPERSONSHOOTER_API AFirstPersonCharacter : public ACharacter {
+class FIRSTPERSONSHOOTER_API AFirstPersonCharacter : public ACharacter, public IEventListener {
 	GENERATED_BODY()
 
 	bool bIsPressingSprint = false;
@@ -83,6 +84,8 @@ class FIRSTPERSONSHOOTER_API AFirstPersonCharacter : public ACharacter {
 	protected:
 		virtual void BeginPlay() override;
 
+		virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+
 	public:
 		virtual void Tick(float DeltaSeconds) override;
 
@@ -138,4 +141,7 @@ class FIRSTPERSONSHOOTER_API AFirstPersonCharacter : public ACharacter {
 
 		UFUNCTION(BlueprintCallable, Category = "Movement")
 		float GetFastestWalkSpeed();
+
+		UFUNCTION(BlueprintCallable)
+		void OnEventReceived_Implementation(FName EventName, const TArray<FEventData>& Params) override;
 };

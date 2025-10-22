@@ -3,7 +3,6 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Interfaces/Spawner.h"
-#include "Events/EventBus.h"
 #include "Events/EventListener.h"
 #include "RiflePickupSpawner.generated.h"
 

@@ -1,10 +1,8 @@
 #include "Weapons/RiflePickup.h"
 #include "Components/BoxComponent.h"
-#include "FirstPersonCharacter.h"
-#include "Weapons/WeaponHolderComponent.h"
-#include "Weapons/RiflePickupSpawner.h"
 #include "Events/EventData.h"
 #include "Events/EventBus.h"
+#include "GameFramework/Character.h"
 
 ARiflePickup::ARiflePickup() {
 	TriggerCollider = CreateDefaultSubobject<UBoxComponent>(TEXT("Trigger Collider"));
@@ -20,15 +18,13 @@ ARiflePickup::ARiflePickup() {
 void ARiflePickup::OnComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) { OnPickup_Implementation(OtherActor); }
 
 void ARiflePickup::OnPickup_Implementation(AActor* CollidedActor) {
-	if (AFirstPersonCharacter* FirstPersonCharacter = Cast<AFirstPersonCharacter>(CollidedActor)) {
-		FirstPersonCharacter->GetWeaponHolderComponent()->PickUpRifle();
+	if (ACharacter* Character = Cast<ACharacter>(CollidedActor)) {
+		BROADCAST_EVENT(RiflePickupEvent, { FUObjectStruct(CollidedActor) });
 		Respawn_Implementation();
 	}
 }
 
 void ARiflePickup::Respawn_Implementation() {
-	if (UEventBus* EventBus = GetGameInstance()->GetSubsystem<UEventBus>()) {
-		EventBus->Broadcast(FName("RespawnEvent"), { FUObjectStruct(this) });
-		GetWorld()->DestroyActor(this);
-	}
+	BROADCAST_EVENT(RespawnEvent, { FUObjectStruct(this) });
+	GetWorld()->DestroyActor(this);
 }

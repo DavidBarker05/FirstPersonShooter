@@ -4,6 +4,15 @@
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "EventBus.generated.h"
 
+#ifndef BROADCAST_EVENT
+	#define BROADCAST_EVENT(EventName, Params)\
+		do {\
+			if (UEventBus* EventBus = GetGameInstance()->GetSubsystem<UEventBus>()) {\
+				EventBus->Broadcast(FName(TEXT(#EventName)), Params);\
+			}\
+		} while (0)
+#endif
+
 UCLASS(BlueprintType)
 class FIRSTPERSONSHOOTER_API UEventBus : public UGameInstanceSubsystem	{
 	GENERATED_BODY()
