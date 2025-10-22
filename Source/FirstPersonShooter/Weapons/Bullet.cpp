@@ -1,7 +1,6 @@
 #include "Weapons/Bullet.h"
 #include "GameFramework/ProjectileMovementComponent.h"
-#include "FirstPersonCharacter.h"
-#include "CharacterHealthComponent.h"
+#include "GameFramework/Character.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Events/EventData.h"
 #include "Events/EventBus.h"
