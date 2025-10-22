@@ -27,8 +27,10 @@ void UEventBus::RemoveListener(FName EventName, TScriptInterface<IEventListener>
 	}
 }
 
-void UEventBus::Broadcast(FName EventName, TArray<FEventData>& Params) {
+void UEventBus::Broadcast(FName EventName, const TArray<FEventData>& Params) {
+	if (!EventListeners.Contains(EventName)) return;
 	if (TArray<TScriptInterface<IEventListener>>* Listeners = EventListeners.Find(EventName)) {
+		if (Listeners->IsEmpty()) return;
 		for (int i = Listeners->Num() - 1; i >= 0; --i) {
 			if ((*Listeners)[i]) (*Listeners)[i]->Execute_OnEventReceived((*Listeners)[i].GetObject(), EventName, Params);
 		}

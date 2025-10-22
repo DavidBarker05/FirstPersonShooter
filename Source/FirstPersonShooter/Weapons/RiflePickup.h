@@ -4,6 +4,7 @@
 #include "GameFramework/Actor.h"
 #include "Interfaces/Pickup.h"
 #include "Interfaces/Respawnable.h"
+#include "Events/EventListener.h"
 #include "RiflePickup.generated.h"
 
 UCLASS(Abstract)
@@ -15,10 +16,6 @@ class FIRSTPERSONSHOOTER_API ARiflePickup : public AActor, public IPickup, publi
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	UStaticMeshComponent* RifleMesh;
-
-	public:
-		UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
-		class ARiflePickupSpawner* Spawner;
 	
 	public:
 		ARiflePickup();

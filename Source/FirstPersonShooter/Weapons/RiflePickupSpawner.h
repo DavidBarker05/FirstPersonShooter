@@ -3,13 +3,17 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Interfaces/Spawner.h"
+#include "Events/EventBus.h"
+#include "Events/EventListener.h"
 #include "RiflePickupSpawner.generated.h"
 
 UCLASS(Abstract)
-class FIRSTPERSONSHOOTER_API ARiflePickupSpawner : public AActor, public ISpawner {
+class FIRSTPERSONSHOOTER_API ARiflePickupSpawner : public AActor, public ISpawner, public IEventListener {
 	GENERATED_BODY()
 
 	FTimerHandle RespawnHandle;
+
+	AActor* ActivePickup;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	UStaticMeshComponent* SpawnerBase;
@@ -29,9 +33,14 @@ class FIRSTPERSONSHOOTER_API ARiflePickupSpawner : public AActor, public ISpawne
 	protected:
 		virtual void BeginPlay() override;
 
+		virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+
 	public:
 		UFUNCTION(BlueprintCallable)
 		void SpawnNewPickupAfterDelay();
+
+		UFUNCTION(BlueprintCallable)
+		void OnEventReceived_Implementation(FName EventName, const TArray<FEventData>& Params) override;
 
 	protected:
 		UFUNCTION()

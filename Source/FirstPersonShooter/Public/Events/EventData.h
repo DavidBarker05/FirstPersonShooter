@@ -6,7 +6,7 @@
 
 // All of this is because blueprints don't allow void* and unreal doesn't allow template ustructs
 
-USTRUCT(BlueprintType)
+USTRUCT(BlueprintType, meta = (HasNativeMake = "/Script/FirstPersonShooter.CustomStructFunctionLibrary.MakeEventData"))
 struct FIRSTPERSONSHOOTER_API FEventData {
 	GENERATED_BODY()
 
@@ -15,23 +15,19 @@ struct FIRSTPERSONSHOOTER_API FEventData {
 
 	FEventData() = default;
 
-	template<typename T>
-	FEventData(T&& InData) {
-		Data.InitializeAs<T>();
-		*Data.GetMutable<T>() = Forward<T>(InData);
-	}
+	FEventData(FInstancedStruct InData) : Data(InData) { }
 
 	template<typename T>
-	void SetData(T&& InData) {
-		Data.InitializeAs<T>();
-		*Data.GetMutable<T>() = Forward<T>(InData);
-	}
+	FEventData(T&& InData) { Data = FInstancedStruct::Make(InData); }
+
+	template<typename T>
+	void SetData(T&& InData) { Data = FInstancedStruct::Make(InData); }
 
 	template<typename T>
 	T* Get() { return Data.GetScriptStruct() == TBaseStructure<T>::Get() ? Data.GetMutable<T>() : nullptr; }
 
 	template<typename T>
-	const T* Get() const { return Data.GetScriptStruct() == TBaseStructure<T>::Get() ? Data.Get<T>() : nullptr; }
+	const T* Get() const { return Data.GetScriptStruct() == TBaseStructure<T>::Get() ? &Data.Get<T>() : nullptr; }
 };
 
 USTRUCT(BlueprintType, meta = (DisplayName = "Integer Struct"))

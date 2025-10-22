@@ -1,6 +1,9 @@
 #include "Events/CustomStructFunctionLibrary.h"
-#include "Events/EventData.h"
-#include "Kismet/KismetMathLibrary.h"
+
+FEventData UCustomStructFunctionLibrary::MakeEventData(const int32& InStruct) {
+	checkNoEntry();
+	return {};
+}
 
 // FInt32Struct
 bool UCustomStructFunctionLibrary::FInt32Struct_Equal_FInt32Struct(const FInt32Struct& A, const FInt32Struct& B) { return A == B; }

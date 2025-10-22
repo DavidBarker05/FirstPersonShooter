@@ -22,5 +22,5 @@ class FIRSTPERSONSHOOTER_API UEventBus : public UGameInstanceSubsystem	{
 		void RemoveListener(FName EventName, TScriptInterface<class IEventListener> Listener);
 
 		UFUNCTION(BlueprintCallable)
-		void Broadcast(FName EventName, TArray<struct FEventData>& Params);
+		void Broadcast(FName EventName, const TArray<struct FEventData>& Params);
 };

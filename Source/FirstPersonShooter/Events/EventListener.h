@@ -15,5 +15,5 @@ class FIRSTPERSONSHOOTER_API IEventListener {
 
 	public:
 		UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-		void OnEventReceived(FName EventName, TArray<FEventData>& Params);
+		void OnEventReceived(FName EventName, const TArray<FEventData>& Params);
 };

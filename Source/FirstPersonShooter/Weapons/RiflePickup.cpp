@@ -3,6 +3,8 @@
 #include "FirstPersonCharacter.h"
 #include "Weapons/WeaponHolderComponent.h"
 #include "Weapons/RiflePickupSpawner.h"
+#include "Events/EventData.h"
+#include "Events/EventBus.h"
 
 ARiflePickup::ARiflePickup() {
 	TriggerCollider = CreateDefaultSubobject<UBoxComponent>(TEXT("Trigger Collider"));
@@ -25,6 +27,8 @@ void ARiflePickup::OnPickup_Implementation(AActor* CollidedActor) {
 }
 
 void ARiflePickup::Respawn_Implementation() {
-	if (Spawner) Spawner->SpawnNewPickupAfterDelay();
-	GetWorld()->DestroyActor(this);
+	if (UEventBus* EventBus = GetGameInstance()->GetSubsystem<UEventBus>()) {
+		EventBus->Broadcast(FName("RespawnEvent"), { FUObjectStruct(this) });
+		GetWorld()->DestroyActor(this);
+	}
 }
