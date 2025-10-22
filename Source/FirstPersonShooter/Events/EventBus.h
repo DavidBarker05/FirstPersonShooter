@@ -5,10 +5,10 @@
 #include "EventBus.generated.h"
 
 #ifndef BROADCAST_EVENT
-	#define BROADCAST_EVENT(EventName, Params)\
+	#define BROADCAST_EVENT(EventName, ...)\
 		do {\
 			if (UEventBus* EventBus = GetGameInstance()->GetSubsystem<UEventBus>()) {\
-				EventBus->Broadcast(FName(TEXT(#EventName)), Params);\
+				EventBus->Broadcast(FName(EventName), { __VA_ARGS__ });\
 			}\
 		} while (0)
 #endif

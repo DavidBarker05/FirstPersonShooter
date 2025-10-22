@@ -3,6 +3,8 @@
 #include "FirstPersonCharacter.h"
 #include "CharacterHealthComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "Events/EventData.h"
+#include "Events/EventBus.h"
 
 ABullet::ABullet() {
 	PrimaryActorTick.bCanEverTick = true;
@@ -23,7 +25,7 @@ void ABullet::Tick(float DeltaTime) {
 	Super::Tick(DeltaTime);
 	FHitResult OutHit;
 	if (CheckForHit(OutHit)) {
-		if (AFirstPersonCharacter* FirstPersonCharacter = Cast<AFirstPersonCharacter>(OutHit.GetActor())) FirstPersonCharacter->GetCharacterHealthComponent()->TakeDamage(Damage);
+		BROADCAST_EVENT("BulletHitEvent", FUObjectStruct(OutHit.GetActor()), FInt32Struct(Damage));
 		GetWorld()->DestroyActor(this);
 	}
 	LastPosition = GetActorLocation();

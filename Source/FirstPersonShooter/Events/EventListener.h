@@ -8,25 +8,16 @@
 
 #ifndef EVENTS_TO_LISTEN_TO
 	// Write this in the cpp file outside of any function at the top
-	#define EVENTS_TO_LISTEN_TO(...)\
-		static TArray<FName> EventNames;\
-		static FString UnformattedNames(#__VA_ARGS__);
+	#define EVENTS_TO_LISTEN_TO(...) static const FString EventNames[] = { __VA_ARGS__ };
 #endif
 
 #ifndef SUBSCRIBE_TO_EVENTS
 	// Write this in the cpp file in the BeginPlay function
 	#define SUBSCRIBE_TO_EVENTS()\
 		do {\
-			EventNames.Empty();\
-			TArray<FString> SplitNames;\
-			(void)UnformattedNames.Replace(TEXT(" "), TEXT(""));\
-			(void)UnformattedNames.ParseIntoArray(SplitNames, TEXT(","));\
-			for (FString Name : SplitNames) {\
-				(void)EventNames.Add(FName(Name));\
-			}\
 			if (UEventBus* EventBus = GetGameInstance()->GetSubsystem<UEventBus>()) {\
-				for (const FName& EventName : EventNames) {\
-					EventBus->AddListener(EventName, this);\
+				for (const FString& EventName : EventNames) {\
+					EventBus->AddListener(FName(EventName), this);\
 				}\
 			}\
 		} while (0)
@@ -37,11 +28,10 @@
 	#define UNSUBSCRIBE_FROM_EVENTS() \
 		do {\
 			if (UEventBus* EventBus = GetGameInstance()->GetSubsystem<UEventBus>()) {\
-				for (const FName& EventName : EventNames) {\
-					EventBus->RemoveListener(EventName, this);\
+				for (const FString& EventName : EventNames) {\
+					EventBus->RemoveListener(FName(EventName), this);\
 				}\
 			}\
-			EventNames.Empty();\
 		} while (0)
 #endif
 

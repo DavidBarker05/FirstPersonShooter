@@ -11,8 +11,9 @@
 #include "InputActionValue.h"
 #include "GameFramework/PlayerController.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Events/EventData.h"
 
-EVENTS_TO_LISTEN_TO(RiflePickupEvent)
+EVENTS_TO_LISTEN_TO("RiflePickupEvent", "BulletHitEvent")
 
 AFirstPersonCharacter::AFirstPersonCharacter() {
 	PrimaryActorTick.bCanEverTick = true;
@@ -143,6 +144,12 @@ void AFirstPersonCharacter::OnEventReceived_Implementation(FName EventName, cons
 		if (Params.Num() != 1) return;
 		if (AActor* CollidedActor = Params[0].Get<FUObjectStruct>()->CastAs<AActor>()) {
 			if (CollidedActor == this) WeaponHolderComponent->PickUpRifle();
+		}
+	} else if (EventName.IsEqual("BulletHitEvent")) {
+		if (Params.Num() != 2) return;
+		if (AActor* HitActor = Params[0].Get<FUObjectStruct>()->CastAs<AActor>()) {
+			if (HitActor != this) return;
+			if (const FInt32Struct* Damage = Params[1].Get<FInt32Struct>()) CharacterHealthComponent->TakeDamage(*Damage);
 		}
 	}
 }
