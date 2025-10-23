@@ -10,7 +10,7 @@ class FIRSTPERSONSHOOTER_API ABullet : public AActor {
 
 	int32 Damage;
 	FVector LastPosition;
-	ACharacter* CharacterToIgnore;
+	AActor* ActorToIgnore;
 
 	protected:
 		UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
@@ -36,7 +36,7 @@ class FIRSTPERSONSHOOTER_API ABullet : public AActor {
 		void SetInitialSpeed(const float Speed);
 
 		UFUNCTION(BlueprintCallable, Category = "Weapons")
-		void SetCharacterToIgnore(ACharacter* Character);
+		void SetActorToIgnore(AActor* Actor);
 
 	private:
 		bool CheckForHit(FHitResult& OutHit);

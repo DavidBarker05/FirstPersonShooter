@@ -13,6 +13,6 @@ ABaseWeapon::ABaseWeapon() {
 
 bool ABaseWeapon::Shoot(const FTransform& SpawnTransform, AController* Controller) { return WeaponShootComponent->Shoot(SpawnTransform, Controller); }
 
-void ABaseWeapon::SetOwningCharacter(ACharacter* Character) { if (Character) WeaponShootComponent->OwningCharacter = Character; }
+void ABaseWeapon::SetOwningActor(AActor* Actor) { if (Actor) WeaponShootComponent->OwningActor = Actor; }
 
 UStaticMeshComponent* ABaseWeapon::GetWeaponMesh() { return WeaponMesh; }

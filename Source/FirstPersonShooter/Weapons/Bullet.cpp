@@ -1,6 +1,5 @@
 #include "Weapons/Bullet.h"
 #include "GameFramework/ProjectileMovementComponent.h"
-#include "GameFramework/Character.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Events/EventBus.h"
 
@@ -38,7 +37,7 @@ void ABullet::SetInitialSpeed(const float Speed) {
 	ProjectileMovementComponent->Activate(true);
 }
 
-void ABullet::SetCharacterToIgnore(ACharacter* Character) { CharacterToIgnore = Character; }
+void ABullet::SetActorToIgnore(AActor* Actor) { ActorToIgnore = Actor; }
 
 bool ABullet::CheckForHit(FHitResult& OutHit) {
 	UObject* WorldContextObject = GetWorld();
@@ -46,7 +45,7 @@ bool ABullet::CheckForHit(FHitResult& OutHit) {
 	FVector End = GetActorLocation();
 	bool bTraceComplex = false;
 	TArray<AActor*> ActorsToIgnore;
-	ActorsToIgnore.Add((AActor*)CharacterToIgnore);
+	if (ActorToIgnore) ActorsToIgnore.Add(ActorToIgnore);
 	bool bIgnoreSelf = true;
 	return UKismetSystemLibrary::LineTraceSingle(WorldContextObject, Start, End, ETraceTypeQuery::TraceTypeQuery1, bTraceComplex, ActorsToIgnore, EDrawDebugTrace::ForDuration, OutHit, bIgnoreSelf);
 }

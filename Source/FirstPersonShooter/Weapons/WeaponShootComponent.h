@@ -18,7 +18,7 @@ class FIRSTPERSONSHOOTER_API UWeaponShootComponent : public UActorComponent {
 
 	public:
 		UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Character", meta = (AllowPrivateAccess = "true"))
-		ACharacter* OwningCharacter;
+		AActor* OwningActor;
 
 		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapons", meta = (ClampMin = 0.01f, ClampMax = 2.0f, Units = "s", AllowPrivateAccess = "true"))
 		float TimeBetweenShots;

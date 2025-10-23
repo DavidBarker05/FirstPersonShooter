@@ -31,7 +31,7 @@ bool UWeaponShootComponent::Shoot(const FTransform& SpawnTransform, AController*
 	if (!Bullet) return false;
 	Bullet->SetDamage(GunDamage);
 	Bullet->SetInitialSpeed(BulletSpeed);
-	Bullet->SetCharacterToIgnore(OwningCharacter);
+	Bullet->SetActorToIgnore(OwningActor);
 	bCanShoot = false;
 	GetOwner()->GetWorldTimerManager().SetTimer(ShootCooldownHandle, this, &UWeaponShootComponent::ResetShot, TimeBetweenShots, false);
 	RecoilTimer = 0.0f;

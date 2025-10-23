@@ -74,7 +74,7 @@ ABaseWeapon* UWeaponHolderComponent::CreateWeapon(FActorSpawnParameters& SpawnPa
 	Weapon->AttachToComponent(AttachMesh, AttachRules, FName("WeaponSocket"));
 	Weapon->GetWeaponMesh()->FirstPersonPrimitiveType = bIsFirstPerson ? EFirstPersonPrimitiveType::FirstPerson : EFirstPersonPrimitiveType::WorldSpaceRepresentation;
 	bIsFirstPerson ? Weapon->GetWeaponMesh()->SetOnlyOwnerSee(true) : Weapon->GetWeaponMesh()->SetOwnerNoSee(true);
-	if (ACharacter* OwningCharacter = Cast<ACharacter>(GetOwner())) Weapon->SetOwningCharacter(OwningCharacter);
+	if (GetOwner()) Weapon->SetOwningActor(GetOwner());
 	return Weapon;
 }
 

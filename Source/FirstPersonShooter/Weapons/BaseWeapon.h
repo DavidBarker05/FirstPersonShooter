@@ -25,8 +25,8 @@ class FIRSTPERSONSHOOTER_API ABaseWeapon : public AActor {
 		UFUNCTION(BlueprintCallable, Category = "Weapons")
 		virtual bool Shoot(const FTransform& SpawnTransform, class AController* Controller);
 
-		UFUNCTION(BlueprintCallable, Category = "Character")
-		void SetOwningCharacter(ACharacter* Character);
+		UFUNCTION(BlueprintCallable, Category = "Owner")
+		void SetOwningActor(AActor* Actor);
 
 		UFUNCTION(BlueprintCallable, Category = "Components")
 		UStaticMeshComponent* GetWeaponMesh();
