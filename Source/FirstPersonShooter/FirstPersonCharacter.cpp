@@ -138,13 +138,11 @@ USkeletalMeshComponent* AFirstPersonCharacter::GetFirstPersonMesh() { return Fir
 float AFirstPersonCharacter::GetFastestWalkSpeed() { return BaseWalkSpeed; }
 
 void AFirstPersonCharacter::OnEventReceived_Implementation(FName EventName, const TArray<FEventData>& Params) {
-	if (EventName.IsEqual("RiflePickupEvent")) {
-		if (Params.Num() != 1) return;
+	if (EventName.IsEqual("RiflePickupEvent") && Params.Num() == 1) {
 		if (AActor* CollidedActor = Params[0].Get<FUObjectStruct>()->CastAs<AActor>()) {
 			if (CollidedActor == this) WeaponHolderComponent->PickUpRifle();
 		}
-	} else if (EventName.IsEqual("BulletHitEvent")) {
-		if (Params.Num() != 2) return;
+	} else if (EventName.IsEqual("BulletHitEvent") && Params.Num() == 2) {
 		if (AActor* HitActor = Params[0].Get<FUObjectStruct>()->CastAs<AActor>()) {
 			if (HitActor != this) return;
 			if (const FInt32Struct* Damage = Params[1].Get<FInt32Struct>()) CharacterHealthComponent->TakeDamage(*Damage);

@@ -28,8 +28,8 @@ void ARiflePickupSpawner::SpawnNewPickupAfterDelay() {
 }
 
 void ARiflePickupSpawner::OnEventReceived_Implementation(FName EventName, const TArray<FEventData>& Params) {
-	if (EventName.IsEqual("RespawnEvent")) {
-		if (Params.Num() != 1 || !ActivePickup) return;
+	if (EventName.IsEqual("RespawnEvent") && Params.Num() == 1) {
+		if (!ActivePickup) return;
 		if (AActor* Pickup = Params[0].Get<FUObjectStruct>()->CastAs<AActor>()) {
 			if (ActivePickup != Pickup) return;
 			SpawnNewPickupAfterDelay();
