@@ -11,7 +11,6 @@
 #include "InputActionValue.h"
 #include "GameFramework/PlayerController.h"
 #include "Kismet/KismetMathLibrary.h"
-#include "Events/EventData.h"
 
 AFirstPersonCharacter::AFirstPersonCharacter() {
 	PrimaryActorTick.bCanEverTick = true;

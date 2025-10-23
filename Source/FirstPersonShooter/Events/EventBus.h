@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Subsystems/GameInstanceSubsystem.h"
+#include "Events/EventData.h"
 #include "EventBus.generated.h"
 
 #ifndef BROADCAST_EVENT
@@ -31,5 +32,5 @@ class FIRSTPERSONSHOOTER_API UEventBus : public UGameInstanceSubsystem	{
 		void RemoveListener(FName EventName, TScriptInterface<class IEventListener> Listener);
 
 		UFUNCTION(BlueprintCallable)
-		void Broadcast(FName EventName, const TArray<struct FEventData>& Params);
+		void Broadcast(FName EventName, const TArray<FEventData>& Params);
 };

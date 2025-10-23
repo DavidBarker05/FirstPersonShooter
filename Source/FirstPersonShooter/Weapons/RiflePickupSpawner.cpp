@@ -1,6 +1,5 @@
 #include "Weapons/RiflePickupSpawner.h"
 #include "Weapons/RiflePickup.h"
-#include "Events/EventBus.h"
 
 ARiflePickupSpawner::ARiflePickupSpawner() {
 	SpawnerBase = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Spawner Base"));

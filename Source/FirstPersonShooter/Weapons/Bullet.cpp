@@ -2,7 +2,6 @@
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "GameFramework/Character.h"
 #include "Kismet/KismetSystemLibrary.h"
-#include "Events/EventData.h"
 #include "Events/EventBus.h"
 
 ABullet::ABullet() {

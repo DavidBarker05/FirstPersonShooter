@@ -1,6 +1,5 @@
 #include "Weapons/RiflePickup.h"
 #include "Components/BoxComponent.h"
-#include "Events/EventData.h"
 #include "Events/EventBus.h"
 #include "GameFramework/Character.h"
 
