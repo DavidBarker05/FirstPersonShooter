@@ -145,5 +145,5 @@ class FIRSTPERSONSHOOTER_API AFirstPersonCharacter : public ACharacter, public I
 		float GetFastestWalkSpeed();
 
 		UFUNCTION(BlueprintCallable)
-		void OnEventReceived_Implementation(FName EventName, const TArray<FEventData>& Params) override;
+		virtual void OnEventReceived_Implementation(FName EventName, const TArray<FEventData>& Params) override;
 };

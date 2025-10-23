@@ -22,7 +22,7 @@ void ABullet::Tick(float DeltaTime) {
 	Super::Tick(DeltaTime);
 	FHitResult OutHit;
 	if (CheckForHit(OutHit)) {
-		BROADCAST_EVENT("BulletHitEvent", FUObjectStruct(OutHit.GetActor()), FInt32Struct(Damage));
+		BROADCAST_EVENT("BulletHitEvent", FUObjectStruct(OutHit.GetActor()), FInt32Struct(Damage), FUObjectStruct(ActorToIgnore));
 		GetWorld()->DestroyActor(this);
 	}
 	LastPosition = GetActorLocation();

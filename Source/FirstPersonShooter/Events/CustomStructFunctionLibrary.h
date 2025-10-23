@@ -66,8 +66,8 @@ class FIRSTPERSONSHOOTER_API UCustomStructFunctionLibrary : public UBlueprintFun
         static void EventDataGetAsStruct(UPARAM(ref) const FEventData& InEventData, EIsAOutputPins& OutputPins, int32& OutputStruct);
 
         DECLARE_FUNCTION(execEventDataGetAsStruct) {
-            P_GET_ENUM_REF(EIsAOutputPins, OutputPins);
             P_GET_STRUCT_REF(FEventData, InEventData);
+            P_GET_ENUM_REF(EIsAOutputPins, OutputPins);
             Stack.MostRecentPropertyAddress = nullptr;
             Stack.MostRecentPropertyContainer = nullptr;
             Stack.StepCompiledIn<FStructProperty>(nullptr);
@@ -85,6 +85,7 @@ class FIRSTPERSONSHOOTER_API UCustomStructFunctionLibrary : public UBlueprintFun
                 else OutputPins = EIsAOutputPins::IsNotType;
                 P_NATIVE_END;
             }
+            else OutputPins = EIsAOutputPins::IsNotType;
         }
 
         UFUNCTION(BlueprintCallable, CustomThunk, Category = "CustomStructs|EventData|Value", meta = (CustomStructureParam = "InStruct"))

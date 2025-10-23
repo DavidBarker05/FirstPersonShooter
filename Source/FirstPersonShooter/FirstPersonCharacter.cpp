@@ -104,7 +104,14 @@ void AFirstPersonCharacter::DoSprintStart() { bIsPressingSprint = true; }
 
 void AFirstPersonCharacter::DoSprintEnd() { bIsPressingSprint = false; }
 
-void AFirstPersonCharacter::DoShoot() { WeaponHolderComponent->Shoot(BulletSpawnTransform->GetComponentTransform(), GetController()); }
+void AFirstPersonCharacter::DoShoot() {
+	WeaponHolderComponent->Shoot(BulletSpawnTransform->GetComponentTransform(), GetController());
+	float Loudness = 1.0f;
+	APawn* NoiseInstigator = this;
+	FVector NoiseLocation = GetActorLocation();
+	float MaxRange = 2000.0f;
+	Super::MakeNoise(Loudness, NoiseInstigator, NoiseLocation, MaxRange);
+}
 
 void AFirstPersonCharacter::DoSelectWeaponOne() { WeaponHolderComponent->EquipPistol(); }
 
@@ -141,7 +148,7 @@ void AFirstPersonCharacter::OnEventReceived_Implementation(FName EventName, cons
 		if (AActor* CollidedActor = Params[0].Get<FUObjectStruct>()->CastAs<AActor>()) {
 			if (CollidedActor == this) WeaponHolderComponent->PickUpRifle();
 		}
-	} else if (EventName.IsEqual("BulletHitEvent") && Params.Num() == 2) {
+	} else if (EventName.IsEqual("BulletHitEvent") && Params.Num() == 3) {
 		if (AActor* HitActor = Params[0].Get<FUObjectStruct>()->CastAs<AActor>()) {
 			if (HitActor != this) return;
 			if (const FInt32Struct* Damage = Params[1].Get<FInt32Struct>()) CharacterHealthComponent->TakeDamage(*Damage);
