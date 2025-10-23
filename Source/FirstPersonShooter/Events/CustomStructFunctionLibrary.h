@@ -27,6 +27,8 @@ class FIRSTPERSONSHOOTER_API UCustomStructFunctionLibrary : public UBlueprintFun
 
     public:
         // Idk why it has to be like this, copying how FInstancedStruct did it was not showing up in blueprints, so this also slightly follows KismetArrayLibrary's style
+        
+        // Creates Event Data based on an input struct (wildcard)
         UFUNCTION(BlueprintCallable, CustomThunk, Category = "CustomStructs|EventData|Creation", meta = (CustomStructureParam = "InStruct", NativeMakeFunc))
         static FEventData MakeEventData(const int32& InStruct);
 
@@ -37,7 +39,65 @@ class FIRSTPERSONSHOOTER_API UCustomStructFunctionLibrary : public UBlueprintFun
             const FStructProperty* ValueProp = CastField<FStructProperty>(Stack.MostRecentProperty);
             const void* ValuePtr = Stack.MostRecentPropertyAddress;
             P_FINISH;
-            if (!ValueProp || !ValuePtr)
+            if (ValueProp && ValuePtr)
+            {
+                P_NATIVE_BEGIN;
+                FInstancedStruct Instanced;
+                Instanced.InitializeAs(ValueProp->Struct);
+                ValueProp->Struct->CopyScriptStruct(Instanced.GetMutableMemory(), ValuePtr);
+                *(FEventData*)RESULT_PARAM = FEventData(Instanced);
+                P_NATIVE_END;
+            }
+            else
+            {
+                P_NATIVE_BEGIN;
+                *(FEventData*)RESULT_PARAM = FEventData();
+                P_NATIVE_END;
+            }
+        }
+
+        UFUNCTION(BlueprintPure, Category = "CustomStructs|EventData|Value", meta = (DisplayName = "Break Event Data", ReturnDisplayName = "Instanced Struct", ToolTip = "Breaks an Event Data Struct", NativeBreakFunc))
+        static FInstancedStruct BreakEventData(const FEventData& EventData);
+
+        UFUNCTION(BlueprintPure, Category = "CustomStructs|EventData|Value", meta = (DisplayName = "Get", ToolTip = "Gets the Instanced Struct stored in the Event Data"))
+        static FInstancedStruct EventData_Get(const FEventData& InEventData);
+
+        UFUNCTION(BlueprintCallable, CustomThunk, Category = "CustomStructs|EventData|Value", meta = (DisplayName = "Get As Struct", ExpandEnumAsExecs = "OutputPins", CustomStructureParam = "OutputStruct", ToolTip = "Gets the struct stored in the Event Data\nNote the output pin needs to be used in order for the wildcard type to be set\nMake sure to only use the output if the Is Valid pin executes"))
+        static void EventDataGetAsStruct(UPARAM(ref) const FEventData& InEventData, EIsAOutputPins& OutputPins, int32& OutputStruct);
+
+        DECLARE_FUNCTION(execEventDataGetAsStruct) {
+            P_GET_ENUM_REF(EIsAOutputPins, OutputPins);
+            P_GET_STRUCT_REF(FEventData, InEventData);
+            Stack.MostRecentPropertyAddress = nullptr;
+            Stack.MostRecentPropertyContainer = nullptr;
+            Stack.StepCompiledIn<FStructProperty>(nullptr);
+            const FStructProperty* ValueProp = CastField<FStructProperty>(Stack.MostRecentProperty);
+            void* ValuePtr = Stack.MostRecentPropertyAddress;
+            P_FINISH;
+            if (ValueProp && ValuePtr)
+            {
+                P_NATIVE_BEGIN;
+                if (InEventData.Data.IsValid() && InEventData.Data.GetScriptStruct()->IsChildOf(ValueProp->Struct))
+                {
+                    ValueProp->Struct->CopyScriptStruct(ValuePtr, InEventData.Data.GetMemory());
+                    OutputPins = EIsAOutputPins::IsType;
+                }
+                else OutputPins = EIsAOutputPins::IsNotType;
+                P_NATIVE_END;
+            }
+        }
+
+        UFUNCTION(BlueprintCallable, CustomThunk, Category = "CustomStructs|EventData|Value", meta = (CustomStructureParam = "InStruct"))
+        static FEventData SetEventData(const int32& InStruct);
+
+        DECLARE_FUNCTION(execSetEventData) {
+            Stack.MostRecentPropertyAddress = nullptr;
+            Stack.MostRecentPropertyContainer = nullptr;
+            Stack.StepCompiledIn<FStructProperty>(nullptr);
+            const FStructProperty* ValueProp = CastField<FStructProperty>(Stack.MostRecentProperty);
+            const void* ValuePtr = Stack.MostRecentPropertyAddress;
+            P_FINISH;
+            if (ValueProp && ValuePtr)
             {
                 P_NATIVE_BEGIN;
                 FInstancedStruct Instanced;
@@ -55,6 +115,12 @@ class FIRSTPERSONSHOOTER_API UCustomStructFunctionLibrary : public UBlueprintFun
         }
 
     public:
+        UFUNCTION(BlueprintCallable, Category = "CustomStructs|IntegerStruct|Creation", meta = (DisplayName = "Make Integer Struct", ToolTip = "Makes an Integer Struct based on the Integer", NativeMakeFunc))
+        static FInt32Struct MakeInt32Struct(int32 InValue);
+
+        UFUNCTION(BlueprintPure, Category = "CustomStructs|IntegerStruct|Value", meta = (DisplayName = "Break Integer Struct", ReturnDisplayName = "Integer", ToolTip = "Breaks an Integer Struct", NativeBreakFunc))
+        static int32 BreakInt32Struct(const FInt32Struct& IntegerStruct);
+
         UFUNCTION(BlueprintPure, Category = "CustomStructs|IntegerStruct|Operators", meta = (DisplayName = "Equal (==) (Integer Struct, Integer Struct)", CompactNodeTitle = "==", ToolTip = "Equal (==)"))
         static bool FInt32Struct_Equal_FInt32Struct(const FInt32Struct& A, const FInt32Struct& B);
 
@@ -212,6 +278,12 @@ class FIRSTPERSONSHOOTER_API UCustomStructFunctionLibrary : public UBlueprintFun
         static FInt32Struct& FInt32Struct_Set(UPARAM(ref) FInt32Struct& InStruct, int32 NewValue);
 
     public:
+        UFUNCTION(BlueprintCallable, Category = "CustomStructs|FloatStruct|Creation", meta = (DisplayName = "Make Float Struct", ToolTip = "Makes a Float Struct based on the Float", NativeMakeFunc))
+        static FFloatStruct MakeFloatStruct(float InValue);
+
+        UFUNCTION(BlueprintPure, Category = "CustomStructs|FloatStruct|Value", meta = (DisplayName = "Break Float Struct", ReturnDisplayName = "Float", ToolTip = "Breaks a Float Struct", NativeBreakFunc))
+        static float BreakFloatStruct(const FFloatStruct& FloatStruct);
+
         UFUNCTION(BlueprintPure, Category = "CustomStructs|FloatStruct|Operators", meta = (DisplayName = "Equal (==) (Float Struct, Float Struct)", CompactNodeTitle = "==", ToolTip = "Equal (==)"))
         static bool FFloatStruct_Equal_FFloatStruct(const FFloatStruct& A, const FFloatStruct& B);
 
@@ -309,6 +381,12 @@ class FIRSTPERSONSHOOTER_API UCustomStructFunctionLibrary : public UBlueprintFun
         static FFloatStruct& FFloatStruct_Set(UPARAM(ref) FFloatStruct& InStruct, float NewValue);
 
     public:
+        UFUNCTION(BlueprintCallable, Category = "CustomStructs|BooleanStruct|Creation", meta = (DisplayName = "Make Boolean Struct", ToolTip = "Makes a Boolean Struct based on the Boolean", NativeMakeFunc))
+        static FBoolStruct MakeBoolStruct(bool InValue);
+
+        UFUNCTION(BlueprintPure, Category = "CustomStructs|BooleanStruct|Value", meta = (DisplayName = "Break Boolean Struct", ReturnDisplayName = "Boolean", ToolTip = "Breaks a Boolean Struct", NativeBreakFunc))
+        static bool BreakBoolStruct(const FBoolStruct& BooleanStruct);
+
         UFUNCTION(BlueprintPure, Category = "CustomStructs|BooleanStruct|Operators", meta = (DisplayName = "Equal (==) (Boolean Struct, Boolean Struct)", CompactNodeTitle = "==", ToolTip = "Equal (==)"))
         static bool FBoolStruct_Equal_FBoolStruct(const FBoolStruct& A, const FBoolStruct& B);
 
@@ -385,6 +463,12 @@ class FIRSTPERSONSHOOTER_API UCustomStructFunctionLibrary : public UBlueprintFun
         static FBoolStruct& FBoolStruct_Set(UPARAM(ref) FBoolStruct& InStruct, bool NewValue);
 
     public:
+        UFUNCTION(BlueprintCallable, Category = "CustomStructs|StringStruct|Creation", meta = (DisplayName = "Make String Struct", ToolTip = "Makes a String Struct based on the String", NativeMakeFunc))
+        static FStringStruct MakeStringStruct(const FString& InValue);
+
+        UFUNCTION(BlueprintPure, Category = "CustomStructs|StringStruct|Value", meta = (DisplayName = "Break String Struct", ReturnDisplayName = "String", ToolTip = "Breaks a String Struct", NativeBreakFunc))
+        static FString BreakStringStruct(const FStringStruct& StringStruct);
+
         UFUNCTION(BlueprintPure, Category = "CustomStructs|StringStruct|String", meta = (DisplayName = "Equal Exacly (String Struct, String Struct)", CompactNodeTitle = "===", ToolTip = "Test if the input String Structs are equal (A == B)"))
         static bool FStringStruct_EqualExactly_FStringStruct(const FStringStruct& A, const FStringStruct& B);
 
@@ -428,9 +512,15 @@ class FIRSTPERSONSHOOTER_API UCustomStructFunctionLibrary : public UBlueprintFun
         static FString FStringStruct_Get(const FStringStruct& InStruct);
 
         UFUNCTION(BlueprintCallable, Category = "CustomStructs|StringStruct|Value", meta = (DisplayName = "Set", ToolTip = "Sets the String stored in the String Struct"))
-        static FStringStruct& FStringStruct_Set(UPARAM(ref) FStringStruct& InStruct, FString NewValue);
+        static FStringStruct& FStringStruct_Set(UPARAM(ref) FStringStruct& InStruct, const FString& NewValue);
 
     public:
+        UFUNCTION(BlueprintCallable, Category = "CustomStructs|NameStruct|Creation", meta = (DisplayName = "Make Name Struct", ToolTip = "Makes a Name Struct based on the Name", NativeMakeFunc))
+        static FNameStruct MakeNameStruct(const FName& InValue);
+
+        UFUNCTION(BlueprintPure, Category = "CustomStructs|NameStruct|Value", meta = (DisplayName = "Break Name Struct", ReturnDisplayName = "Name", ToolTip = "Breaks a Name Struct", NativeBreakFunc))
+        static FName BreakNameStruct(const FNameStruct& NameStruct);
+
         UFUNCTION(BlueprintPure, Category = "CustomStructs|NameStruct|Operators", meta = (DisplayName = "Equal (==) (Name Struct, Name Struct)", CompactNodeTitle = "==", ToolTip = "Equal (==)"))
         static bool FNameStruct_Equal_FNameStruct(const FNameStruct& A, const FNameStruct& B);
 
@@ -438,7 +528,7 @@ class FIRSTPERSONSHOOTER_API UCustomStructFunctionLibrary : public UBlueprintFun
         static bool FNameStruct_Equal_FName(const FNameStruct& A, FName B);
 
         UFUNCTION(BlueprintPure, Category = "CustomStructs|NameStruct|Operators", meta = (DisplayName = "Not Equal (!=) (Name Struct, Name Struct)", CompactNodeTitle = "!=", ToolTip = "Not Equal (!=)"))
-        static bool FNameStruct_NotEqual_FNameStruct(const FNameStruct& A, const  FNameStruct& B);
+        static bool FNameStruct_NotEqual_FNameStruct(const FNameStruct& A, const FNameStruct& B);
 
         UFUNCTION(BlueprintPure, Category = "CustomStructs|NameStruct|Operators", meta = (DisplayName = "Not Equal (!=) (Name Struct, Name)", CompactNodeTitle = "!=", ToolTip = "Not Equal (!=)"))
         static bool FNameStruct_NotEqual_FName(const FNameStruct& A, FName B);
@@ -453,9 +543,15 @@ class FIRSTPERSONSHOOTER_API UCustomStructFunctionLibrary : public UBlueprintFun
         static FName FNameStruct_Get(const FNameStruct& InStruct);
 
         UFUNCTION(BlueprintCallable, Category = "CustomStructs|NameStruct|Value", meta = (DisplayName = "Set", ToolTip = "Sets the Name stored in the Name Struct"))
-        static FNameStruct& FNameStruct_Set(UPARAM(ref) FNameStruct& InStruct, FName NewValue);
+        static FNameStruct& FNameStruct_Set(UPARAM(ref) FNameStruct& InStruct, const FName& NewValue);
 
     public:
+        UFUNCTION(BlueprintCallable, Category = "CustomStructs|TextStruct|Creation", meta = (DisplayName = "Make Text Struct", ToolTip = "Makes a Text Struct based on the Text", NativeMakeFunc))
+        static FTextStruct MakeTextStruct(const FText& InValue);
+
+        UFUNCTION(BlueprintPure, Category = "CustomStructs|TextStruct|Value", meta = (DisplayName = "Break Text Struct", ReturnDisplayName = "Text", ToolTip = "Breaks a Text Struct", NativeBreakFunc))
+        static FText BreakTextStruct(const FTextStruct& TextStruct);
+
         UFUNCTION(BlueprintPure, Category = "CustomStructs|TextStruct|Text", meta = (BlueprintAutocast, DisplayName = "Text Struct To Text", CompactNodeTitle = "->", ToolTip = "Converts a Text Struct to a Text"))
         static FText FTextStruct_To_FText(const FTextStruct& A);
 
@@ -466,9 +562,15 @@ class FIRSTPERSONSHOOTER_API UCustomStructFunctionLibrary : public UBlueprintFun
         static FText FTextStruct_Get(const FTextStruct& InStruct);
 
         UFUNCTION(BlueprintCallable, Category = "CustomStructs|TextStruct|Value", meta = (DisplayName = "Set", ToolTip = "Sets the Text stored in the Text Struct"))
-        static FTextStruct& FTextStruct_Set(UPARAM(ref) FTextStruct& InStruct, FText NewValue);
+        static FTextStruct& FTextStruct_Set(UPARAM(ref) FTextStruct& InStruct, const FText& NewValue);
 
     public:
+        UFUNCTION(BlueprintCallable, Category = "CustomStructs|ObjectStruct|Creation", meta = (DisplayName = "Make Object Struct", ToolTip = "Makes an Object Struct based on the Object", NativeMakeFunc))
+        static FUObjectStruct MakeObjectStruct(UObject* InValue);
+
+        UFUNCTION(BlueprintPure, Category = "CustomStructs|ObjectStruct|Value", meta = (DisplayName = "Break Object Struct", ReturnDisplayName = "Object", ToolTip = "Breaks an Object Struct", NativeBreakFunc))
+        static UObject* BreakObjectStruct(const FUObjectStruct& ObjectStruct);
+
         UFUNCTION(BlueprintPure, Category = "CustomStructs|ObjectStruct|Operators", meta = (DisplayName = "Equal (==) (Object Struct, Object Struct)", CompactNodeTitle = "==", ToolTip = "Equal (==)"))
         static bool FUObjectStruct_Equal_FUObjectStruct(const FUObjectStruct& A, const FUObjectStruct& B);
 
@@ -487,9 +589,6 @@ class FIRSTPERSONSHOOTER_API UCustomStructFunctionLibrary : public UBlueprintFun
         UFUNCTION(BlueprintCallable, Category = "CustomStructs|ObjectStruct|Object", meta = (DisplayName = "Is Valid (Branch)", ToolTip = "Checks whether the Object Struct contains a valid Object", ExpandEnumAsExecs = "OutputPins"))
         static void FUObjectStruct_IsValidBranch(const FUObjectStruct& ObjectStruct, EIsValidOutputPints& OutputPins);
 
-        UFUNCTION(BlueprintPure, Category = "CustomStructs|ObjectStruct|Object", meta = (DisplayName = "Cast To Object", DeterminesOutputType = "Class", ToolTip = "Casts the Object inside the Object Struct to the specified class"))
-        static UObject* FUObjectStruct_CastAs(const FUObjectStruct& ObjectStruct, TSubclassOf<UObject> Class);
-
         UFUNCTION(BlueprintPure, Category = "CustomStructs|ObjectStruct|Object", meta = (DisplayName = "Is A Class", ToolTip = "Checks whether the Object inside the Object Struct is the same type as the specified class"))
         static bool FUObjectStruct_IsA(const FUObjectStruct& ObjectStruct, TSubclassOf<UObject> Class);
 
@@ -504,6 +603,9 @@ class FIRSTPERSONSHOOTER_API UCustomStructFunctionLibrary : public UBlueprintFun
 
         UFUNCTION(BlueprintPure, Category = "CustomStructs|ObjectStruct|Value", meta = (DisplayName = "Get", ToolTip = "Gets the Object stored in the Object Struct"))
         static UObject* FUObjectStruct_Get(const FUObjectStruct& InStruct);
+
+        UFUNCTION(BlueprintCallable, Category = "CustomStructs|ObjectStruct|Value", meta = (DisplayName = "Get As Type", DeterminesOutputType = "Class", ToolTip = "Gets the Object stored in the Object Struct as the class type", ExpandEnumAsExecs = "OutputPins"))
+        static UObject* FUObjectStruct_GetAsType(const FUObjectStruct& ObjectStruct, TSubclassOf<UObject> Class, EIsAOutputPins& OutputPins);
 
         UFUNCTION(BlueprintCallable, Category = "CustomStructs|ObjectStruct|Value", meta = (DisplayName = "Set", ToolTip = "Sets the Object stored in the Object Struct"))
         static FUObjectStruct& FUObjectStruct_Set(UPARAM(ref) FUObjectStruct& InStruct, UObject* NewValue);

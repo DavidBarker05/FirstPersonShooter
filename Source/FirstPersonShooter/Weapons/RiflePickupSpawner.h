@@ -9,6 +9,8 @@
 UCLASS(Abstract)
 class FIRSTPERSONSHOOTER_API ARiflePickupSpawner : public AActor, public ISpawner, public IEventListener {
 	GENERATED_BODY()
+	
+	EVENTS_TO_LISTEN_TO("RespawnEvent")
 
 	FTimerHandle RespawnHandle;
 

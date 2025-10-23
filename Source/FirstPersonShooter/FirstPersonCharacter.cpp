@@ -13,8 +13,6 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "Events/EventData.h"
 
-EVENTS_TO_LISTEN_TO("RiflePickupEvent", "BulletHitEvent")
-
 AFirstPersonCharacter::AFirstPersonCharacter() {
 	PrimaryActorTick.bCanEverTick = true;
 	GetCapsuleComponent()->InitCapsuleSize(34.0f, 90.0f);

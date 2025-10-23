@@ -6,7 +6,7 @@
 
 // All of this is because blueprints don't allow void* and unreal doesn't allow template ustructs
 
-USTRUCT(BlueprintType, meta = (HasNativeMake = "/Script/FirstPersonShooter.CustomStructFunctionLibrary.MakeEventData"))
+USTRUCT(BlueprintType, meta = (HasNativeMake = "/Script/FirstPersonShooter.CustomStructFunctionLibrary.MakeEventData", HasNativeBreak = "/Script/FirstPersonShooter.CustomStructFunctionLibrary.BreakEventData"))
 struct FIRSTPERSONSHOOTER_API FEventData {
 	GENERATED_BODY()
 
@@ -30,7 +30,7 @@ struct FIRSTPERSONSHOOTER_API FEventData {
 	const T* Get() const { return Data.GetScriptStruct() == TBaseStructure<T>::Get() ? &Data.Get<T>() : nullptr; }
 };
 
-USTRUCT(BlueprintType, meta = (DisplayName = "Integer Struct"))
+USTRUCT(BlueprintType, meta = (DisplayName = "Integer Struct", HasNativeMake = "/Script/FirstPersonShooter.CustomStructFunctionLibrary.MakeInt32Struct", HasNativeBreak = "/Script/FirstPersonShooter.CustomStructFunctionLibrary.BreakInt32Struct"))
 struct FIRSTPERSONSHOOTER_API FInt32Struct {
 	GENERATED_BODY()
 
@@ -253,7 +253,7 @@ struct FIRSTPERSONSHOOTER_API FInt32Struct {
 	}
 };
 
-USTRUCT(BlueprintType, meta = (DisplayName = "Float Struct"))
+USTRUCT(BlueprintType, meta = (DisplayName = "Float Struct", HasNativeMake = "/Script/FirstPersonShooter.CustomStructFunctionLibrary.MakeFloatStruct", HasNativeBreak = "/Script/FirstPersonShooter.CustomStructFunctionLibrary.BreakFloatStruct"))
 struct FIRSTPERSONSHOOTER_API FFloatStruct {
 	GENERATED_BODY()
 
@@ -368,7 +368,7 @@ struct FIRSTPERSONSHOOTER_API FFloatStruct {
 	}
 };
 
-USTRUCT(BlueprintType, meta = (DisplayName = "Boolean Struct"))
+USTRUCT(BlueprintType, meta = (DisplayName = "Boolean Struct", HasNativeMake = "/Script/FirstPersonShooter.CustomStructFunctionLibrary.MakeBoolStruct", HasNativeBreak = "/Script/FirstPersonShooter.CustomStructFunctionLibrary.BreakBoolStruct"))
 struct FIRSTPERSONSHOOTER_API FBoolStruct {
 	GENERATED_BODY()
 
@@ -429,7 +429,7 @@ struct FIRSTPERSONSHOOTER_API FBoolStruct {
 	}
 };
 
-USTRUCT(BlueprintType, meta = (DisplayName = "String Struct"))
+USTRUCT(BlueprintType, meta = (DisplayName = "String Struct", HasNativeMake = "/Script/FirstPersonShooter.CustomStructFunctionLibrary.MakeStringStruct", HasNativBreak = "/Script/FirstPersonShooter.CustomStructFunctionLibrary.BreakStringStruct"))
 struct FIRSTPERSONSHOOTER_API FStringStruct {
 	GENERATED_BODY()
 
@@ -548,7 +548,7 @@ struct FIRSTPERSONSHOOTER_API FStringStruct {
 	}
 };
 
-USTRUCT(BlueprintType, meta = (DisplayName = "Name Struct"))
+USTRUCT(BlueprintType, meta = (DisplayName = "Name Struct", HasNativeMake = "/Script/FirstPersonShooter.CustomStructFunctionLibrary.MakeNameStruct", HasNativeBreak = "/Script/FirstPersonShooter.CustomStructFunctionLibrary.BreakNameStruct"))
 struct FIRSTPERSONSHOOTER_API FNameStruct {
 	GENERATED_BODY()
 
@@ -621,7 +621,7 @@ struct FIRSTPERSONSHOOTER_API FNameStruct {
 	}
 };
 
-USTRUCT(BlueprintType, meta = (DisplayName = "Text Struct"))
+USTRUCT(BlueprintType, meta = (DisplayName = "Text Struct", HasNativeMake = "/Script/FirstPersonShooter.CustomStructFunctionLibrary.MakeTextStruct", HasNativeBreak = "/Script/FirstPersonShooter.CustomStructFunctionLibrary.BreakTextStruct"))
 struct FIRSTPERSONSHOOTER_API FTextStruct {
 	GENERATED_BODY()
 
@@ -698,7 +698,7 @@ struct FIRSTPERSONSHOOTER_API FTextStruct {
 	}
 };
 
-USTRUCT(BlueprintType, meta = (DisplayName = "Object Struct"))
+USTRUCT(BlueprintType, meta = (DisplayName = "Object Struct", HasNativeMake = "/Script/FirstPersonShooter.CustomStructFunctionLibrary.MakeObjectStruct", HasNativeBreak = "/Script/FirstPersonShooter.CustomStructFunctionLibrary.BreakObjectStruct"))
 struct FIRSTPERSONSHOOTER_API FUObjectStruct {
 	GENERATED_BODY()
 

@@ -9,6 +9,8 @@ UCLASS(Abstract)
 class FIRSTPERSONSHOOTER_API AFirstPersonCharacter : public ACharacter, public IEventListener {
 	GENERATED_BODY()
 
+	EVENTS_TO_LISTEN_TO("RiflePickupEvent", "BulletHitEvent")
+
 	bool bIsPressingSprint = false;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))

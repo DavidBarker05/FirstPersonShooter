@@ -1,11 +1,27 @@
 #include "Events/CustomStructFunctionLibrary.h"
 
+// FEventData
 FEventData UCustomStructFunctionLibrary::MakeEventData(const int32& InStruct) {
 	checkNoEntry();
 	return {};
 }
 
+FInstancedStruct UCustomStructFunctionLibrary::BreakEventData(const FEventData& EventData) { return EventData.Data; }
+
+FInstancedStruct UCustomStructFunctionLibrary::EventData_Get(const FEventData& InEventData) { return InEventData.Data; }
+
+void UCustomStructFunctionLibrary::EventDataGetAsStruct(UPARAM(ref) const FEventData& InEventData, EIsAOutputPins& OutputPins, int32& OutputStruct) { checkNoEntry(); }
+
+FEventData UCustomStructFunctionLibrary::SetEventData(const int32& InStruct) {
+	checkNoEntry();
+	return {};
+}
+
 // FInt32Struct
+FInt32Struct UCustomStructFunctionLibrary::MakeInt32Struct(int32 InValue) { return InValue; }
+
+int32 UCustomStructFunctionLibrary::BreakInt32Struct(const FInt32Struct& IntegerStruct) { return IntegerStruct; }
+
 bool UCustomStructFunctionLibrary::FInt32Struct_Equal_FInt32Struct(const FInt32Struct& A, const FInt32Struct& B) { return A == B; }
 
 bool UCustomStructFunctionLibrary::FInt32Struct_Equal_Int32(const FInt32Struct& A, int32 B) { return A == B; }
@@ -111,6 +127,10 @@ int32 UCustomStructFunctionLibrary::FInt32Struct_Get(const FInt32Struct& InStruc
 FInt32Struct& UCustomStructFunctionLibrary::FInt32Struct_Set(UPARAM(ref) struct FInt32Struct& InStruct, int32 NewValue) { return InStruct.Set(NewValue); }
 
 // FFloatStruct
+FFloatStruct UCustomStructFunctionLibrary::MakeFloatStruct(float InValue) { return InValue; }
+
+float UCustomStructFunctionLibrary::BreakFloatStruct(const FFloatStruct& FloatStruct) { return FloatStruct; }
+
 bool UCustomStructFunctionLibrary::FFloatStruct_Equal_FFloatStruct(const FFloatStruct& A, const FFloatStruct& B) { return A == B; }
 
 bool UCustomStructFunctionLibrary::FFloatStruct_Equal_Float(const FFloatStruct& A, float B) { return A == B; }
@@ -176,6 +196,10 @@ float UCustomStructFunctionLibrary::FFloatStruct_Get(const FFloatStruct& InStruc
 FFloatStruct& UCustomStructFunctionLibrary::FFloatStruct_Set(UPARAM(ref) FFloatStruct& InStruct, float NewValue) { return InStruct.Set(NewValue); }
 
 // FBoolStruct
+FBoolStruct UCustomStructFunctionLibrary::MakeBoolStruct(bool InValue) { return InValue; }
+
+bool UCustomStructFunctionLibrary::BreakBoolStruct(const FBoolStruct& BooleanStruct) { return BooleanStruct; }
+
 bool UCustomStructFunctionLibrary::FBoolStruct_Equal_FBoolStruct(const FBoolStruct& A, const FBoolStruct& B) { return A == B; }
 
 bool UCustomStructFunctionLibrary::FBoolStruct_Equal_Bool(const FBoolStruct& A, bool B) { return A == B; }
@@ -227,6 +251,10 @@ bool UCustomStructFunctionLibrary::FBoolStruct_Get(const FBoolStruct& InStruct) 
 FBoolStruct& UCustomStructFunctionLibrary::FBoolStruct_Set(UPARAM(ref) FBoolStruct& InStruct, bool NewValue) { return InStruct.Set(NewValue); }
 
 // FStringStruct
+FStringStruct UCustomStructFunctionLibrary::MakeStringStruct(const FString& InValue) { return InValue; }
+
+FString UCustomStructFunctionLibrary::BreakStringStruct(const FStringStruct& StringStruct) { return StringStruct; }
+
 bool UCustomStructFunctionLibrary::FStringStruct_EqualExactly_FStringStruct(const FStringStruct& A, const FStringStruct& B) { return A.Equals(B); }
 
 bool UCustomStructFunctionLibrary::FStringStruct_EqualExactly_FString(const FStringStruct& A, const FString& B) { return A.Equals(B); }
@@ -255,9 +283,13 @@ FStringStruct UCustomStructFunctionLibrary::FString_To_FStringStruct(const FStri
 
 FString UCustomStructFunctionLibrary::FStringStruct_Get(const FStringStruct& InStruct) { return InStruct.Get(); }
 
-FStringStruct& UCustomStructFunctionLibrary::FStringStruct_Set(UPARAM(ref) FStringStruct& InStruct, FString NewValue) { return InStruct.Set(NewValue); }
+FStringStruct& UCustomStructFunctionLibrary::FStringStruct_Set(UPARAM(ref) FStringStruct& InStruct, const FString& NewValue) { return InStruct.Set(NewValue); }
 
 // FNameStruct
+FNameStruct UCustomStructFunctionLibrary::MakeNameStruct(const FName& InValue) { return InValue; }
+
+FName UCustomStructFunctionLibrary::BreakNameStruct(const FNameStruct& NameStruct) { return NameStruct; }
+
 bool UCustomStructFunctionLibrary::FNameStruct_Equal_FNameStruct(const FNameStruct& A, const FNameStruct& B) { return A == B; }
 
 bool UCustomStructFunctionLibrary::FNameStruct_Equal_FName(const FNameStruct& A, FName B) { return A == B; }
@@ -272,18 +304,26 @@ FNameStruct UCustomStructFunctionLibrary::FName_To_FNameStruct(const FName& A) {
 
 FName UCustomStructFunctionLibrary::FNameStruct_Get(const FNameStruct& InStruct) { return InStruct.Get(); }
 
-FNameStruct& UCustomStructFunctionLibrary::FNameStruct_Set(UPARAM(ref) FNameStruct& InStruct, FName NewValue) { return InStruct.Set(NewValue); }
+FNameStruct& UCustomStructFunctionLibrary::FNameStruct_Set(UPARAM(ref) FNameStruct& InStruct, const FName& NewValue) { return InStruct.Set(NewValue); }
 
 // FTextStruct
+FTextStruct UCustomStructFunctionLibrary::MakeTextStruct(const FText& InValue) { return InValue; }
+
+FText UCustomStructFunctionLibrary::BreakTextStruct(const FTextStruct& TextStruct) { return TextStruct; }
+
 FText UCustomStructFunctionLibrary::FTextStruct_To_FText(const FTextStruct& A) { return A; }
 
 FTextStruct UCustomStructFunctionLibrary::FText_ToFTextStruct(const FText& A) { return A; }
 
 FText UCustomStructFunctionLibrary::FTextStruct_Get(const FTextStruct& InStruct) { return InStruct.Get(); }
 
-FTextStruct& UCustomStructFunctionLibrary::FTextStruct_Set(UPARAM(ref) FTextStruct& InStruct, FText NewValue) { return InStruct.Set(NewValue); }
+FTextStruct& UCustomStructFunctionLibrary::FTextStruct_Set(UPARAM(ref) FTextStruct& InStruct, const FText& NewValue) { return InStruct.Set(NewValue); }
 
 // FUObjectStruct
+FUObjectStruct UCustomStructFunctionLibrary::MakeObjectStruct(UObject* InValue) { return InValue; }
+
+UObject* UCustomStructFunctionLibrary::BreakObjectStruct(const FUObjectStruct& ObjectStruct) { return ObjectStruct; }
+
 bool UCustomStructFunctionLibrary::FUObjectStruct_Equal_FUObjectStruct(const FUObjectStruct& A, const FUObjectStruct& B) { return A == B; }
 
 bool UCustomStructFunctionLibrary::FUObjectStruct_Equal_UObject(const FUObjectStruct& A, const UObject* B) { return A == B; }
@@ -296,8 +336,6 @@ bool UCustomStructFunctionLibrary::FUObjectStruct_IsValid(const FUObjectStruct& 
 
 void UCustomStructFunctionLibrary::FUObjectStruct_IsValidBranch(const FUObjectStruct& ObjectStruct, EIsValidOutputPints& OutputPins) { OutputPins = ObjectStruct ? EIsValidOutputPints::Valid : EIsValidOutputPints::NotValid; }
 
-UObject* UCustomStructFunctionLibrary::FUObjectStruct_CastAs(const FUObjectStruct& ObjectStruct, TSubclassOf<UObject> Class) { return ObjectStruct && ObjectStruct.IsA(Class) ? ObjectStruct : nullptr; }
-
 bool UCustomStructFunctionLibrary::FUObjectStruct_IsA(const FUObjectStruct& ObjectStruct, TSubclassOf<UObject> Class) { return ObjectStruct.IsA(Class); }
 
 void UCustomStructFunctionLibrary::FUObjectStruct_IsABranch(const FUObjectStruct& ObjectStruct, TSubclassOf<UObject> Class, EIsAOutputPins& OutputPins) { OutputPins = ObjectStruct.IsA(Class) ? EIsAOutputPins::IsType : EIsAOutputPins::IsNotType; }
@@ -307,6 +345,16 @@ UObject* UCustomStructFunctionLibrary::FUObjectStruct_To_UObject(const FUObjectS
 FUObjectStruct UCustomStructFunctionLibrary::UObject_To_FUObjectStruct(UObject* A) { return A; }
 
 UObject* UCustomStructFunctionLibrary::FUObjectStruct_Get(const FUObjectStruct& InStruct) { return InStruct.Get(); }
+
+UObject* UCustomStructFunctionLibrary::FUObjectStruct_GetAsType(const FUObjectStruct& ObjectStruct, TSubclassOf<UObject> Class, EIsAOutputPins& OutputPins)
+{
+	if (ObjectStruct && ObjectStruct.IsA(Class)) {
+		OutputPins = EIsAOutputPins::IsType;
+		return ObjectStruct;
+	}
+	OutputPins = EIsAOutputPins::IsNotType;
+	return nullptr;
+}
 
 FUObjectStruct& UCustomStructFunctionLibrary::FUObjectStruct_Set(UPARAM(ref) FUObjectStruct& InStruct, UObject* NewValue) { return InStruct.Set(NewValue); }
 

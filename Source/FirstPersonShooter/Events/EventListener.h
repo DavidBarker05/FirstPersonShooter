@@ -7,8 +7,8 @@
 #include "EventListener.generated.h"
 
 #ifndef EVENTS_TO_LISTEN_TO
-	// Write this in the cpp file outside of any function at the top
-	#define EVENTS_TO_LISTEN_TO(...) static const FString EventNames[] = { __VA_ARGS__ };
+	// Write this in the header file
+	#define EVENTS_TO_LISTEN_TO(...) inline static const FString EventNames[] = { __VA_ARGS__ };
 #endif
 
 #ifndef SUBSCRIBE_TO_EVENTS
