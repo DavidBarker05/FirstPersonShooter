@@ -4,20 +4,23 @@
 #include "GameFramework/Actor.h"
 #include "Interfaces/Pickup.h"
 #include "Interfaces/Respawnable.h"
-#include "RiflePickup.generated.h"
+#include "HealthPickup.generated.h"
 
 UCLASS(Abstract)
-class FIRSTPERSONSHOOTER_API ARiflePickup : public AActor, public IPickup, public IRespawnable {
+class FIRSTPERSONSHOOTER_API AHealthPickup : public AActor, public IPickup, public IRespawnable {
 	GENERATED_BODY()
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Collision", meta = (AllowPrivateAccess = "true"))
 	class UBoxComponent* TriggerCollider;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
-	UStaticMeshComponent* RifleMesh;
+	UStaticMeshComponent* PickupMesh;
+
+	public:
+		static const int32 HealAmount = 25;
 	
 	public:
-		ARiflePickup();
+		AHealthPickup();
 
 	protected:
 		UFUNCTION()

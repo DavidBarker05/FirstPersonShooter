@@ -154,4 +154,10 @@ void AFirstPersonCharacter::OnEventReceived_Implementation(FName EventName, cons
 			if (const FInt32Struct* Damage = Params[1].Get<FInt32Struct>()) CharacterHealthComponent->TakeDamage(*Damage);
 		}
 	}
+	if (EventName.IsEqual("HealthPickupEvent") && Params.Num() == 2) {
+		if (AActor* CollidedActor = Params[0].Get<FUObjectStruct>()->CastAs<AActor>()) {
+			if (CollidedActor != this) return;
+			if (const FInt32Struct* HealAmount = Params[1].Get<FInt32Struct>()) CharacterHealthComponent->ReceiveHealth(*HealAmount);
+		}
+	}
 }
