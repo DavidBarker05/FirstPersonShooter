@@ -12,7 +12,7 @@ void ARiflePickup::OnComponentBeginOverlap(UPrimitiveComponent* OverlappedCompon
 
 void ARiflePickup::OnPickup_Implementation(AActor* CollidedActor) {
 	if (ACharacter* Character = Cast<ACharacter>(CollidedActor)) {
-		BROADCAST_EVENT("RiflePickupEvent", {FUObjectStruct(CollidedActor)});
+		BROADCAST_EVENT("RiflePickupEvent", FUObjectStruct(CollidedActor));
 		Respawn_Implementation();
 	}
 }

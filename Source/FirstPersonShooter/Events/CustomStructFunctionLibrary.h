@@ -29,91 +29,39 @@ class FIRSTPERSONSHOOTER_API UCustomStructFunctionLibrary : public UBlueprintFun
         // Idk why it has to be like this, copying how FInstancedStruct did it was not showing up in blueprints, so this also slightly follows KismetArrayLibrary's style
         
         // Creates Event Data based on an input struct (wildcard)
-        UFUNCTION(BlueprintCallable, CustomThunk, Category = "CustomStructs|EventData|Creation", meta = (CustomStructureParam = "InStruct", NativeMakeFunc))
-        static FEventData MakeEventData(const int32& InStruct);
-
-        DECLARE_FUNCTION(execMakeEventData) {
-            Stack.MostRecentPropertyAddress = nullptr;
-            Stack.MostRecentPropertyContainer = nullptr;
-            Stack.StepCompiledIn<FStructProperty>(nullptr);
-            const FStructProperty* ValueProp = CastField<FStructProperty>(Stack.MostRecentProperty);
-            const void* ValuePtr = Stack.MostRecentPropertyAddress;
-            P_FINISH;
-            if (ValueProp && ValuePtr)
-            {
-                P_NATIVE_BEGIN;
-                FInstancedStruct Instanced;
-                Instanced.InitializeAs(ValueProp->Struct);
-                ValueProp->Struct->CopyScriptStruct(Instanced.GetMutableMemory(), ValuePtr);
-                *(FEventData*)RESULT_PARAM = FEventData(Instanced);
-                P_NATIVE_END;
-            }
-            else
-            {
-                P_NATIVE_BEGIN;
-                *(FEventData*)RESULT_PARAM = FEventData();
-                P_NATIVE_END;
-            }
-        }
+        UFUNCTION(BlueprintCallable, CustomThunk, Category = "CustomStructs|EventData|Creation", meta = (DisplayName = "Make Event Data", CustomStructureParam = "Value", BlueprintInternalUseOnly = "true", NativeMakeFunc))
+        static FEventData MakeEventData(const int32& Value);
 
         UFUNCTION(BlueprintPure, Category = "CustomStructs|EventData|Value", meta = (DisplayName = "Break Event Data", ReturnDisplayName = "Instanced Struct", ToolTip = "Breaks an Event Data Struct", NativeBreakFunc))
         static FInstancedStruct BreakEventData(const FEventData& EventData);
 
+        UFUNCTION(BlueprintPure, Category = "CustomStructs|EventData|Value", meta = (DisplayName = "Is Valid", ReturnDisplayName = "Is Valid", ToolTip = "Check if the Event Data contains valid data"))
+        static bool EventData_IsValid(const FEventData& EventData);
+
+        UFUNCTION(BlueprintCallable, Category = "CustomStructs|EventData|Value", meta = (DisplayName = "Is Valid (Branch)", ToolTip = "Check if the Event Data contains valid data", ExpandEnumAsExecs = "OutputPins"))
+        static void EventData_IsValidBranch(const FEventData& EventData, EIsValidOutputPints& OutputPins);
+
         UFUNCTION(BlueprintPure, Category = "CustomStructs|EventData|Value", meta = (DisplayName = "Get", ToolTip = "Gets the Instanced Struct stored in the Event Data"))
         static FInstancedStruct EventData_Get(const FEventData& InEventData);
 
-        UFUNCTION(BlueprintCallable, CustomThunk, Category = "CustomStructs|EventData|Value", meta = (DisplayName = "Get As Struct", ExpandEnumAsExecs = "OutputPins", CustomStructureParam = "OutputStruct", ToolTip = "Gets the struct stored in the Event Data\nNote the output pin needs to be used in order for the wildcard type to be set\nMake sure to only use the output if the Is Valid pin executes"))
-        static void EventDataGetAsStruct(UPARAM(ref) const FEventData& InEventData, EIsAOutputPins& OutputPins, int32& OutputStruct);
+        UFUNCTION(BlueprintCallable, CustomThunk, Category = "CustomStructs|EventData|Value", meta = (DisplayName = "Get As Struct", ExpandEnumAsExecs = "OutputPins", CustomStructureParam = "Value", ToolTip = "Gets the struct stored in the Event Data\nNote the output pin needs to be used in order for the wildcard type to be set\nMake sure to only use the output if the Is Valid pin executes", BlueprintInternalUseOnly = "true"))
+        static void EventDataGetAsStruct(UPARAM(ref) const FEventData& InEventData, EIsAOutputPins& OutputPins, int32& Value);
 
-        DECLARE_FUNCTION(execEventDataGetAsStruct) {
-            P_GET_STRUCT_REF(FEventData, InEventData);
-            P_GET_ENUM_REF(EIsAOutputPins, OutputPins);
-            Stack.MostRecentPropertyAddress = nullptr;
-            Stack.MostRecentPropertyContainer = nullptr;
-            Stack.StepCompiledIn<FStructProperty>(nullptr);
-            const FStructProperty* ValueProp = CastField<FStructProperty>(Stack.MostRecentProperty);
-            void* ValuePtr = Stack.MostRecentPropertyAddress;
-            P_FINISH;
-            if (ValueProp && ValuePtr)
-            {
-                P_NATIVE_BEGIN;
-                if (InEventData.Data.IsValid() && InEventData.Data.GetScriptStruct()->IsChildOf(ValueProp->Struct))
-                {
-                    ValueProp->Struct->CopyScriptStruct(ValuePtr, InEventData.Data.GetMemory());
-                    OutputPins = EIsAOutputPins::IsType;
-                }
-                else OutputPins = EIsAOutputPins::IsNotType;
-                P_NATIVE_END;
-            }
-            else OutputPins = EIsAOutputPins::IsNotType;
-        }
+        UFUNCTION(BlueprintCallable, CustomThunk, Category = "CustomStructs|EventData|Value", meta = (CustomStructureParam = "Value", BlueprintInternalUseOnly = "true"))
+        static FEventData SetEventData(const int32& Value);
 
-        UFUNCTION(BlueprintCallable, CustomThunk, Category = "CustomStructs|EventData|Value", meta = (CustomStructureParam = "InStruct"))
-        static FEventData SetEventData(const int32& InStruct);
+        // Creates Event Data based on an input struct (wildcard)
+        UFUNCTION(BlueprintPure, CustomThunk, Category = "CustomStructs|EventData|Creation", meta = (BlueprintAutoCast, DisplayName = "Struct to Event Data", CompactNodeTitle = "->", ToolTip = "Converts a Struct to EventData", CustomStructureParam = "Value", BlueprintInternalUseOnly = "true"))
+        static FEventData StructToEventData(const int32& Value);
 
-        DECLARE_FUNCTION(execSetEventData) {
-            Stack.MostRecentPropertyAddress = nullptr;
-            Stack.MostRecentPropertyContainer = nullptr;
-            Stack.StepCompiledIn<FStructProperty>(nullptr);
-            const FStructProperty* ValueProp = CastField<FStructProperty>(Stack.MostRecentProperty);
-            const void* ValuePtr = Stack.MostRecentPropertyAddress;
-            P_FINISH;
-            if (ValueProp && ValuePtr)
-            {
-                P_NATIVE_BEGIN;
-                FInstancedStruct Instanced;
-                Instanced.InitializeAs(ValueProp->Struct);
-                ValueProp->Struct->CopyScriptStruct(Instanced.GetMutableMemory(), ValuePtr);
-                *(FEventData*)RESULT_PARAM = FEventData(Instanced);
-                P_NATIVE_END;
-            }
-            else
-            {
-                P_NATIVE_BEGIN;
-                *(FEventData*)RESULT_PARAM = FEventData();
-                P_NATIVE_END;
-            }
-        }
+    private:
+        DECLARE_FUNCTION(execMakeEventData);
+
+        DECLARE_FUNCTION(execEventDataGetAsStruct);
+
+        DECLARE_FUNCTION(execSetEventData);
+
+        DECLARE_FUNCTION(execStructToEventData);
 
     public:
         UFUNCTION(BlueprintCallable, Category = "CustomStructs|IntegerStruct|Creation", meta = (DisplayName = "Make Integer Struct", ToolTip = "Makes an Integer Struct based on the Integer", NativeMakeFunc))

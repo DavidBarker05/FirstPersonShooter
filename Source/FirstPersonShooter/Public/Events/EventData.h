@@ -20,6 +20,8 @@ struct FIRSTPERSONSHOOTER_API FEventData {
 	template<typename T>
 	FEventData(T&& InData) { Data = FInstancedStruct::Make(InData); }
 
+	bool IsValid() const { return Data.IsValid(); }
+
 	template<typename T>
 	void SetData(T&& InData) { Data = FInstancedStruct::Make(InData); }
 

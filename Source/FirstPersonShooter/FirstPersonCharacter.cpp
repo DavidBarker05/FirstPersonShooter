@@ -145,16 +145,19 @@ float AFirstPersonCharacter::GetFastestWalkSpeed() { return BaseWalkSpeed; }
 
 void AFirstPersonCharacter::OnEventReceived_Implementation(FName EventName, const TArray<FEventData>& Params) {
 	if (EventName.IsEqual("RiflePickupEvent") && Params.Num() == 1) {
+		if (!Params[0].IsValid())
 		if (AActor* CollidedActor = Params[0].Get<FUObjectStruct>()->CastAs<AActor>()) {
 			if (CollidedActor == this) WeaponHolderComponent->PickUpRifle();
 		}
 	} else if (EventName.IsEqual("BulletHitEvent") && Params.Num() == 3) {
+		if (!Params[0].IsValid() || !Params[1].IsValid() || !Params[2].IsValid()) return;
 		if (AActor* HitActor = Params[0].Get<FUObjectStruct>()->CastAs<AActor>()) {
 			if (HitActor != this) return;
 			if (const FInt32Struct* Damage = Params[1].Get<FInt32Struct>()) CharacterHealthComponent->TakeDamage(*Damage);
 		}
 	}
 	if (EventName.IsEqual("HealthPickupEvent") && Params.Num() == 2) {
+		if (!Params[0].IsValid() || !Params[1].IsValid()) return;
 		if (AActor* CollidedActor = Params[0].Get<FUObjectStruct>()->CastAs<AActor>()) {
 			if (CollidedActor != this) return;
 			if (const FInt32Struct* HealAmount = Params[1].Get<FInt32Struct>()) CharacterHealthComponent->ReceiveHealth(*HealAmount);

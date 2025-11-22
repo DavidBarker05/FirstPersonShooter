@@ -28,8 +28,10 @@ void AHealthPickupSpawner::SpawnNewPickupAfterDelay() {
 
 void AHealthPickupSpawner::OnEventReceived_Implementation(FName EventName, const TArray<FEventData>& Params) {
 	if (EventName.IsEqual("RespawnEvent") && Params.Num() == 1) {
-		if (AActor* PickupOwner = Params[0].Get<FUObjectStruct>()->CastAs<AActor>())
+		if (!Params[0].IsValid()) return;
+		if (AActor* PickupOwner = Params[0].Get<FUObjectStruct>()->CastAs<AActor>()) {
 			if (PickupOwner == this) SpawnNewPickupAfterDelay();
+		}
 	}
 }
 

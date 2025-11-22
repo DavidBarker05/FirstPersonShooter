@@ -9,7 +9,7 @@ UCLASS(Abstract)
 class FIRSTPERSONSHOOTER_API AFirstPersonCharacter : public ACharacter, public IEventListener {
 	GENERATED_BODY()
 
-	EVENTS_TO_LISTEN_TO("RiflePickupEvent", "BulletHitEvent", "HealthPickupEvent")
+	EVENTS_TO_LISTEN_TO("RiflePickupEvent", "BulletHitEvent", "HealthPickupEvent", "DeathEvent")
 
 	bool bIsPressingSprint = false;
 

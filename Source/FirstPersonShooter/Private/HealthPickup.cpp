@@ -12,7 +12,7 @@ void AHealthPickup::OnComponentBeginOverlap(UPrimitiveComponent* OverlappedCompo
 
 void AHealthPickup::OnPickup_Implementation(AActor* CollidedActor) {
 	if (ACharacter* Character = Cast<ACharacter>(CollidedActor)) {
-		BROADCAST_EVENT("HealthPickupEvent", { FUObjectStruct(CollidedActor), FInt32Struct(HealAmount)});
+		BROADCAST_EVENT("HealthPickupEvent", FUObjectStruct(CollidedActor), FInt32Struct(HealAmount));
 		Respawn_Implementation();
 	}
 }

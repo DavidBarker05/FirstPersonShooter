@@ -1,4 +1,5 @@
 #include "CharacterHealthComponent.h"
+#include "Events/EventBus.h"
 
 UCharacterHealthComponent::UCharacterHealthComponent() : CurrentHealth(MaxHealth) { }
 
@@ -17,7 +18,11 @@ void UCharacterHealthComponent::TakeDamage(int32 Damage) {
 	if (bIsImmune || bIsDead) return;
 	Damage = FMath::Abs(Damage);
 	CurrentHealth = FMath::Clamp(CurrentHealth - Damage, 0, MaxHealth);
-	if (CurrentHealth <= 0) bIsDead = true; // TODO: Death screen and respawn
+	if (CurrentHealth <= 0)
+	{
+		bIsDead = true; // TODO: Death screen and respawn
+		BROADCAST_EVENT("DeathEvent", FUObjectStruct(GetOwner()));
+	}
 }
 
 void UCharacterHealthComponent::ReceiveHealth(int32 Health) {

@@ -11,6 +11,8 @@ class FIRSTPERSONSHOOTER_API UCharacterHealthComponent : public UActorComponent 
 	int32 CurrentHealth;
 	bool bIsImmune = false;
 	FTimerHandle RespawnImmunityHandle;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Health", meta = (AllowPrivateAccess = "true"))
 	bool bIsDead = false;
 
 	public:
@@ -20,6 +22,9 @@ class FIRSTPERSONSHOOTER_API UCharacterHealthComponent : public UActorComponent 
 		UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Spawning", meta = (ClampMin = 0.0f, ClampMax = 5.0f, Units = "s", AllowPrivateAccess = "true"))
 		float SpawnImmunityDuration = 2.0f;
 
+		UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Spawning", meta = (ClampMin = 0.0f, Units = "s", AllowPrivateAccess = "true"))
+		float RespawnDelay = 5.0f;
+
 	public:
 		UCharacterHealthComponent();
 
@@ -27,10 +32,10 @@ class FIRSTPERSONSHOOTER_API UCharacterHealthComponent : public UActorComponent 
 		virtual void BeginPlay() override;
 
 	public:
-		UFUNCTION(BlueprintCallable, Category = "Health")
+		UFUNCTION(BlueprintPure, Category = "Health")
 		int GetCurrentHealth();
 
-		UFUNCTION(BlueprintCallable, Category = "Health")
+		UFUNCTION(BlueprintPure, Category = "Health")
 		int GetMaxHealth();
 
 		UFUNCTION(BlueprintCallable, Category = "Health")
@@ -38,6 +43,10 @@ class FIRSTPERSONSHOOTER_API UCharacterHealthComponent : public UActorComponent 
 
 		UFUNCTION(BlueprintCallable, Category = "Health")
 		void ReceiveHealth(int32 Health);
+
+		inline float GetRespawnDelay() { return RespawnDelay; }
+
+		inline bool IsDead() { return bIsDead; }
 
 	private:
 		void EndImmunity();

@@ -1,21 +1,135 @@
 #include "Events/CustomStructFunctionLibrary.h"
+#include "Blueprint/BlueprintExceptionInfo.h"
+
+#define LOCTEXT_NAMESPACE "UCustomStructFunctionLibrary"
 
 // FEventData
-FEventData UCustomStructFunctionLibrary::MakeEventData(const int32& InStruct) {
+FEventData UCustomStructFunctionLibrary::MakeEventData(const int32& Value) {
 	checkNoEntry();
 	return {};
 }
 
 FInstancedStruct UCustomStructFunctionLibrary::BreakEventData(const FEventData& EventData) { return EventData.Data; }
 
+bool UCustomStructFunctionLibrary::EventData_IsValid(const FEventData& EventData) { return EventData.IsValid(); }
+
+void UCustomStructFunctionLibrary::EventData_IsValidBranch(const FEventData& EventData, EIsValidOutputPints& OutputPins) { OutputPins = EventData.IsValid() ? EIsValidOutputPints::Valid : EIsValidOutputPints::NotValid; }
+
 FInstancedStruct UCustomStructFunctionLibrary::EventData_Get(const FEventData& InEventData) { return InEventData.Data; }
 
-void UCustomStructFunctionLibrary::EventDataGetAsStruct(UPARAM(ref) const FEventData& InEventData, EIsAOutputPins& OutputPins, int32& OutputStruct) { checkNoEntry(); }
+void UCustomStructFunctionLibrary::EventDataGetAsStruct(UPARAM(ref) const FEventData& InEventData, EIsAOutputPins& OutputPins, int32& Value) { checkNoEntry(); }
 
-FEventData UCustomStructFunctionLibrary::SetEventData(const int32& InStruct) {
+FEventData UCustomStructFunctionLibrary::SetEventData(const int32& Value) {
 	checkNoEntry();
 	return {};
 }
+
+DEFINE_FUNCTION(UCustomStructFunctionLibrary::execMakeEventData) {
+    Stack.MostRecentPropertyAddress = nullptr;
+    Stack.MostRecentPropertyContainer = nullptr;
+    Stack.StepCompiledIn<FStructProperty>(nullptr);
+    const FStructProperty* ValueProp = CastField<FStructProperty>(Stack.MostRecentProperty);
+    const void* ValuePtr = Stack.MostRecentPropertyAddress;
+    P_FINISH;
+    if (!ValueProp || !ValuePtr) {
+        FBlueprintExceptionInfo ExceptionInfo(EBlueprintExceptionType::AbortExecution, LOCTEXT("EventDataMake_MakeInvalidValueWarning", "Failed to resolve the Value for Make Event Data"));
+        FBlueprintCoreDelegates::ThrowScriptException(P_THIS, Stack, ExceptionInfo);
+        P_NATIVE_BEGIN;
+        *(FEventData*) RESULT_PARAM = FEventData();
+        P_NATIVE_END;
+    }
+    else {
+        P_NATIVE_BEGIN;
+        FInstancedStruct Instanced;
+        Instanced.InitializeAs(ValueProp->Struct);
+        ValueProp->Struct->CopyScriptStruct(Instanced.GetMutableMemory(), ValuePtr);
+        *(FEventData*) RESULT_PARAM = FEventData(Instanced);
+        P_NATIVE_END;
+    }
+}
+
+DEFINE_FUNCTION(UCustomStructFunctionLibrary::execEventDataGetAsStruct) {
+    P_GET_STRUCT_REF(FEventData, InEventData);
+    P_GET_ENUM_REF(EIsAOutputPins, OutputPins);
+    Stack.MostRecentPropertyAddress = nullptr;
+    Stack.MostRecentPropertyContainer = nullptr;
+    Stack.StepCompiledIn<FStructProperty>(nullptr);
+    const FStructProperty* ValueProp = CastField<FStructProperty>(Stack.MostRecentProperty);
+    void* ValuePtr = Stack.MostRecentPropertyAddress;
+    P_FINISH;
+    OutputPins = EIsAOutputPins::IsNotType;
+    if (!ValueProp || !ValuePtr)
+    {
+        FBlueprintExceptionInfo ExceptionInfo(EBlueprintExceptionType::AbortExecution, LOCTEXT("InstancedStruct_GetInvalidValueWarning", "Failed to resolve the Value for Get Event Data As Struct"));
+        FBlueprintCoreDelegates::ThrowScriptException(P_THIS, Stack, ExceptionInfo);
+    }
+    else
+    {
+        P_NATIVE_BEGIN;
+        if (InEventData.Data.IsValid() && InEventData.Data.GetScriptStruct()->IsChildOf(ValueProp->Struct))
+        {
+            ValueProp->Struct->CopyScriptStruct(ValuePtr, InEventData.Data.GetMemory());
+            OutputPins = EIsAOutputPins::IsType;
+        }
+        else OutputPins = EIsAOutputPins::IsNotType;
+        P_NATIVE_END;
+    }
+}
+
+DEFINE_FUNCTION(UCustomStructFunctionLibrary::execSetEventData) {
+    Stack.MostRecentPropertyAddress = nullptr;
+    Stack.MostRecentPropertyContainer = nullptr;
+    Stack.StepCompiledIn<FStructProperty>(nullptr);
+    const FStructProperty* ValueProp = CastField<FStructProperty>(Stack.MostRecentProperty);
+    const void* ValuePtr = Stack.MostRecentPropertyAddress;
+    P_FINISH;
+    if (!ValueProp || !ValuePtr)
+    {
+        FBlueprintExceptionInfo ExceptionInfo(EBlueprintExceptionType::AbortExecution, LOCTEXT("InstancedStruct_SetInvalidValueWarning", "Failed to resolve the Value for Set Event Data"));
+        FBlueprintCoreDelegates::ThrowScriptException(P_THIS, Stack, ExceptionInfo);
+        P_NATIVE_BEGIN;
+        *(FEventData*) RESULT_PARAM = FEventData();
+        P_NATIVE_END;
+    }
+    else
+    {
+        P_NATIVE_BEGIN;
+        FInstancedStruct Instanced;
+        Instanced.InitializeAs(ValueProp->Struct);
+        ValueProp->Struct->CopyScriptStruct(Instanced.GetMutableMemory(), ValuePtr);
+        *(FEventData*) RESULT_PARAM = FEventData(Instanced);
+        P_NATIVE_END;
+    }
+}
+
+DEFINE_FUNCTION(UCustomStructFunctionLibrary::execStructToEventData)
+{
+    Stack.MostRecentPropertyAddress = nullptr;
+    Stack.MostRecentPropertyContainer = nullptr;
+    Stack.StepCompiledIn<FStructProperty>(nullptr);
+    const FStructProperty* ValueProp = CastField<FStructProperty>(Stack.MostRecentProperty);
+    const void* ValuePtr = Stack.MostRecentPropertyAddress;
+    P_FINISH;
+    if (!ValueProp || !ValuePtr)
+    {
+        FBlueprintExceptionInfo ExceptionInfo(EBlueprintExceptionType::AbortExecution, LOCTEXT("EventDataMake_ToInvalidValueWarning", "Failed to resolve the Value for Struct to Event Data"));
+        FBlueprintCoreDelegates::ThrowScriptException(P_THIS, Stack, ExceptionInfo);
+        P_NATIVE_BEGIN;
+        *(FEventData*) RESULT_PARAM = FEventData();
+        P_NATIVE_END;
+    }
+    else
+    {
+        P_NATIVE_BEGIN;
+        FInstancedStruct Instanced;
+        Instanced.InitializeAs(ValueProp->Struct);
+        ValueProp->Struct->CopyScriptStruct(Instanced.GetMutableMemory(), ValuePtr);
+        *(FEventData*) RESULT_PARAM = FEventData(Instanced);
+        P_NATIVE_END;
+    }
+}
+
+#undef LOCTEXT_NAMESPACE
 
 // FInt32Struct
 FInt32Struct UCustomStructFunctionLibrary::MakeInt32Struct(int32 InValue) { return InValue; }
