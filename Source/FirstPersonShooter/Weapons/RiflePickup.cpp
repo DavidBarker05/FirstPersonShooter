@@ -18,6 +18,6 @@ void ARiflePickup::OnPickup_Implementation(AActor* CollidedActor) {
 }
 
 void ARiflePickup::Respawn_Implementation() {
-	BROADCAST_EVENT("RespawnEvent", FUObjectStruct(this));
+	BROADCAST_EVENT("RespawnEvent", FUObjectStruct(GetOwner()));
 	GetWorld()->DestroyActor(this);
 }

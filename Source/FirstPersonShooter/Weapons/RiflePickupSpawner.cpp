@@ -28,20 +28,14 @@ void ARiflePickupSpawner::SpawnNewPickupAfterDelay() {
 
 void ARiflePickupSpawner::OnEventReceived_Implementation(FName EventName, const TArray<FEventData>& Params) {
 	if (EventName.IsEqual("RespawnEvent") && Params.Num() == 1) {
-		if (!ActivePickup) return;
-		if (AActor* Pickup = Params[0].Get<FUObjectStruct>()->CastAs<AActor>()) {
-			if (ActivePickup != Pickup) return;
-			SpawnNewPickupAfterDelay();
-			ActivePickup = nullptr;
-		}
+		if (AActor* PickupOwner = Params[0].Get<FUObjectStruct>()->CastAs<AActor>())
+			if (PickupOwner == this) SpawnNewPickupAfterDelay();
 	}
 }
 
 void ARiflePickupSpawner::Spawn_Implementation(TSubclassOf<AActor> ActorToSpawn) {
-	if (!ActorToSpawn || ActivePickup) return;
-	if (!ActorToSpawn->ImplementsInterface(URespawnable::StaticClass())) return;
+	if (!ActorToSpawn || !ActorToSpawn->ImplementsInterface(URespawnable::StaticClass())) return;
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.Owner = this;
 	AActor* Pickup = GetWorld()->SpawnActor<AActor>(ActorToSpawn, SpawnTransform->GetComponentTransform(), SpawnParams);
-	if (Pickup) ActivePickup = Pickup;
 }

@@ -18,6 +18,6 @@ void AHealthPickup::OnPickup_Implementation(AActor* CollidedActor) {
 }
 
 void AHealthPickup::Respawn_Implementation() {
-	BROADCAST_EVENT("RespawnEvent", FUObjectStruct(this));
+	BROADCAST_EVENT("RespawnEvent", FUObjectStruct(GetOwner()));
 	GetWorld()->DestroyActor(this);
 }
