@@ -8,11 +8,14 @@
 
 #define LOCTEXT_NAMESPACE "EventData"
 
-void UK2Node_EventData::GetMenuActions(FBlueprintActionDatabaseRegistrar& ActionRegistrar) const {
+void UK2Node_EventData::GetMenuActions(FBlueprintActionDatabaseRegistrar& ActionRegistrar) const
+{
 	Super::GetMenuActions(ActionRegistrar);
 	UClass* Action = GetClass();
-	if (ActionRegistrar.IsOpenForRegistration(Action)) {
-		auto CustomizeLambda = [](UEdGraphNode* NewNode, bool bIsTemplateNode, const FName FunctionName) {
+	if (ActionRegistrar.IsOpenForRegistration(Action))
+	{
+		auto CustomizeLambda = [](UEdGraphNode* NewNode, bool bIsTemplateNode, const FName FunctionName)
+		{
 			UK2Node_EventData* Node = CastChecked<UK2Node_EventData>(NewNode);
 			UFunction* Function = UCustomStructFunctionLibrary::StaticClass()->FindFunctionByName(FunctionName);
 			check(Function);
@@ -41,10 +44,13 @@ void UK2Node_EventData::GetMenuActions(FBlueprintActionDatabaseRegistrar& Action
 	}
 }
 
-bool UK2Node_EventData::IsConnectionDisallowed(const UEdGraphPin* MyPin, const UEdGraphPin* OtherPin, FString& OutReason) const {
+bool UK2Node_EventData::IsConnectionDisallowed(const UEdGraphPin* MyPin, const UEdGraphPin* OtherPin, FString& OutReason) const
+{
 	const UEdGraphPin* ValuePin = FindPinChecked(FName(TEXT("Value")));
-	if (MyPin == ValuePin && MyPin->PinType.PinCategory == UEdGraphSchema_K2::PC_Wildcard) {
-		if (OtherPin->PinType.PinCategory != UEdGraphSchema_K2::PC_Struct) {
+	if (MyPin == ValuePin && MyPin->PinType.PinCategory == UEdGraphSchema_K2::PC_Wildcard)
+	{
+		if (OtherPin->PinType.PinCategory != UEdGraphSchema_K2::PC_Struct)
+		{
 			OutReason = TEXT("Value must be a struct.");
 			return true;
 		}

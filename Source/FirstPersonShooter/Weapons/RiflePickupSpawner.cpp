@@ -1,7 +1,8 @@
 #include "Weapons/RiflePickupSpawner.h"
 #include "Weapons/RiflePickup.h"
 
-ARiflePickupSpawner::ARiflePickupSpawner() {
+ARiflePickupSpawner::ARiflePickupSpawner()
+{
 	SpawnerBase = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Spawner Base"));
 	SetRootComponent(SpawnerBase);
 	SpawnerBase->SetCollisionProfileName(FName("NoCollision"));
@@ -9,25 +10,30 @@ ARiflePickupSpawner::ARiflePickupSpawner() {
 	SpawnTransform->SetupAttachment(RootComponent);
 }
 
-void ARiflePickupSpawner::BeginPlay() {
+void ARiflePickupSpawner::BeginPlay()
+{
 	Super::BeginPlay();
 	SUBSCRIBE_TO_EVENTS();
 	Spawn_Implementation(RiflePickupBlueprint);
 }
 
-void ARiflePickupSpawner::EndPlay(const EEndPlayReason::Type EndPlayReason) {
+void ARiflePickupSpawner::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
 	Super::EndPlay(EndPlayReason);
 	UNSUBSCRIBE_FROM_EVENTS();
 }
 
-void ARiflePickupSpawner::SpawnNewPickupAfterDelay() {
+void ARiflePickupSpawner::SpawnNewPickupAfterDelay()
+{
 	FTimerDelegate RespawnDelegate;
 	RespawnDelegate.BindUFunction(this, FName("Spawn_Implementation"), RiflePickupBlueprint);
 	GetWorldTimerManager().SetTimer(RespawnHandle, RespawnDelegate, RespawnDelay, false);
 }
 
-void ARiflePickupSpawner::OnEventReceived_Implementation(FName EventName, const TArray<FEventData>& Params) {
-	if (EventName.IsEqual("RespawnEvent") && Params.Num() == 1) {
+void ARiflePickupSpawner::OnEventReceived_Implementation(FName EventName, const TArray<FEventData>& Params)
+{
+	if (EventName.IsEqual("RespawnEvent") && Params.Num() == 1)
+	{
 		if (!Params[0].IsValid()) return;
 		if (AActor* PickupOwner = Params[0].Get<FUObjectStruct>()->CastAs<AActor>()) {
 			if (PickupOwner == this) SpawnNewPickupAfterDelay();
@@ -35,7 +41,8 @@ void ARiflePickupSpawner::OnEventReceived_Implementation(FName EventName, const 
 	}
 }
 
-void ARiflePickupSpawner::Spawn_Implementation(TSubclassOf<AActor> ActorToSpawn) {
+void ARiflePickupSpawner::Spawn_Implementation(TSubclassOf<AActor> ActorToSpawn)
+{
 	if (!ActorToSpawn || !ActorToSpawn->ImplementsInterface(URespawnable::StaticClass())) return;
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.Owner = this;

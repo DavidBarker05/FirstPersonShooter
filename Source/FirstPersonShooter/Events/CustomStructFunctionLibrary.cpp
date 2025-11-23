@@ -4,7 +4,8 @@
 #define LOCTEXT_NAMESPACE "UCustomStructFunctionLibrary"
 
 // FEventData
-FEventData UCustomStructFunctionLibrary::MakeEventData(const int32& Value) {
+FEventData UCustomStructFunctionLibrary::MakeEventData(const int32& Value)
+{
 	checkNoEntry();
 	return {};
 }
@@ -19,26 +20,30 @@ FInstancedStruct UCustomStructFunctionLibrary::EventData_Get(const FEventData& I
 
 void UCustomStructFunctionLibrary::EventDataGetAsStruct(UPARAM(ref) const FEventData& InEventData, EIsAOutputPins& OutputPins, int32& Value) { checkNoEntry(); }
 
-FEventData UCustomStructFunctionLibrary::SetEventData(const int32& Value) {
+FEventData UCustomStructFunctionLibrary::SetEventData(const int32& Value)
+{
 	checkNoEntry();
 	return {};
 }
 
-DEFINE_FUNCTION(UCustomStructFunctionLibrary::execMakeEventData) {
+DEFINE_FUNCTION(UCustomStructFunctionLibrary::execMakeEventData)
+{
     Stack.MostRecentPropertyAddress = nullptr;
     Stack.MostRecentPropertyContainer = nullptr;
     Stack.StepCompiledIn<FStructProperty>(nullptr);
     const FStructProperty* ValueProp = CastField<FStructProperty>(Stack.MostRecentProperty);
     const void* ValuePtr = Stack.MostRecentPropertyAddress;
     P_FINISH;
-    if (!ValueProp || !ValuePtr) {
+    if (!ValueProp || !ValuePtr)
+    {
         FBlueprintExceptionInfo ExceptionInfo(EBlueprintExceptionType::AbortExecution, LOCTEXT("EventDataMake_MakeInvalidValueWarning", "Failed to resolve the Value for Make Event Data"));
         FBlueprintCoreDelegates::ThrowScriptException(P_THIS, Stack, ExceptionInfo);
         P_NATIVE_BEGIN;
         *(FEventData*) RESULT_PARAM = FEventData();
         P_NATIVE_END;
     }
-    else {
+    else
+    {
         P_NATIVE_BEGIN;
         FInstancedStruct Instanced;
         Instanced.InitializeAs(ValueProp->Struct);
@@ -48,7 +53,8 @@ DEFINE_FUNCTION(UCustomStructFunctionLibrary::execMakeEventData) {
     }
 }
 
-DEFINE_FUNCTION(UCustomStructFunctionLibrary::execEventDataGetAsStruct) {
+DEFINE_FUNCTION(UCustomStructFunctionLibrary::execEventDataGetAsStruct)
+{
     P_GET_STRUCT_REF(FEventData, InEventData);
     P_GET_ENUM_REF(EIsAOutputPins, OutputPins);
     Stack.MostRecentPropertyAddress = nullptr;
@@ -76,7 +82,8 @@ DEFINE_FUNCTION(UCustomStructFunctionLibrary::execEventDataGetAsStruct) {
     }
 }
 
-DEFINE_FUNCTION(UCustomStructFunctionLibrary::execSetEventData) {
+DEFINE_FUNCTION(UCustomStructFunctionLibrary::execSetEventData)
+{
     Stack.MostRecentPropertyAddress = nullptr;
     Stack.MostRecentPropertyContainer = nullptr;
     Stack.StepCompiledIn<FStructProperty>(nullptr);
@@ -462,7 +469,8 @@ UObject* UCustomStructFunctionLibrary::FUObjectStruct_Get(const FUObjectStruct& 
 
 UObject* UCustomStructFunctionLibrary::FUObjectStruct_GetAsType(const FUObjectStruct& ObjectStruct, TSubclassOf<UObject> Class, EIsAOutputPins& OutputPins)
 {
-	if (ObjectStruct && ObjectStruct.IsA(Class)) {
+	if (ObjectStruct && ObjectStruct.IsA(Class))
+    {
 		OutputPins = EIsAOutputPins::IsType;
 		return ObjectStruct;
 	}

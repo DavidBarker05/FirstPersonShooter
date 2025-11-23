@@ -7,7 +7,8 @@
 #include "RiflePickupSpawner.generated.h"
 
 UCLASS(Abstract)
-class FIRSTPERSONSHOOTER_API ARiflePickupSpawner : public AActor, public ISpawner, public IEventListener {
+class FIRSTPERSONSHOOTER_API ARiflePickupSpawner : public AActor, public ISpawner, public IEventListener
+{
 	GENERATED_BODY()
 	
 	EVENTS_TO_LISTEN_TO("RespawnEvent")
@@ -26,22 +27,22 @@ class FIRSTPERSONSHOOTER_API ARiflePickupSpawner : public AActor, public ISpawne
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawning", meta = (ClampMin = 1.0f, Units = "s", AllowPrivateAccess = "true"))
 	float RespawnDelay = 10.0f;
 
-	public:
-		ARiflePickupSpawner();
+public:
+	ARiflePickupSpawner();
 
-	protected:
-		virtual void BeginPlay() override;
+protected:
+	virtual void BeginPlay() override;
 
-		virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
-	public:
-		UFUNCTION(BlueprintCallable)
-		void SpawnNewPickupAfterDelay();
+public:
+	UFUNCTION(BlueprintCallable)
+	void SpawnNewPickupAfterDelay();
 
-		UFUNCTION(BlueprintCallable)
-		void OnEventReceived_Implementation(FName EventName, const TArray<FEventData>& Params) override;
+	UFUNCTION(BlueprintCallable)
+	void OnEventReceived_Implementation(FName EventName, const TArray<FEventData>& Params) override;
 
-	protected:
-		UFUNCTION()
-		void Spawn_Implementation(TSubclassOf<AActor> ActorToSpawn) override;
+protected:
+	UFUNCTION()
+	void Spawn_Implementation(TSubclassOf<AActor> ActorToSpawn) override;
 };

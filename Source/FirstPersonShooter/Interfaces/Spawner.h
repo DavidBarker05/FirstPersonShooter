@@ -6,14 +6,16 @@
 #include "Spawner.generated.h"
 
 UINTERFACE(MinimalAPI, BlueprintType)
-class USpawner : public UInterface {
+class USpawner : public UInterface
+{
 	GENERATED_BODY()
 };
 
-class FIRSTPERSONSHOOTER_API ISpawner {
+class FIRSTPERSONSHOOTER_API ISpawner
+{
 	GENERATED_BODY()
 
-	public:
-		UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-		void Spawn(TSubclassOf<AActor> ActorToSpawn);
+public:
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void Spawn(TSubclassOf<AActor> ActorToSpawn);
 };

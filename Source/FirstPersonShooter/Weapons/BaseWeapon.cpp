@@ -2,7 +2,8 @@
 #include "Weapons/WeaponShootComponent.h"
 #include "GameFramework/Controller.h"
 
-ABaseWeapon::ABaseWeapon() {
+ABaseWeapon::ABaseWeapon()
+{
 	Root = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
 	SetRootComponent(Root);
 	WeaponMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Weapon Mesh"));

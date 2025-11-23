@@ -2,14 +2,16 @@
 #include "Weapons/WeaponShootComponent.h"
 #include "GameFramework/Controller.h"
 
-ARifleWeapon::ARifleWeapon() {
+ARifleWeapon::ARifleWeapon()
+{
 	WeaponShootComponent->TimeBetweenShots = 0.5f;
 	WeaponShootComponent->GunDamage = 12;
 	WeaponShootComponent->BulletSpeed = 8000.0f;
 	WeaponShootComponent->VerticalRecoil = 2.0f;
 }
 
-bool ARifleWeapon::Shoot(const FTransform& SpawnTransform, AController* Controller) {
+bool ARifleWeapon::Shoot(const FTransform& SpawnTransform, AController* Controller)
+{
 	if (CurrentAmmo <= 0) return false;
 	bool DidShoot = Super::Shoot(SpawnTransform, Controller);
 	if(DidShoot) --CurrentAmmo;

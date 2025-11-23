@@ -736,11 +736,15 @@ struct FIRSTPERSONSHOOTER_API FUObjectStruct {
 
 	inline bool operator==(const UObject* OtherValue) const { return Value == OtherValue; }
 
+	inline bool operator==(UObject* OtherValue) const { return Value == OtherValue; }
+
 	inline bool operator!=(const FUObjectStruct& Other) const { return Value != Other.Value; }
 
 	inline bool operator!=(const TObjectPtr<UObject> OtherValue) const { return Value != OtherValue; }
 
 	inline bool operator!=(const UObject* OtherValue) const { return Value != OtherValue; }
+
+	inline bool operator!=(UObject* OtherValue) const { return Value != OtherValue; }
 
 	operator bool() const { return Value != nullptr; }
 

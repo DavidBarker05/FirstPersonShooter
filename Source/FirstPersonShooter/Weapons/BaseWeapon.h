@@ -5,29 +5,30 @@
 #include "BaseWeapon.generated.h"
 
 UCLASS(Abstract)
-class FIRSTPERSONSHOOTER_API ABaseWeapon : public AActor {
+class FIRSTPERSONSHOOTER_API ABaseWeapon : public AActor
+{
 	GENERATED_BODY()
 	
-	protected:
-		UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
-		USceneComponent* Root;
+protected:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
+	USceneComponent* Root;
 
-		UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
-		UStaticMeshComponent* WeaponMesh;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
+	UStaticMeshComponent* WeaponMesh;
 
-		UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
-		class UWeaponShootComponent* WeaponShootComponent;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
+	class UWeaponShootComponent* WeaponShootComponent;
 
-	public:
-		ABaseWeapon();
+public:
+	ABaseWeapon();
 
-	public:
-		UFUNCTION(BlueprintCallable, Category = "Weapons")
-		virtual bool Shoot(const FTransform& SpawnTransform, class AController* Controller);
+public:
+	UFUNCTION(BlueprintCallable, Category = "Weapons")
+	virtual bool Shoot(const FTransform& SpawnTransform, class AController* Controller);
 
-		UFUNCTION(BlueprintCallable, Category = "Owner")
-		void SetOwningActor(AActor* Actor);
+	UFUNCTION(BlueprintCallable, Category = "Owner")
+	void SetOwningActor(AActor* Actor);
 
-		UFUNCTION(BlueprintCallable, Category = "Components")
-		UStaticMeshComponent* GetWeaponMesh();
+	UFUNCTION(BlueprintCallable, Category = "Components")
+	UStaticMeshComponent* GetWeaponMesh();
 };

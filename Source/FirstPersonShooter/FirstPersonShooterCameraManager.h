@@ -9,6 +9,6 @@ class FIRSTPERSONSHOOTER_API AFirstPersonShooterCameraManager : public APlayerCa
 {
 	GENERATED_BODY()
 	
-	public:
-		AFirstPersonShooterCameraManager();
+public:
+	AFirstPersonShooterCameraManager();
 };

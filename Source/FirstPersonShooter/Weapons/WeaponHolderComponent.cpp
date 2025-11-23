@@ -7,26 +7,32 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Controller.h"
 
-UWeaponHolderComponent::UWeaponHolderComponent() {
-	if (AFirstPersonCharacter* FirstPersonCharacter = Cast<AFirstPersonCharacter>(GetOwner())) {
+UWeaponHolderComponent::UWeaponHolderComponent()
+{
+	if (AFirstPersonCharacter* FirstPersonCharacter = Cast<AFirstPersonCharacter>(GetOwner()))
+	{
 		OwnerMesh = FirstPersonCharacter->GetMesh();
 		OwnerFirstPersonMesh = FirstPersonCharacter->GetFirstPersonMesh();
 	}
 }
 
-void UWeaponHolderComponent::BeginPlay() {
+void UWeaponHolderComponent::BeginPlay()
+{
 	Super::BeginPlay();
 	bHasRifle = false;
 	CreateWeapons();
 	CurrentWeapon = Pistol;
 }
 
-bool UWeaponHolderComponent::Shoot(const FTransform& SpawnTransform, AController* Controller) {
-	if (AFirstPersonCharacter* FirstPersonCharacter = Cast<AFirstPersonCharacter>(GetOwner())) {
+bool UWeaponHolderComponent::Shoot(const FTransform& SpawnTransform, AController* Controller)
+{
+	if (AFirstPersonCharacter* FirstPersonCharacter = Cast<AFirstPersonCharacter>(GetOwner()))
+	{
 		UCharacterMovementComponent* CharacterMovement = FirstPersonCharacter->GetCharacterMovement();
 		if (CharacterMovement->MaxWalkSpeed > FirstPersonCharacter->GetFastestWalkSpeed() || CharacterMovement->IsFalling()) return false;
 		FTransform BulletSpawnTransform(SpawnTransform);
-		if (CharacterMovement->Velocity.SizeSquared2D() > 1.0f) {
+		if (CharacterMovement->Velocity.SizeSquared2D() > 1.0f)
+		{
 			FVector ForwardVector = BulletSpawnTransform.GetRotation().GetForwardVector();
 			float SpreadRadians = FMath::DegreesToRadians(MovementBulletSpread);
 			FVector ShootDirection = FMath::VRandCone(ForwardVector, SpreadRadians);
@@ -38,7 +44,8 @@ bool UWeaponHolderComponent::Shoot(const FTransform& SpawnTransform, AController
 	return false;
 }
 
-void UWeaponHolderComponent::PickUpRifle() {
+void UWeaponHolderComponent::PickUpRifle()
+{
 	bHasRifle = true;
 	if (Rifle) Rifle->AddAmmo();
 }
@@ -51,7 +58,8 @@ APistolWeapon* UWeaponHolderComponent::GetPistol() { return Pistol; }
 
 ARifleWeapon* UWeaponHolderComponent::GetRifle() { return Rifle; }
 
-void UWeaponHolderComponent::CreateWeapons() {
+void UWeaponHolderComponent::CreateWeapons()
+{
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.Owner = GetOwner();
 	SpawnParams.Instigator = GetOwner()->GetInstigator();
@@ -67,7 +75,8 @@ void UWeaponHolderComponent::CreateWeapons() {
 	if(RifleFirstPerson) RifleFirstPerson->GetWeaponMesh()->SetVisibility(false);
 }
 
-ABaseWeapon* UWeaponHolderComponent::CreateWeapon(FActorSpawnParameters& SpawnParams, FAttachmentTransformRules& AttachRules, TSubclassOf<class ABaseWeapon> WeaponBlueprint, bool bIsFirstPerson) {
+ABaseWeapon* UWeaponHolderComponent::CreateWeapon(FActorSpawnParameters& SpawnParams, FAttachmentTransformRules& AttachRules, TSubclassOf<class ABaseWeapon> WeaponBlueprint, bool bIsFirstPerson)
+{
 	USkeletalMeshComponent* AttachMesh = bIsFirstPerson ? OwnerFirstPersonMesh : OwnerMesh;
 	if (!AttachMesh || !WeaponBlueprint) return nullptr;
 	ABaseWeapon* Weapon = GetOwner()->GetWorld()->SpawnActor<ABaseWeapon>(WeaponBlueprint, SpawnParams);
@@ -78,7 +87,8 @@ ABaseWeapon* UWeaponHolderComponent::CreateWeapon(FActorSpawnParameters& SpawnPa
 	return Weapon;
 }
 
-void UWeaponHolderComponent::SwitchWeapon() {
+void UWeaponHolderComponent::SwitchWeapon()
+{
 	if (!(bHasRifle && Pistol && PistolFirstPerson && Rifle && RifleFirstPerson)) return;
 	bIsHoldingRifle = !bIsHoldingRifle;
 	Pistol->GetWeaponMesh()->SetVisibility(!bIsHoldingRifle);

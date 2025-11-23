@@ -5,13 +5,15 @@
 
 UWeaponShootComponent::UWeaponShootComponent() : TimeBetweenShots(0.01f), GunDamage(0), BulletSpeed(1000.0f), VerticalRecoil(0.0f) { PrimaryComponentTick.bCanEverTick = true; }
 
-void UWeaponShootComponent::BeginPlay() {
+void UWeaponShootComponent::BeginPlay()
+{
 	Super::BeginPlay();
 	RecoilTimer = RecoilTime;
 	bCanShoot = true;
 }
 
-void UWeaponShootComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) {
+void UWeaponShootComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+{
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	if (RecoilTimer >= RecoilTime) return;
 	RecoilTimer += DeltaTime;
@@ -22,7 +24,8 @@ void UWeaponShootComponent::TickComponent(float DeltaTime, ELevelTick TickType, 
 	LastAppliedPitch = DesiredPitch;
 }
 
-bool UWeaponShootComponent::Shoot(const FTransform& SpawnTransform, AController* Controller) {
+bool UWeaponShootComponent::Shoot(const FTransform& SpawnTransform, AController* Controller)
+{
 	if (!bCanShoot || !BulletBlueprint) return false;
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.Owner = GetOwner();

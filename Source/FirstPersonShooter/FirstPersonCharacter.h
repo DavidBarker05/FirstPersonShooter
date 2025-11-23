@@ -6,7 +6,8 @@
 #include "FirstPersonCharacter.generated.h"
 
 UCLASS(Abstract)
-class FIRSTPERSONSHOOTER_API AFirstPersonCharacter : public ACharacter, public IEventListener {
+class FIRSTPERSONSHOOTER_API AFirstPersonCharacter : public ACharacter, public IEventListener
+{
 	GENERATED_BODY()
 
 	EVENTS_TO_LISTEN_TO("RiflePickupEvent", "BulletHitEvent", "HealthPickupEvent", "DeathEvent")
@@ -58,92 +59,92 @@ class FIRSTPERSONSHOOTER_API AFirstPersonCharacter : public ACharacter, public I
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement", meta = (AllowPrivateAccess = "true", ToolTip = "Indicates if the character is moving to the right"))
 	bool bIsMovingRight = false;
 
-	protected:
-		UPROPERTY(EditAnywhere, Category = "Input")
-		class UInputAction* MoveAction;
+protected:
+	UPROPERTY(EditAnywhere, Category = "Input")
+	class UInputAction* MoveAction;
 
-		UPROPERTY(EditAnywhere, Category = "Input")
-		class UInputAction* MouseLookAction;
+	UPROPERTY(EditAnywhere, Category = "Input")
+	class UInputAction* MouseLookAction;
 
-		UPROPERTY(EditAnywhere, Category = "Input")
-		class UInputAction* JumpAction;
+	UPROPERTY(EditAnywhere, Category = "Input")
+	class UInputAction* JumpAction;
 
-		UPROPERTY(EditAnywhere, Category = "Input")
-		class UInputAction* SprintAction;
+	UPROPERTY(EditAnywhere, Category = "Input")
+	class UInputAction* SprintAction;
 
-		UPROPERTY(EditAnywhere, Category = "Input")
-		class UInputAction* ShootAction;
+	UPROPERTY(EditAnywhere, Category = "Input")
+	class UInputAction* ShootAction;
 
-		UPROPERTY(EditAnywhere, Category = "Input")
-		class UInputAction* WeaponOneSelectAction;
+	UPROPERTY(EditAnywhere, Category = "Input")
+	class UInputAction* WeaponOneSelectAction;
 
-		UPROPERTY(EditAnywhere, Category = "Input")
-		class UInputAction* WeaponTwoSelectAction;
+	UPROPERTY(EditAnywhere, Category = "Input")
+	class UInputAction* WeaponTwoSelectAction;
 
-	public:
-		AFirstPersonCharacter();
+public:
+	AFirstPersonCharacter();
 
-	protected:
-		virtual void BeginPlay() override;
+protected:
+	virtual void BeginPlay() override;
 
-		virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
-	public:
-		virtual void Tick(float DeltaSeconds) override;
+public:
+	virtual void Tick(float DeltaSeconds) override;
 
-	protected:
-		virtual void SetupPlayerInputComponent(class UInputComponent* InputComponent) override;
+protected:
+	virtual void SetupPlayerInputComponent(class UInputComponent* InputComponent) override;
 
-	protected:
-		void Move(const struct FInputActionValue& Value);
+protected:
+	void Move(const struct FInputActionValue& Value);
 
-		void Look(const struct FInputActionValue& Value);
+	void Look(const struct FInputActionValue& Value);
 
-	public:
-		UFUNCTION(BlueprintCallable, Category = "Input")
-		virtual void DoMove(const float Right, const float Forward);
+public:
+	UFUNCTION(BlueprintCallable, Category = "Input")
+	virtual void DoMove(const float Right, const float Forward);
 
-		UFUNCTION(BlueprintCallable, Category = "Input")
-		virtual void DoLook(const float Yaw, const float Pitch);
+	UFUNCTION(BlueprintCallable, Category = "Input")
+	virtual void DoLook(const float Yaw, const float Pitch);
 
-		UFUNCTION(BlueprintCallable, Category = "Input")
-		virtual void DoJumpStart();
+	UFUNCTION(BlueprintCallable, Category = "Input")
+	virtual void DoJumpStart();
 
-		UFUNCTION(BlueprintCallable, Category = "Input")
-		virtual void DoJumpEnd();
+	UFUNCTION(BlueprintCallable, Category = "Input")
+	virtual void DoJumpEnd();
 
-		UFUNCTION(BlueprintCallable, Category = "Input")
-		virtual void DoSprintStart();
+	UFUNCTION(BlueprintCallable, Category = "Input")
+	virtual void DoSprintStart();
 
-		UFUNCTION(BlueprintCallable, Category = "Input")
-		virtual void DoSprintEnd();
+	UFUNCTION(BlueprintCallable, Category = "Input")
+	virtual void DoSprintEnd();
 
-		UFUNCTION(BlueprintCallable, Category = "Input")
-		virtual void DoShoot();
+	UFUNCTION(BlueprintCallable, Category = "Input")
+	virtual void DoShoot();
 
-		UFUNCTION(BlueprintCallable, Category = "Input")
-		virtual void DoSelectWeaponOne();
+	UFUNCTION(BlueprintCallable, Category = "Input")
+	virtual void DoSelectWeaponOne();
 
-		UFUNCTION(BlueprintCallable, Category = "Input")
-		virtual void DoSelectWeaponTwo();
+	UFUNCTION(BlueprintCallable, Category = "Input")
+	virtual void DoSelectWeaponTwo();
 
-	private:
-		void UpdateBulletSpawnPos();
-		float GetMaxMovementSpeed(const float Right, const float Forward);
+private:
+	void UpdateBulletSpawnPos();
+	float GetMaxMovementSpeed(const float Right, const float Forward);
 
-	public:
-		UFUNCTION(BlueprintCallable, Category = "Components")
-		class UCharacterHealthComponent* GetCharacterHealthComponent();
+public:
+	UFUNCTION(BlueprintCallable, Category = "Components")
+	class UCharacterHealthComponent* GetCharacterHealthComponent();
 
-		UFUNCTION(BlueprintCallable, Category = "Components")
-		class UWeaponHolderComponent* GetWeaponHolderComponent();
+	UFUNCTION(BlueprintCallable, Category = "Components")
+	class UWeaponHolderComponent* GetWeaponHolderComponent();
 
-		UFUNCTION(BlueprintCallable, Category = "Components")
-		class USkeletalMeshComponent* GetFirstPersonMesh();
+	UFUNCTION(BlueprintCallable, Category = "Components")
+	class USkeletalMeshComponent* GetFirstPersonMesh();
 
-		UFUNCTION(BlueprintCallable, Category = "Movement")
-		float GetFastestWalkSpeed();
+	UFUNCTION(BlueprintCallable, Category = "Movement")
+	float GetFastestWalkSpeed();
 
-		UFUNCTION(BlueprintCallable)
-		virtual void OnEventReceived_Implementation(FName EventName, const TArray<FEventData>& Params) override;
+	UFUNCTION(BlueprintCallable)
+	virtual void OnEventReceived_Implementation(FName EventName, const TArray<FEventData>& Params) override;
 };

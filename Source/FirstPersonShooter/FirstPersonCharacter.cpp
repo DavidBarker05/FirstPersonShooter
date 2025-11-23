@@ -1,5 +1,4 @@
 #include "FirstPersonCharacter.h"
-#include "Animation/AnimInstance.h"
 #include "Components/CapsuleComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Components/SkeletalMeshComponent.h"
@@ -9,10 +8,12 @@
 #include "Weapons/WeaponHolderComponent.h"
 #include "EnhancedInputComponent.h"
 #include "InputActionValue.h"
-#include "GameFramework/PlayerController.h"
-#include "Kismet/KismetMathLibrary.h"
+#include "Events/EventBus.h"
+#include "Kismet/GameplayStatics.h"
+#include "Perception/AISense_Damage.h"
 
-AFirstPersonCharacter::AFirstPersonCharacter() {
+AFirstPersonCharacter::AFirstPersonCharacter()
+{
 	PrimaryActorTick.bCanEverTick = true;
 	GetCapsuleComponent()->InitCapsuleSize(34.0f, 90.0f);
 	PlayerCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("Player Camera"));
@@ -39,26 +40,31 @@ AFirstPersonCharacter::AFirstPersonCharacter() {
 	BulletSpawnTransform->SetupAttachment(BulletSpawnOffset, USpringArmComponent::SocketName);
 }
 
-void AFirstPersonCharacter::BeginPlay() {
+void AFirstPersonCharacter::BeginPlay()
+{
 	Super::BeginPlay();
 	SUBSCRIBE_TO_EVENTS();
 	GetCharacterMovement()->MaxWalkSpeed = BaseWalkSpeed;
 	bIsPressingSprint = false;
 }
 
-void AFirstPersonCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason) {
+void AFirstPersonCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
 	Super::EndPlay(EndPlayReason);
 	UNSUBSCRIBE_FROM_EVENTS();
 }
 
-void AFirstPersonCharacter::Tick(float DeltaSeconds) {
+void AFirstPersonCharacter::Tick(float DeltaSeconds)
+{
 	Super::Tick(DeltaSeconds);
 	UpdateBulletSpawnPos();
 }
 
-void AFirstPersonCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) {
+void AFirstPersonCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+{
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
-	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent)) {
+	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
+	{
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AFirstPersonCharacter::Move);
 		EnhancedInputComponent->BindAction(MouseLookAction, ETriggerEvent::Triggered, this, &AFirstPersonCharacter::Look);
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &AFirstPersonCharacter::DoJumpStart);
@@ -71,17 +77,20 @@ void AFirstPersonCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInp
 	}
 }
 
-void AFirstPersonCharacter::Move(const FInputActionValue& Value) {
+void AFirstPersonCharacter::Move(const FInputActionValue& Value)
+{
 	FVector2D MoveVector = Value.Get<FVector2D>();
 	DoMove(MoveVector.X, MoveVector.Y);
 }
 
-void AFirstPersonCharacter::Look(const FInputActionValue& Value) {
+void AFirstPersonCharacter::Look(const FInputActionValue& Value)
+{
 	FVector2D LookVector = Value.Get<FVector2D>();
 	DoLook(LookVector.X, LookVector.Y);
 }
 
-void AFirstPersonCharacter::DoMove(const float Right, const float Forward) {
+void AFirstPersonCharacter::DoMove(const float Right, const float Forward)
+{
 	if (!GetController()) return;
 	GetCharacterMovement()->MaxWalkSpeed = GetMaxMovementSpeed(Right, Forward);
 	bIsMovingLeft = Right < -MovementDeadzone;
@@ -90,7 +99,8 @@ void AFirstPersonCharacter::DoMove(const float Right, const float Forward) {
 	AddMovementInput(GetActorForwardVector(), Forward);
 }
 
-void AFirstPersonCharacter::DoLook(const float Yaw, const float Pitch) {
+void AFirstPersonCharacter::DoLook(const float Yaw, const float Pitch)
+{
 	if (!GetController()) return;
 	AddControllerYawInput(Yaw);
 	AddControllerPitchInput(Pitch);
@@ -104,7 +114,8 @@ void AFirstPersonCharacter::DoSprintStart() { bIsPressingSprint = true; }
 
 void AFirstPersonCharacter::DoSprintEnd() { bIsPressingSprint = false; }
 
-void AFirstPersonCharacter::DoShoot() {
+void AFirstPersonCharacter::DoShoot()
+{
 	WeaponHolderComponent->Shoot(BulletSpawnTransform->GetComponentTransform(), GetController());
 	float Loudness = 1.0f;
 	APawn* NoiseInstigator = this;
@@ -117,14 +128,16 @@ void AFirstPersonCharacter::DoSelectWeaponOne() { WeaponHolderComponent->EquipPi
 
 void AFirstPersonCharacter::DoSelectWeaponTwo() { WeaponHolderComponent->EquipRifle(); }
 
-void AFirstPersonCharacter::UpdateBulletSpawnPos() {
+void AFirstPersonCharacter::UpdateBulletSpawnPos()
+{
 	float CamToWeaponSocketDistFP = FVector::Dist(PlayerCamera->GetComponentLocation(), FirstPersonMesh->GetSocketLocation(FName("WeaponSocket")));
 	float CamToWeaponSocketDistTP = FVector::Dist(PlayerCamera->GetComponentLocation(), GetMesh()->GetSocketLocation(FName("WeaponSocket")));
 	float CamToWeaponSocketAvgDist = (CamToWeaponSocketDistFP + CamToWeaponSocketDistTP) / 2.0f;
 	BulletSpawnOffset->TargetArmLength = -CamToWeaponSocketAvgDist;
 }
 
-float AFirstPersonCharacter::GetMaxMovementSpeed(const float Right, const float Forward) {
+float AFirstPersonCharacter::GetMaxMovementSpeed(const float Right, const float Forward)
+{
 	if (Forward < -MovementDeadzone) return BackwardsWalkSpeed;
 	float SqrRight = Right * Right;
 	float SqrForward = Forward * Forward;
@@ -143,24 +156,36 @@ USkeletalMeshComponent* AFirstPersonCharacter::GetFirstPersonMesh() { return Fir
 
 float AFirstPersonCharacter::GetFastestWalkSpeed() { return BaseWalkSpeed; }
 
-void AFirstPersonCharacter::OnEventReceived_Implementation(FName EventName, const TArray<FEventData>& Params) {
-	if (EventName.IsEqual("RiflePickupEvent") && Params.Num() == 1) {
-		if (!Params[0].IsValid())
-		if (AActor* CollidedActor = Params[0].Get<FUObjectStruct>()->CastAs<AActor>()) {
-			if (CollidedActor == this) WeaponHolderComponent->PickUpRifle();
-		}
-	} else if (EventName.IsEqual("BulletHitEvent") && Params.Num() == 3) {
-		if (!Params[0].IsValid() || !Params[1].IsValid() || !Params[2].IsValid()) return;
-		if (AActor* HitActor = Params[0].Get<FUObjectStruct>()->CastAs<AActor>()) {
-			if (HitActor != this) return;
-			if (const FInt32Struct* Damage = Params[1].Get<FInt32Struct>()) CharacterHealthComponent->TakeDamage(*Damage);
+void AFirstPersonCharacter::OnEventReceived_Implementation(FName EventName, const TArray<FEventData>& Params)
+{
+	if (EVENT_MATCHES("RiflePickupEvent", 1) && PARAMS_ARE_VALID && PARAMS_ARE_CORRECT_TYPES(FUObjectStruct))
+	{
+		if (*Params[0].Get<FUObjectStruct>() == this) WeaponHolderComponent->PickUpRifle();
+	}
+	else if (EVENT_MATCHES("DeathEvent", 1) && PARAMS_ARE_VALID && PARAMS_ARE_CORRECT_TYPES(FUObjectStruct))
+	{
+		if (*Params[0].Get<FUObjectStruct>() == this) BROADCAST_EVENT("RespawnEvent", FUObjectStruct((UObject*) UGameplayStatics::GetGameMode(GetWorld())), FUObjectStruct(this), FFloatStruct(CharacterHealthComponent->GetRespawnDelay()));
+	}
+	else if (EVENT_MATCHES("BulletHitEvent", 3) && PARAMS_ARE_VALID && PARAMS_ARE_CORRECT_TYPES(FUObjectStruct, FInt32Struct, FUObjectStruct))
+	{
+		if (*Params[0].Get<FUObjectStruct>() != this) return;
+		if (const FInt32Struct* Damage = Params[1].Get<FInt32Struct>())
+		{
+			CharacterHealthComponent->TakeDamage(*Damage);
+			if (AActor* DamageInstigator = Params[2].Get<FUObjectStruct>()->CastAs<AActor>())
+			{
+				UObject* WorldContextObject = GetWorld();
+				AActor* DamagedActor = this;
+				float DamageAmount = (float) Damage->Get();
+				FVector EventLocation = DamageInstigator->GetActorLocation();
+				FVector HitLocation = GetActorLocation();
+				UAISense_Damage::ReportDamageEvent(WorldContextObject, DamagedActor, DamageInstigator, DamageAmount, EventLocation, HitLocation);
+			}
 		}
 	}
-	if (EventName.IsEqual("HealthPickupEvent") && Params.Num() == 2) {
-		if (!Params[0].IsValid() || !Params[1].IsValid()) return;
-		if (AActor* CollidedActor = Params[0].Get<FUObjectStruct>()->CastAs<AActor>()) {
-			if (CollidedActor != this) return;
-			if (const FInt32Struct* HealAmount = Params[1].Get<FInt32Struct>()) CharacterHealthComponent->ReceiveHealth(*HealAmount);
-		}
+	else if (EVENT_MATCHES("HealthPickupEvent", 2) && PARAMS_ARE_VALID && PARAMS_ARE_CORRECT_TYPES(FUObjectStruct, FInt32Struct))
+	{
+		if (*Params[0].Get<FUObjectStruct>() != this) return;
+		if (const FInt32Struct* HealAmount = Params[1].Get<FInt32Struct>()) CharacterHealthComponent->ReceiveHealth(*HealAmount);
 	}
 }

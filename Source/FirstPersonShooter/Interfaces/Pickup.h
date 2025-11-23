@@ -6,7 +6,8 @@
 
 #ifndef CREATE_TRIGGER_COLLIDER
 	#define CREATE_TRIGGER_COLLIDER(TriggerCollider, Type, Name, OverlapFunction)\
-		do {\
+		do\
+		{\
 			TriggerCollider = CreateDefaultSubobject<Type>(TEXT(Name));\
 			SetRootComponent(TriggerCollider);\
 			TriggerCollider->SetCollisionProfileName(FName("OverlapOnlyPawn"));\
@@ -17,7 +18,8 @@
 
 #ifndef CREATE_MESH
 	#define CREATE_MESH(Mesh, Type, Name)\
-		do {\
+		do\
+		{\
 			Mesh = CreateDefaultSubobject<Type>(TEXT(Name));\
 			Mesh->SetupAttachment(RootComponent);\
 			Mesh->SetCollisionProfileName(FName("NoCollision"));\
@@ -26,14 +28,16 @@
 
 
 UINTERFACE(MinimalAPI, BlueprintType)
-class UPickup : public UInterface {
+class UPickup : public UInterface
+{
 	GENERATED_BODY()
 };
 
-class FIRSTPERSONSHOOTER_API IPickup {
+class FIRSTPERSONSHOOTER_API IPickup
+{
 	GENERATED_BODY()
 
-	public:
-		UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-		void OnPickup(AActor* CollidedActor);
+public:
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void OnPickup(AActor* CollidedActor);
 };

@@ -5,7 +5,8 @@
 #include "K2Node_EventData.generated.h"
 
 UCLASS()
-class FIRSTPERSONSHOOTER_API UK2Node_EventData : public UK2Node_CallFunction {
+class FIRSTPERSONSHOOTER_API UK2Node_EventData : public UK2Node_CallFunction
+{
 	GENERATED_BODY()
 
 	//~ Begin UEdGraphNode Interface
@@ -16,8 +17,8 @@ class FIRSTPERSONSHOOTER_API UK2Node_EventData : public UK2Node_CallFunction {
 	virtual bool IsConnectionDisallowed(const UEdGraphPin* MyPin, const UEdGraphPin* OtherPin, FString& OutReason) const override;
 	//~ End K2Node Interface
 
-	protected:
-		//~ UK2Node_CallFunction interface
-		virtual bool CanToggleNodePurity() const override { return false; }
-		//~ End UK2Node_CallFunction interface
+protected:
+	//~ UK2Node_CallFunction interface
+	virtual bool CanToggleNodePurity() const override { return false; }
+	//~ End UK2Node_CallFunction interface
 };

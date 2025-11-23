@@ -3,7 +3,8 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "Events/EventBus.h"
 
-ABullet::ABullet() {
+ABullet::ABullet()
+{
 	PrimaryActorTick.bCanEverTick = true;
 	BulletMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Bullet Mesh"));
 	BulletMesh->SetCollisionProfileName(FName("NoCollision"));
@@ -13,15 +14,18 @@ ABullet::ABullet() {
 	ProjectileMovementComponent->bShouldBounce = false;
 }
 
-void ABullet::BeginPlay() {
+void ABullet::BeginPlay()
+{
 	Super::BeginPlay();
 	LastPosition = GetActorLocation();
 }
 
-void ABullet::Tick(float DeltaTime) {
+void ABullet::Tick(float DeltaTime)
+{
 	Super::Tick(DeltaTime);
 	FHitResult OutHit;
-	if (CheckForHit(OutHit)) {
+	if (CheckForHit(OutHit))
+	{
 		BROADCAST_EVENT("BulletHitEvent", FUObjectStruct(OutHit.GetActor()), FInt32Struct(Damage), FUObjectStruct(ActorToIgnore));
 		GetWorld()->DestroyActor(this);
 	}
@@ -30,7 +34,8 @@ void ABullet::Tick(float DeltaTime) {
 
 void ABullet::SetDamage(const int32 _Damage) { Damage = _Damage; }
 
-void ABullet::SetInitialSpeed(const float Speed) {
+void ABullet::SetInitialSpeed(const float Speed)
+{
 	ProjectileMovementComponent->InitialSpeed = Speed;
 	ProjectileMovementComponent->MaxSpeed = Speed;
 	ProjectileMovementComponent->Velocity = GetActorForwardVector() * Speed;
@@ -39,7 +44,8 @@ void ABullet::SetInitialSpeed(const float Speed) {
 
 void ABullet::SetActorToIgnore(AActor* Actor) { ActorToIgnore = Actor; }
 
-bool ABullet::CheckForHit(FHitResult& OutHit) {
+bool ABullet::CheckForHit(FHitResult& OutHit)
+{
 	UObject* WorldContextObject = GetWorld();
 	FVector Start = LastPosition;
 	FVector End = GetActorLocation();

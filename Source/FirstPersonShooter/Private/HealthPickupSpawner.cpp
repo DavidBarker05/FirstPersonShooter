@@ -1,7 +1,8 @@
 #include "HealthPickupSpawner.h"
 #include "HealthPickup.h"
 
-AHealthPickupSpawner::AHealthPickupSpawner() {
+AHealthPickupSpawner::AHealthPickupSpawner()
+{
 	SpawnerBase = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Spawner Base"));
 	SetRootComponent(SpawnerBase);
 	SpawnerBase->SetCollisionProfileName(FName("NoCollision"));
@@ -9,33 +10,36 @@ AHealthPickupSpawner::AHealthPickupSpawner() {
 	SpawnTransform->SetupAttachment(RootComponent);
 }
 
-void AHealthPickupSpawner::BeginPlay() {
+void AHealthPickupSpawner::BeginPlay()
+{
 	Super::BeginPlay();
 	SUBSCRIBE_TO_EVENTS();
 	Spawn_Implementation(HealthPickupBlueprint);
 }
 
-void AHealthPickupSpawner::EndPlay(const EEndPlayReason::Type EndPlayReason) {
+void AHealthPickupSpawner::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
 	Super::EndPlay(EndPlayReason);
 	UNSUBSCRIBE_FROM_EVENTS();
 }
 
-void AHealthPickupSpawner::SpawnNewPickupAfterDelay() {
+void AHealthPickupSpawner::SpawnNewPickupAfterDelay()
+{
 	FTimerDelegate RespawnDelegate;
 	RespawnDelegate.BindUFunction(this, FName("Spawn_Implementation"), HealthPickupBlueprint);
 	GetWorldTimerManager().SetTimer(RespawnHandle, RespawnDelegate, RespawnDelay, false);
 }
 
-void AHealthPickupSpawner::OnEventReceived_Implementation(FName EventName, const TArray<FEventData>& Params) {
-	if (EventName.IsEqual("RespawnEvent") && Params.Num() == 1) {
-		if (!Params[0].IsValid()) return;
-		if (AActor* PickupOwner = Params[0].Get<FUObjectStruct>()->CastAs<AActor>()) {
-			if (PickupOwner == this) SpawnNewPickupAfterDelay();
-		}
+void AHealthPickupSpawner::OnEventReceived_Implementation(FName EventName, const TArray<FEventData>& Params)
+{
+	if (EVENT_MATCHES("RespawnEvent", 1) && PARAMS_ARE_VALID && PARAMS_ARE_CORRECT_TYPES(FUObjectStruct))
+	{
+		if (*Params[0].Get<FUObjectStruct>() == this) SpawnNewPickupAfterDelay();
 	}
 }
 
-void AHealthPickupSpawner::Spawn_Implementation(TSubclassOf<AActor> ActorToSpawn) {
+void AHealthPickupSpawner::Spawn_Implementation(TSubclassOf<AActor> ActorToSpawn)
+{
 	if (!ActorToSpawn || !ActorToSpawn->ImplementsInterface(URespawnable::StaticClass())) return;
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.Owner = this;
