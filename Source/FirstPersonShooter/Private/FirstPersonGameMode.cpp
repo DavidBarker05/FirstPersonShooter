@@ -35,7 +35,7 @@ void AFirstPersonGameMode::SpawnCharacterAfterDelay(TSubclassOf<AActor> ActorToS
 
 void AFirstPersonGameMode::OnEventReceived_Implementation(FName EventName, const TArray<FEventData>& Params)
 {
-	if (EVENT_MATCHES("RespawnEvent", 3) && PARAMS_ARE_VALID && PARAMS_ARE_CORRECT_TYPES(FUObjectStruct, FUObjectStruct, FFloatStruct))
+	if (EVENT_MATCHES("RespawnEvent", 3) && PARAMS_ARE_VALID && PARAMS_ARE_CORRECT_TYPES(FUObjectStruct, FUObjectStruct, FFloatStruct) && OBJECTS_ARE_NOT_NULL)
 	{
 		if (*Params[0].Get<FUObjectStruct>() != this || !GetWorld()) return;
 		if (AActor* ActorToSpawn = Params[1].Get<FUObjectStruct>()->CastAs<AActor>())

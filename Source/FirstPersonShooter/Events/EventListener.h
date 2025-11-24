@@ -111,6 +111,16 @@ namespace Internal
 		*/
 		return isCorrect;
 	}
+
+	static bool ObjectParamsAreNotNull(const TArray<FEventData>& params)
+	{
+		for (const FEventData& param : params)
+		{
+			if (!param.Get<FUObjectStruct>()) continue;
+			if (!param.Get<FUObjectStruct>()->Get()) return false;
+		}
+		return true;
+	}
 }
 
 #ifndef PARAMS_ARE_VALID
@@ -121,6 +131,9 @@ namespace Internal
 	#define PARAMS_ARE_CORRECT_TYPES(...) Internal::EventParamsAreCorrectTypes<__VA_ARGS__>(Params)
 #endif
 
+#ifndef OBJECTS_ARE_NOT_NULL
+#define OBJECTS_ARE_NOT_NULL Internal::ObjectParamsAreNotNull(Params)
+#endif
 
 UINTERFACE(MinimalAPI, BlueprintType)
 class UEventListener : public UInterface
