@@ -19,8 +19,8 @@ void AHealthPickupSpawner::BeginPlay()
 
 void AHealthPickupSpawner::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-	Super::EndPlay(EndPlayReason);
 	UNSUBSCRIBE_FROM_EVENTS();
+	Super::EndPlay(EndPlayReason);
 }
 
 void AHealthPickupSpawner::SpawnNewPickupAfterDelay()
@@ -40,7 +40,7 @@ void AHealthPickupSpawner::OnEventReceived_Implementation(FName EventName, const
 
 void AHealthPickupSpawner::Spawn_Implementation(TSubclassOf<AActor> ActorToSpawn)
 {
-	if (!ActorToSpawn || !ActorToSpawn->ImplementsInterface(URespawnable::StaticClass())) return;
+	if (!ActorToSpawn || !ActorToSpawn->ImplementsInterface(URespawnable::StaticClass()) || !GetWorld()) return;
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.Owner = this;
 	AActor* Pickup = GetWorld()->SpawnActor<AActor>(ActorToSpawn, SpawnTransform->GetComponentTransform(), SpawnParams);

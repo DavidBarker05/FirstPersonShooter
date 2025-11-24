@@ -19,8 +19,8 @@ void ARiflePickupSpawner::BeginPlay()
 
 void ARiflePickupSpawner::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-	Super::EndPlay(EndPlayReason);
 	UNSUBSCRIBE_FROM_EVENTS();
+	Super::EndPlay(EndPlayReason);
 }
 
 void ARiflePickupSpawner::SpawnNewPickupAfterDelay()
@@ -32,18 +32,15 @@ void ARiflePickupSpawner::SpawnNewPickupAfterDelay()
 
 void ARiflePickupSpawner::OnEventReceived_Implementation(FName EventName, const TArray<FEventData>& Params)
 {
-	if (EventName.IsEqual("RespawnEvent") && Params.Num() == 1)
+	if (EVENT_MATCHES("RespawnEvent", 1) && PARAMS_ARE_VALID && PARAMS_ARE_CORRECT_TYPES(FUObjectStruct))
 	{
-		if (!Params[0].IsValid()) return;
-		if (AActor* PickupOwner = Params[0].Get<FUObjectStruct>()->CastAs<AActor>()) {
-			if (PickupOwner == this) SpawnNewPickupAfterDelay();
-		}
+		if (*Params[0].Get<FUObjectStruct>() == this) SpawnNewPickupAfterDelay();
 	}
 }
 
 void ARiflePickupSpawner::Spawn_Implementation(TSubclassOf<AActor> ActorToSpawn)
 {
-	if (!ActorToSpawn || !ActorToSpawn->ImplementsInterface(URespawnable::StaticClass())) return;
+	if (!ActorToSpawn || !ActorToSpawn->ImplementsInterface(URespawnable::StaticClass()) || !GetWorld()) return;
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.Owner = this;
 	AActor* Pickup = GetWorld()->SpawnActor<AActor>(ActorToSpawn, SpawnTransform->GetComponentTransform(), SpawnParams);

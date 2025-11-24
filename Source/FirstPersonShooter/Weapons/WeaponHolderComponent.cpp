@@ -1,11 +1,8 @@
 #include "Weapons/WeaponHolderComponent.h"
 #include "FirstPersonCharacter.h"
-#include "Components/SkeletalMeshComponent.h"
 #include "Weapons/BaseWeapon.h"
 #include "Weapons/PistolWeapon.h"
 #include "Weapons/RifleWeapon.h"
-#include "GameFramework/CharacterMovementComponent.h"
-#include "GameFramework/Controller.h"
 #include "Factories/WeaponFactory.h"
 
 UWeaponHolderComponent::UWeaponHolderComponent()
@@ -23,6 +20,12 @@ void UWeaponHolderComponent::BeginPlay()
 	bHasRifle = false;
 	CreateWeapons();
 	CurrentWeapon = Pistol;
+}
+
+void UWeaponHolderComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	CleanupWeapons();
+	Super::EndPlay(EndPlayReason);
 }
 
 bool UWeaponHolderComponent::Shoot(FTransform SpawnTransform, bool bDoBulletSpread)
@@ -73,4 +76,17 @@ void UWeaponHolderComponent::SwitchWeapon()
 	Rifle->GetWeaponMesh()->SetVisibility(bIsHoldingRifle);
 	RifleFirstPerson->GetWeaponMesh()->SetVisibility(bIsHoldingRifle);
 	CurrentWeapon = bIsHoldingRifle ? (ABaseWeapon*)Rifle : (ABaseWeapon*)Pistol;
+}
+
+void UWeaponHolderComponent::CleanupWeapons()
+{
+	if (!GetWorld()) return;
+	if (Pistol && IsValid(Pistol)) GetWorld()->DestroyActor(Pistol);
+	if (Rifle && IsValid(Rifle)) GetWorld()->DestroyActor(Rifle);
+	if (PistolFirstPerson && IsValid(PistolFirstPerson)) GetWorld()->DestroyActor(PistolFirstPerson);
+	if (RifleFirstPerson && IsValid(RifleFirstPerson)) GetWorld()->DestroyActor(RifleFirstPerson);
+	Pistol = nullptr;
+	Rifle = nullptr;
+	PistolFirstPerson = nullptr;
+	RifleFirstPerson = nullptr;
 }

@@ -19,45 +19,48 @@ class FIRSTPERSONSHOOTER_API UWeaponHolderComponent : public UActorComponent {
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapons", meta = (AllowPrivateAccess = "true"))
 	bool bHasRifle = false;
 
-	protected:
-		UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapons", meta = (AllowPrivateAccess = "true"))
-		TSubclassOf<class APistolWeapon> PistolBlueprint;
+protected:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapons", meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<class APistolWeapon> PistolBlueprint;
 
-		UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapons", meta = (AllowPrivateAccess = "true"))
-		TSubclassOf<class ARifleWeapon> RifleBlueprint;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapons", meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<class ARifleWeapon> RifleBlueprint;
 
-		UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapons", meta = (AllowPrivateAccess = "true"))
-		bool bIsHoldingRifle = false;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapons", meta = (AllowPrivateAccess = "true"))
+	bool bIsHoldingRifle = false;
 
-		UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapons", meta = (ClampMin = 0.0f, Units = "deg", AllowPrivateAccess = "true"))
-		float MovementBulletSpread = 3.0f;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapons", meta = (ClampMin = 0.0f, Units = "deg", AllowPrivateAccess = "true"))
+	float MovementBulletSpread = 3.0f;
 
-	public:
-		UWeaponHolderComponent();
+public:
+	UWeaponHolderComponent();
 
-	protected:
-		virtual void BeginPlay() override;
+protected:
+	virtual void BeginPlay() override;
 
-	public:
-		UFUNCTION(BlueprintCallable, Category = "Weapons")
-		bool Shoot(FTransform SpawnTransform, bool bDoBulletSpread);
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
-		UFUNCTION(BlueprintCallable, Category = "Weapons")
-		void PickUpRifle();
+public:
+	UFUNCTION(BlueprintCallable, Category = "Weapons")
+	bool Shoot(FTransform SpawnTransform, bool bDoBulletSpread);
 
-		UFUNCTION(BlueprintCallable, Category = "Weapons")
-		void EquipPistol();
+	UFUNCTION(BlueprintCallable, Category = "Weapons")
+	void PickUpRifle();
 
-		UFUNCTION(BlueprintCallable, Category = "Weapons")
-		void EquipRifle();
+	UFUNCTION(BlueprintCallable, Category = "Weapons")
+	void EquipPistol();
 
-		UFUNCTION(BlueprintCallable, Category = "Weapons")
-		class APistolWeapon* GetPistol();
+	UFUNCTION(BlueprintCallable, Category = "Weapons")
+	void EquipRifle();
 
-		UFUNCTION(BlueprintCallable, Category = "Weapons")
-		class ARifleWeapon* GetRifle();
+	UFUNCTION(BlueprintCallable, Category = "Weapons")
+	class APistolWeapon* GetPistol();
 
-	private:
-		void CreateWeapons();
-		void SwitchWeapon();
+	UFUNCTION(BlueprintCallable, Category = "Weapons")
+	class ARifleWeapon* GetRifle();
+
+private:
+	void CreateWeapons();
+	void SwitchWeapon();
+	void CleanupWeapons();
 };

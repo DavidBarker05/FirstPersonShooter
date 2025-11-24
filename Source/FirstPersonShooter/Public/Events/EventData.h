@@ -7,7 +7,8 @@
 // All of this is because blueprints don't allow void* and unreal doesn't allow template ustructs
 
 USTRUCT(BlueprintType, meta = (HasNativeMake = "/Script/FirstPersonShooter.CustomStructFunctionLibrary.MakeEventData", HasNativeBreak = "/Script/FirstPersonShooter.CustomStructFunctionLibrary.BreakEventData"))
-struct FIRSTPERSONSHOOTER_API FEventData {
+struct FIRSTPERSONSHOOTER_API FEventData
+{
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -33,7 +34,8 @@ struct FIRSTPERSONSHOOTER_API FEventData {
 };
 
 USTRUCT(BlueprintType, meta = (DisplayName = "Integer Struct", HasNativeMake = "/Script/FirstPersonShooter.CustomStructFunctionLibrary.MakeInt32Struct", HasNativeBreak = "/Script/FirstPersonShooter.CustomStructFunctionLibrary.BreakInt32Struct"))
-struct FIRSTPERSONSHOOTER_API FInt32Struct {
+struct FIRSTPERSONSHOOTER_API FInt32Struct
+{
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -45,12 +47,14 @@ struct FIRSTPERSONSHOOTER_API FInt32Struct {
 
 	FInt32Struct(int32 InValue) : Value(InValue) {}
 
-	inline FInt32Struct& operator=(const FInt32Struct& Other) {
+	inline FInt32Struct& operator=(const FInt32Struct& Other)
+	{
 		Value = Other.Value;
 		return *this;
 	}
 
-	inline FInt32Struct& operator=(int32 OtherValue) {
+	inline FInt32Struct& operator=(int32 OtherValue)
+	{
 		Value = OtherValue;
 		return *this;
 	}
@@ -121,123 +125,147 @@ struct FIRSTPERSONSHOOTER_API FInt32Struct {
 
 	inline FInt32Struct operator~() const { return FInt32Struct(~Value); }
 
-	inline FInt32Struct& operator+=(const FInt32Struct& Other) {
+	inline FInt32Struct& operator+=(const FInt32Struct& Other)
+	{
 		Value += Other.Value;
 		return *this;
 	}
 
-	inline FInt32Struct& operator+=(const int32 OtherValue) {
+	inline FInt32Struct& operator+=(const int32 OtherValue)
+	{
 		Value += OtherValue;
 		return *this;
 	}
 
-	inline FInt32Struct& operator-=(const FInt32Struct& Other) {
+	inline FInt32Struct& operator-=(const FInt32Struct& Other)
+	{
 		Value -= Other.Value;
 		return *this;
 	}
 
-	inline FInt32Struct& operator-=(const int32 OtherValue) {
+	inline FInt32Struct& operator-=(const int32 OtherValue)
+	{
 		Value -= OtherValue;
 		return *this;
 	}
 
-	inline FInt32Struct& operator*=(const FInt32Struct& Other) {
+	inline FInt32Struct& operator*=(const FInt32Struct& Other)
+	{
 		Value *= Other.Value;
 		return *this;
 	}
 
-	inline FInt32Struct& operator*=(const int32 OtherValue) {
+	inline FInt32Struct& operator*=(const int32 OtherValue)
+	{
 		Value *= OtherValue;
 		return *this;
 	}
 
-	inline FInt32Struct& operator/=(const FInt32Struct& Other) {
+	inline FInt32Struct& operator/=(const FInt32Struct& Other)
+	{
 		Value /= Other.Value;
 		return *this;
 	}
 
-	inline FInt32Struct& operator/=(const int32 OtherValue) {
+	inline FInt32Struct& operator/=(const int32 OtherValue)
+	{
 		Value /= OtherValue;
 		return *this;
 	}
 
-	inline FInt32Struct& operator%=(const FInt32Struct& Other) {
+	inline FInt32Struct& operator%=(const FInt32Struct& Other)
+	{
 		Value %= Other.Value;
 		return *this;
 	}
 
-	inline FInt32Struct& operator%=(const int32 OtherValue) {
+	inline FInt32Struct& operator%=(const int32 OtherValue)
+	{
 		Value %= OtherValue;
 		return *this;
 	}
 
-	inline FInt32Struct& operator<<=(const FInt32Struct& Other) {
+	inline FInt32Struct& operator<<=(const FInt32Struct& Other)
+	{
 		Value <<= Other.Value;
 		return *this;
 	}
 
-	inline FInt32Struct& operator<<=(const int32 OtherValue) {
+	inline FInt32Struct& operator<<=(const int32 OtherValue)
+	{
 		Value <<= OtherValue;
 		return *this;
 	}
 
-	inline FInt32Struct& operator>>=(const FInt32Struct& Other) {
+	inline FInt32Struct& operator>>=(const FInt32Struct& Other)
+	{
 		Value >>= Other.Value;
 		return *this;
 	}
 
-	inline FInt32Struct& operator>>=(const int32 OtherValue) {
+	inline FInt32Struct& operator>>=(const int32 OtherValue)
+	{
 		Value >>= OtherValue;
 		return *this;
 	}
 
-	inline FInt32Struct& operator&=(const FInt32Struct& Other) {
+	inline FInt32Struct& operator&=(const FInt32Struct& Other)
+	{
 		Value &= Other.Value;
 		return *this;
 	}
 
-	inline FInt32Struct& operator&=(const int32 OtherValue) {
+	inline FInt32Struct& operator&=(const int32 OtherValue)
+	{
 		Value &= OtherValue;
 		return *this;
 	}
 
-	inline FInt32Struct& operator|=(const FInt32Struct& Other) {
+	inline FInt32Struct& operator|=(const FInt32Struct& Other)
+	{
 		Value |= Other.Value;
 		return *this;
 	}
 
-	inline FInt32Struct& operator|=(const int32 OtherValue) {
+	inline FInt32Struct& operator|=(const int32 OtherValue)
+	{
 		Value |= OtherValue;
 		return *this;
 	}
 
-	inline FInt32Struct& operator^=(const FInt32Struct& Other) {
+	inline FInt32Struct& operator^=(const FInt32Struct& Other)
+	{
 		Value ^= Other.Value;
 		return *this;
 	}
 
-	inline FInt32Struct& operator^=(const int32 OtherValue) {
+	inline FInt32Struct& operator^=(const int32 OtherValue)
+	{
 		Value ^= OtherValue;
 		return *this;
 	}
 
-	inline FInt32Struct& operator++() {
+	inline FInt32Struct& operator++()
+	{
 		++Value;
 		return *this;
 	}
 
-	inline FInt32Struct& operator--() {
+	inline FInt32Struct& operator--()
+	{
 		--Value;
 		return *this;
 	}
 
-	inline FInt32Struct operator++(int) {
+	inline FInt32Struct operator++(int)
+	{
 		FInt32Struct Temp = *this;
 		++Value;
 		return Temp;
 	}
 
-	inline FInt32Struct operator--(int) {
+	inline FInt32Struct operator--(int)
+	{
 		FInt32Struct Temp = *this;
 		--Value;
 		return Temp;
@@ -249,14 +277,16 @@ struct FIRSTPERSONSHOOTER_API FInt32Struct {
 
 	inline int32 Get() const { return Value; }
 
-	inline FInt32Struct& Set(int32 NewValue) {
+	inline FInt32Struct& Set(int32 NewValue)
+	{
 		Value = NewValue;
 		return *this;
 	}
 };
 
 USTRUCT(BlueprintType, meta = (DisplayName = "Float Struct", HasNativeMake = "/Script/FirstPersonShooter.CustomStructFunctionLibrary.MakeFloatStruct", HasNativeBreak = "/Script/FirstPersonShooter.CustomStructFunctionLibrary.BreakFloatStruct"))
-struct FIRSTPERSONSHOOTER_API FFloatStruct {
+struct FIRSTPERSONSHOOTER_API FFloatStruct
+{
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -268,12 +298,14 @@ struct FIRSTPERSONSHOOTER_API FFloatStruct {
 
 	FFloatStruct(float InValue) : Value(InValue) { }
 
-	inline FFloatStruct& operator=(const FFloatStruct& Other) {
+	inline FFloatStruct& operator=(const FFloatStruct& Other)
+	{
 		Value = Other.Value;
 		return *this;
 	}
 
-	inline FFloatStruct& operator=(float OtherValue) {
+	inline FFloatStruct& operator=(float OtherValue)
+	{
 		Value = OtherValue;
 		return *this;
 	}
@@ -318,42 +350,50 @@ struct FIRSTPERSONSHOOTER_API FFloatStruct {
 
 	inline FFloatStruct operator/(const float OtherValue) const { return FFloatStruct(Value / OtherValue); }
 
-	inline FFloatStruct& operator+=(const FFloatStruct& Other) {
+	inline FFloatStruct& operator+=(const FFloatStruct& Other)
+	{
         Value += Other.Value;
         return *this;
     }
 
-	inline FFloatStruct& operator+=(const float OtherValue) {
+	inline FFloatStruct& operator+=(const float OtherValue)
+	{
 		Value += OtherValue;
 		return *this;
 	}
 
-	inline FFloatStruct& operator-=(const FFloatStruct& Other) {
+	inline FFloatStruct& operator-=(const FFloatStruct& Other)
+	{
 		Value -= Other.Value;
 		return *this;
 	}
 
-	inline FFloatStruct& operator-=(const float OtherValue) {
+	inline FFloatStruct& operator-=(const float OtherValue)
+	{
 		Value -= OtherValue;
 		return *this;
 	}
 
-	inline FFloatStruct& operator*=(const FFloatStruct& Other) {
+	inline FFloatStruct& operator*=(const FFloatStruct& Other)
+	{
 		Value *= Other.Value;
 		return *this;
 	}
 
-	inline FFloatStruct& operator*=(const float OtherValue) {
+	inline FFloatStruct& operator*=(const float OtherValue)
+	{
 		Value *= OtherValue;
 		return *this;
 	}
 
-	inline FFloatStruct& operator/=(const FFloatStruct& Other) {
+	inline FFloatStruct& operator/=(const FFloatStruct& Other)
+	{
 		Value /= Other.Value;
 		return *this;
 	}
 
-	inline FFloatStruct& operator/=(const float OtherValue) {
+	inline FFloatStruct& operator/=(const float OtherValue)
+	{
 		Value /= OtherValue;
 		return *this;
 	}
@@ -364,14 +404,16 @@ struct FIRSTPERSONSHOOTER_API FFloatStruct {
 
 	inline float Get() const { return Value; }
 
-	inline FFloatStruct& Set(float NewValue) {
+	inline FFloatStruct& Set(float NewValue)
+	{
 		Value = NewValue;
 		return *this;
 	}
 };
 
 USTRUCT(BlueprintType, meta = (DisplayName = "Boolean Struct", HasNativeMake = "/Script/FirstPersonShooter.CustomStructFunctionLibrary.MakeBoolStruct", HasNativeBreak = "/Script/FirstPersonShooter.CustomStructFunctionLibrary.BreakBoolStruct"))
-struct FIRSTPERSONSHOOTER_API FBoolStruct {
+struct FIRSTPERSONSHOOTER_API FBoolStruct
+{
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -383,7 +425,8 @@ struct FIRSTPERSONSHOOTER_API FBoolStruct {
 
 	FBoolStruct(bool InValue) : Value(InValue) {}
 
-	inline FBoolStruct& operator=(const FBoolStruct& Other) {
+	inline FBoolStruct& operator=(const FBoolStruct& Other)
+	{
 		Value = Other.Value;
 		return *this;
 	}
@@ -401,22 +444,26 @@ struct FIRSTPERSONSHOOTER_API FBoolStruct {
 
 	inline bool operator!=(const bool OtherValue) const { return Value != OtherValue; }
 
-	inline FBoolStruct& operator&=(const FBoolStruct& Other) {
+	inline FBoolStruct& operator&=(const FBoolStruct& Other)
+	{
 		Value &= Other.Value;
 		return *this;
 	}
 
-	inline FBoolStruct& operator&=(const bool OtherValue) {
+	inline FBoolStruct& operator&=(const bool OtherValue)
+	{
 		Value &= OtherValue;
 		return *this;
 	}
 
-	inline FBoolStruct& operator|=(const FBoolStruct& Other) {
+	inline FBoolStruct& operator|=(const FBoolStruct& Other)
+	{
 		Value |= Other.Value;
 		return *this;
 	}
 
-	inline FBoolStruct& operator|=(const bool OtherValue) {
+	inline FBoolStruct& operator|=(const bool OtherValue)
+	{
 		Value |= OtherValue;
 		return *this;
 	}
@@ -425,14 +472,16 @@ struct FIRSTPERSONSHOOTER_API FBoolStruct {
 
 	inline bool Get() const { return Value; }
 
-	inline FBoolStruct& Set(bool NewValue) {
+	inline FBoolStruct& Set(bool NewValue)
+	{
 		Value = NewValue;
 		return *this;
 	}
 };
 
 USTRUCT(BlueprintType, meta = (DisplayName = "String Struct", HasNativeMake = "/Script/FirstPersonShooter.CustomStructFunctionLibrary.MakeStringStruct", HasNativBreak = "/Script/FirstPersonShooter.CustomStructFunctionLibrary.BreakStringStruct"))
-struct FIRSTPERSONSHOOTER_API FStringStruct {
+struct FIRSTPERSONSHOOTER_API FStringStruct
+{
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -448,22 +497,26 @@ struct FIRSTPERSONSHOOTER_API FStringStruct {
 
 	FStringStruct(char* InString) : Value(InString) {}
 
-	inline FStringStruct& operator=(const FStringStruct& Other) {
+	inline FStringStruct& operator=(const FStringStruct& Other)
+	{
 		Value = Other.Value;
 		return *this;
 	}
 
-	inline FStringStruct& operator=(const FString& OtherValue) {
+	inline FStringStruct& operator=(const FString& OtherValue)
+	{
 		Value = OtherValue;
 		return *this;
 	}
 
-	inline FStringStruct& operator=(const char* OtherString) {
+	inline FStringStruct& operator=(const char* OtherString)
+	{
 		Value = OtherString;
 		return *this;
 	}
 
-	inline FStringStruct& operator=(char* OtherString) {
+	inline FStringStruct& operator=(char* OtherString)
+	{
 		Value = OtherString;
 		return *this;
 	}
@@ -492,44 +545,52 @@ struct FIRSTPERSONSHOOTER_API FStringStruct {
 
 	inline FStringStruct operator+(char* OtherString) const { return FStringStruct(Value + OtherString); }
 
-	inline FStringStruct& operator+=(const FStringStruct& Other) {
+	inline FStringStruct& operator+=(const FStringStruct& Other)
+	{
 		Value += Other.Value;
 		return *this;
 	}
 
-	inline FStringStruct& operator+=(const FString& OtherValue) {
+	inline FStringStruct& operator+=(const FString& OtherValue)
+	{
 		Value += OtherValue;
 		return *this;
 	}
 
-	inline FStringStruct& operator+=(const char* OtherString) {
+	inline FStringStruct& operator+=(const char* OtherString)
+	{
 		Value += OtherString;
 		return *this;
 	}
 
-	inline FStringStruct& operator+=(char* OtherString) {
+	inline FStringStruct& operator+=(char* OtherString)
+	{
 		Value += OtherString;
 		return *this;
 	}
 
 	operator FString() const { return Value; }
 
-	inline FStringStruct& Append(const FStringStruct& Other) {
+	inline FStringStruct& Append(const FStringStruct& Other)
+	{
 		Value.Append(Other.Value);
 		return *this;
 	}
 
-	inline FStringStruct& Append(const FString& OtherValue) {
+	inline FStringStruct& Append(const FString& OtherValue)
+	{
 		Value.Append(OtherValue);
 		return *this;
 	}
 
-	inline FStringStruct& Append(const char* OtherString) {
+	inline FStringStruct& Append(const char* OtherString)
+	{
 		Value.Append(OtherString);
 		return *this;
 	}
 
-	inline FStringStruct& Append(char* OtherString) {
+	inline FStringStruct& Append(char* OtherString)
+	{
 		Value.Append(OtherString);
 		return *this;
 	}
@@ -544,14 +605,16 @@ struct FIRSTPERSONSHOOTER_API FStringStruct {
 
 	inline FString Get() const { return Value; }
 
-	inline FStringStruct& Set(FString NewValue) {
+	inline FStringStruct& Set(FString NewValue)
+	{
 		Value = NewValue;
 		return *this;
 	}
 };
 
 USTRUCT(BlueprintType, meta = (DisplayName = "Name Struct", HasNativeMake = "/Script/FirstPersonShooter.CustomStructFunctionLibrary.MakeNameStruct", HasNativeBreak = "/Script/FirstPersonShooter.CustomStructFunctionLibrary.BreakNameStruct"))
-struct FIRSTPERSONSHOOTER_API FNameStruct {
+struct FIRSTPERSONSHOOTER_API FNameStruct
+{
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -569,22 +632,26 @@ struct FIRSTPERSONSHOOTER_API FNameStruct {
 
 	FNameStruct(char* InString) : Value(InString) {}
 
-	inline FNameStruct& operator=(const FNameStruct& Other) {
+	inline FNameStruct& operator=(const FNameStruct& Other)
+	{
 		Value = Other.Value;
 		return *this;
 	}
 
-	inline FNameStruct& operator=(const FName& OtherValue) {
+	inline FNameStruct& operator=(const FName& OtherValue)
+	{
 		Value = OtherValue;
 		return *this;
 	}
 
-	inline FNameStruct& operator=(const char* OtherString) {
+	inline FNameStruct& operator=(const char* OtherString)
+	{
 		Value = OtherString;
 		return *this;
 	}
 
-	inline FNameStruct& operator=(char* OtherString) {
+	inline FNameStruct& operator=(char* OtherString)
+	{
 		Value = OtherString;
 		return *this;
 	}
@@ -617,14 +684,16 @@ struct FIRSTPERSONSHOOTER_API FNameStruct {
 
 	inline FName Get() const { return Value; }
 
-	inline FNameStruct& Set(FName NewValue) {
+	inline FNameStruct& Set(FName NewValue)
+	{
 		Value = NewValue;
 		return *this;
 	}
 };
 
 USTRUCT(BlueprintType, meta = (DisplayName = "Text Struct", HasNativeMake = "/Script/FirstPersonShooter.CustomStructFunctionLibrary.MakeTextStruct", HasNativeBreak = "/Script/FirstPersonShooter.CustomStructFunctionLibrary.BreakTextStruct"))
-struct FIRSTPERSONSHOOTER_API FTextStruct {
+struct FIRSTPERSONSHOOTER_API FTextStruct
+{
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -644,41 +713,47 @@ struct FIRSTPERSONSHOOTER_API FTextStruct {
 
 	FTextStruct(char* InString) : Value(FText::FromString(InString)) {}
 
-	inline FTextStruct& operator=(const FTextStruct& Other) {
+	inline FTextStruct& operator=(const FTextStruct& Other)
+	{
 		Value = Other.Value;
 		return *this;
 	}
 
-	inline FTextStruct& operator=(const FText& OtherValue) {
+	inline FTextStruct& operator=(const FText& OtherValue)
+	{
 		Value = OtherValue;
 		return *this;
 	}
 
-	inline FTextStruct& operator=(const FString& OtherString) {
+	inline FTextStruct& operator=(const FString& OtherString)
+	{
 		Value = FText::FromString(OtherString);
 		return *this;
 	}
 
-	inline FTextStruct& operator=(const FName& OtherName) {
+	inline FTextStruct& operator=(const FName& OtherName)
+	{
 		Value = FText::FromName(OtherName);
 		return *this;
 	}
 
-	inline FTextStruct& operator=(const char* OtherString) {
+	inline FTextStruct& operator=(const char* OtherString)
+	{
 		Value = FText::FromString(OtherString);
 		return *this;
 	}
 
-	inline FTextStruct& operator=(char* OtherString) {
+	inline FTextStruct& operator=(char* OtherString)
+	{
 		Value = FText::FromString(OtherString);
 		return *this;
 	}
 
 	operator FText() const { return Value; }
 
-	inline FTextStruct FromeName(const FNameStruct& InName) const { return FTextStruct(FText::FromName(InName.Value)); }
+	inline FTextStruct FromName(const FNameStruct& InName) const { return FTextStruct(FText::FromName(InName.Value)); }
 
-	inline FTextStruct FromeName(const FName& InName) const { return FTextStruct(FText::FromName(InName)); }
+	inline FTextStruct FromName(const FName& InName) const { return FTextStruct(FText::FromName(InName)); }
 
 	inline FTextStruct FromString(const FStringStruct& InString) const { return FTextStruct(FText::FromString(InString.Value)); };
 
@@ -694,14 +769,16 @@ struct FIRSTPERSONSHOOTER_API FTextStruct {
 
 	inline FText Get() const { return Value; }
 
-	inline FTextStruct& Set(FText NewValue) {
+	inline FTextStruct& Set(FText NewValue)
+	{
 		Value = NewValue;
 		return *this;
 	}
 };
 
 USTRUCT(BlueprintType, meta = (DisplayName = "Object Struct", HasNativeMake = "/Script/FirstPersonShooter.CustomStructFunctionLibrary.MakeObjectStruct", HasNativeBreak = "/Script/FirstPersonShooter.CustomStructFunctionLibrary.BreakObjectStruct"))
-struct FIRSTPERSONSHOOTER_API FUObjectStruct {
+struct FIRSTPERSONSHOOTER_API FUObjectStruct
+{
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -715,17 +792,20 @@ struct FIRSTPERSONSHOOTER_API FUObjectStruct {
 
 	FUObjectStruct(UObject* InValue) : Value(InValue) { }
 
-	inline FUObjectStruct& operator=(const FUObjectStruct& Other) {
+	inline FUObjectStruct& operator=(const FUObjectStruct& Other)
+	{
 		Value = Other.Value;
 		return *this;
 	}
 
-	inline FUObjectStruct& operator=(TObjectPtr<UObject> OtherValue) {
+	inline FUObjectStruct& operator=(TObjectPtr<UObject> OtherValue)
+	{
 		Value = OtherValue;
 		return *this;
 	}
 
-	inline FUObjectStruct& operator=(UObject* OtherValue) {
+	inline FUObjectStruct& operator=(UObject* OtherValue)
+	{
 		Value = OtherValue;
 		return *this;
 	}
@@ -751,13 +831,15 @@ struct FIRSTPERSONSHOOTER_API FUObjectStruct {
 	operator UObject* () const { return Value; }
 
 	template<typename T>
-	inline T* CastAs() const {
+	inline T* CastAs() const
+	{
 		static_assert(TIsDerivedFrom<T, UObject>::IsDerived, "FUObjectStruct::CastAs() can only be used with UObject-derived types");
 		return Cast<T>(Value);
 	}
 
 	template<typename T>
-	inline bool IsA() const {
+	inline bool IsA() const
+	{
 		static_assert(TIsDerivedFrom<T, UObject>::IsDerived, "FUObjectStruct::IsA() can only be used with UObject-derived types");
 		return Value != nullptr && Value->IsA(T::StaticClass());
 	}
@@ -768,7 +850,8 @@ struct FIRSTPERSONSHOOTER_API FUObjectStruct {
 
 	inline UObject* Get() const { return Value; }
 
-	inline FUObjectStruct& Set(UObject* NewValue) {
+	inline FUObjectStruct& Set(UObject* NewValue)
+	{
 		Value = NewValue;
 		return *this;
 	}

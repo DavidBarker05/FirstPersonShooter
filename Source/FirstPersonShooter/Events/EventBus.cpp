@@ -35,6 +35,6 @@ void UEventBus::Broadcast(FName EventName, const TArray<FEventData>& Params)
 	{
 		if (Listeners->IsEmpty()) return;
 		for (int i = Listeners->Num() - 1; i >= 0; --i)
-			if ((*Listeners)[i]) (*Listeners)[i]->Execute_OnEventReceived((*Listeners)[i].GetObject(), EventName, Params);
+			if ((*Listeners)[i] && IsValid((*Listeners)[i].GetObject())) (*Listeners)[i]->Execute_OnEventReceived((*Listeners)[i].GetObject(), EventName, Params);
 	}
 }

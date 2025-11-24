@@ -50,8 +50,8 @@ void AFirstPersonCharacter::BeginPlay()
 
 void AFirstPersonCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-	Super::EndPlay(EndPlayReason);
 	UNSUBSCRIBE_FROM_EVENTS();
+	Super::EndPlay(EndPlayReason);
 }
 
 void AFirstPersonCharacter::Tick(float DeltaSeconds)
@@ -159,15 +159,15 @@ USkeletalMeshComponent* AFirstPersonCharacter::GetFirstPersonMesh() { return Fir
 
 void AFirstPersonCharacter::OnEventReceived_Implementation(FName EventName, const TArray<FEventData>& Params)
 {
-	if (EVENT_MATCHES("RiflePickupEvent", 1) && PARAMS_ARE_VALID && PARAMS_ARE_CORRECT_TYPES(FUObjectStruct) && OBJECTS_ARE_NOT_NULL)
+	if (EVENT_MATCHES("RiflePickupEvent", 1) && PARAMS_ARE_VALID && PARAMS_ARE_CORRECT_TYPES(FUObjectStruct))
 	{
 		if (*Params[0].Get<FUObjectStruct>() == this) WeaponHolderComponent->PickUpRifle();
 	}
-	else if (EVENT_MATCHES("DeathEvent", 1) && PARAMS_ARE_VALID && PARAMS_ARE_CORRECT_TYPES(FUObjectStruct) && OBJECTS_ARE_NOT_NULL)
+	else if (EVENT_MATCHES("DeathEvent", 1) && PARAMS_ARE_VALID && PARAMS_ARE_CORRECT_TYPES(FUObjectStruct))
 	{
 		if (*Params[0].Get<FUObjectStruct>() == this) BROADCAST_EVENT("RespawnEvent", FUObjectStruct((UObject*) UGameplayStatics::GetGameMode(GetWorld())), FUObjectStruct(this), FFloatStruct(CharacterHealthComponent->GetRespawnDelay()));
 	}
-	else if (EVENT_MATCHES("BulletHitEvent", 3) && PARAMS_ARE_VALID && PARAMS_ARE_CORRECT_TYPES(FUObjectStruct, FInt32Struct, FUObjectStruct) && OBJECTS_ARE_NOT_NULL)
+	else if (EVENT_MATCHES("BulletHitEvent", 3) && PARAMS_ARE_VALID && PARAMS_ARE_CORRECT_TYPES(FUObjectStruct, FInt32Struct, FUObjectStruct) )
 	{
 		if (*Params[0].Get<FUObjectStruct>() != this) return;
 		if (const FInt32Struct* Damage = Params[1].Get<FInt32Struct>())
@@ -184,7 +184,7 @@ void AFirstPersonCharacter::OnEventReceived_Implementation(FName EventName, cons
 			}
 		}
 	}
-	else if (EVENT_MATCHES("HealthPickupEvent", 2) && PARAMS_ARE_VALID && PARAMS_ARE_CORRECT_TYPES(FUObjectStruct, FInt32Struct) && OBJECTS_ARE_NOT_NULL)
+	else if (EVENT_MATCHES("HealthPickupEvent", 2) && PARAMS_ARE_VALID && PARAMS_ARE_CORRECT_TYPES(FUObjectStruct, FInt32Struct))
 	{
 		if (*Params[0].Get<FUObjectStruct>() != this) return;
 		if (const FInt32Struct* HealAmount = Params[1].Get<FInt32Struct>()) CharacterHealthComponent->ReceiveHealth(*HealAmount);

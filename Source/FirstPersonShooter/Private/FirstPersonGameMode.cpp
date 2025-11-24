@@ -21,8 +21,8 @@ void AFirstPersonGameMode::BeginPlay()
 
 void AFirstPersonGameMode::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-	Super::EndPlay(EndPlayReason);
 	UNSUBSCRIBE_FROM_EVENTS();
+	Super::EndPlay(EndPlayReason);
 }
 
 void AFirstPersonGameMode::SpawnCharacterAfterDelay(TSubclassOf<AActor> ActorToSpawn, float Delay, FTimerHandle& RespawnHandle)
@@ -35,7 +35,7 @@ void AFirstPersonGameMode::SpawnCharacterAfterDelay(TSubclassOf<AActor> ActorToS
 
 void AFirstPersonGameMode::OnEventReceived_Implementation(FName EventName, const TArray<FEventData>& Params)
 {
-	if (EVENT_MATCHES("RespawnEvent", 3) && PARAMS_ARE_VALID && PARAMS_ARE_CORRECT_TYPES(FUObjectStruct, FUObjectStruct, FFloatStruct) && OBJECTS_ARE_NOT_NULL)
+	if (EVENT_MATCHES("RespawnEvent", 3) && PARAMS_ARE_VALID && PARAMS_ARE_CORRECT_TYPES(FUObjectStruct, FUObjectStruct, FFloatStruct))
 	{
 		if (*Params[0].Get<FUObjectStruct>() != this || !GetWorld()) return;
 		if (AActor* ActorToSpawn = Params[1].Get<FUObjectStruct>()->CastAs<AActor>())
@@ -46,7 +46,11 @@ void AFirstPersonGameMode::OnEventReceived_Implementation(FName EventName, const
 				{
 					if (!RespawnHandles.Contains(PlayerBlueprint)) return;
 					SpawnCharacterAfterDelay(PlayerBlueprint, *SpawnDelay, RespawnHandles[PlayerBlueprint]);
-					GetWorld()->DestroyActor(ActorToSpawn);
+					GetWorldTimerManager().SetTimerForNextTick([this, ActorToDestroy = ActorToSpawn]()
+					{
+						if (IsValid(ActorToDestroy))
+							GetWorld()->DestroyActor(ActorToDestroy);
+					});
 				}
 				else
 				{
@@ -58,7 +62,11 @@ void AFirstPersonGameMode::OnEventReceived_Implementation(FName EventName, const
 						{
 							if (AController* AIController = AI->GetController()) GetWorld()->DestroyActor(AIController);
 						}
-						GetWorld()->DestroyActor(ActorToSpawn);
+						GetWorldTimerManager().SetTimerForNextTick([this, ActorToDestroy = ActorToSpawn]()
+						{
+							if (IsValid(ActorToDestroy))
+								GetWorld()->DestroyActor(ActorToDestroy);
+						});
 						break;
 					}
 				}
