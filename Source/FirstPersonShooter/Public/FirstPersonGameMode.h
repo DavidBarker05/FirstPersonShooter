@@ -5,6 +5,7 @@
 #include "Events/EventListener.h"
 #include "Interfaces/Spawner.h"
 #include "FirstPersonCharacter.h"
+#include "AIController.h"
 #include "FirstPersonGameMode.generated.h"
 
 UCLASS(Abstract)
@@ -23,6 +24,9 @@ class FIRSTPERSONSHOOTER_API AFirstPersonGameMode : public AGameModeBase, public
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "AI Spawning", meta = (AllowPrivateAccess = "true", DisplayName = "AI Blueprints"))
 	TArray<TSubclassOf<AFirstPersonCharacter>> AIBlueprints;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "AI Spawning", meta = (AllowPrivateAccess = "true", DisplayName = "AI Controller Blueprint"))
+	TSubclassOf<AAIController> AIControllerBlueprint;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Spawning", meta = (ClampMin = 0.0f, Units = "s", AllowPrivateAccess = "true", ToolTip = "The time until a spawn point is considered as not occupied"))
 	float OccupiedDuration = 2.0f;
@@ -47,5 +51,6 @@ private:
 	UFUNCTION()
 	FTransform GetValidSpawnPoint();
 
+	UFUNCTION()
 	void MakeSpawnValid(AActor* SpawnPoint);
 };

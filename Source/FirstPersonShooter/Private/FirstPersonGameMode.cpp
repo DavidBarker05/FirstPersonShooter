@@ -37,7 +37,7 @@ void AFirstPersonGameMode::OnEventReceived_Implementation(FName EventName, const
 {
 	if (EVENT_MATCHES("RespawnEvent", 3) && PARAMS_ARE_VALID && PARAMS_ARE_CORRECT_TYPES(FUObjectStruct, FUObjectStruct, FFloatStruct))
 	{
-		if (*Params[0].Get<FUObjectStruct>() != this) return;
+		if (*Params[0].Get<FUObjectStruct>() != this || !GetWorld()) return;
 		if (AActor* ActorToSpawn = Params[1].Get<FUObjectStruct>()->CastAs<AActor>())
 		{
 			if (const FFloatStruct* SpawnDelay = Params[2].Get<FFloatStruct>())
@@ -54,6 +54,10 @@ void AFirstPersonGameMode::OnEventReceived_Implementation(FName EventName, const
 					{
 						if (!AIBlueprint || !ActorToSpawn->IsA(AIBlueprint) || !RespawnHandles.Contains(AIBlueprint)) continue;
 						SpawnCharacterAfterDelay(AIBlueprint, *SpawnDelay, RespawnHandles[AIBlueprint]);
+						if (APawn* AI = Cast<APawn>(ActorToSpawn))
+						{
+							if (AController* AIController = AI->GetController()) GetWorld()->DestroyActor(AIController);
+						}
 						GetWorld()->DestroyActor(ActorToSpawn);
 						break;
 					}
@@ -65,13 +69,31 @@ void AFirstPersonGameMode::OnEventReceived_Implementation(FName EventName, const
 
 void AFirstPersonGameMode::Spawn_Implementation(TSubclassOf<AActor> ActorToSpawn)
 {
-	if (!ActorToSpawn) return;
+	if (!ActorToSpawn || !GetWorld()) return;
 	FTransform ValidSpawn = GetValidSpawnPoint();
 	if (!ValidSpawn.IsValid()) return;
 	ValidSpawn.SetScale3D(FVector(1.0f, 1.0f, 1.0f));
-	FActorSpawnParameters SpawnParams;
-	SpawnParams.Owner = this;
-	AActor* Actor = GetWorld()->SpawnActor<AActor>(ActorToSpawn, ValidSpawn, SpawnParams);
+	AActor* Actor = GetWorld()->SpawnActor<AActor>(ActorToSpawn, ValidSpawn);
+	if (!Actor) return;
+	if (Actor->IsA(PlayerBlueprint))
+	{
+		if (APlayerController* PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0))
+		{
+			if (APawn* Player = Cast<APawn>(Actor)) PlayerController->Possess(Player);
+		}
+	}
+	else
+	{
+		if (!AIControllerBlueprint) return;
+		for (const TSubclassOf<AFirstPersonCharacter>& AIBlueprint : AIBlueprints)
+		{
+			if (!AIBlueprint || !Actor->IsA(AIBlueprint)) continue;
+			AAIController* AIController = GetWorld()->SpawnActor<AAIController>(AIControllerBlueprint, ValidSpawn);
+			if (!AIController) break;
+			if (APawn* AI = Cast<APawn>(ActorToSpawn)) AIController->Possess(AI);
+			break;
+		}
+	}
 }
 
 FTransform AFirstPersonGameMode::GetValidSpawnPoint()
