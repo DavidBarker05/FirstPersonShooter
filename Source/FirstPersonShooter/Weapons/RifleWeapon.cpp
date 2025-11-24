@@ -1,6 +1,5 @@
 #include "Weapons/RifleWeapon.h"
 #include "Weapons/WeaponShootComponent.h"
-#include "GameFramework/Controller.h"
 
 ARifleWeapon::ARifleWeapon()
 {
@@ -10,10 +9,10 @@ ARifleWeapon::ARifleWeapon()
 	WeaponShootComponent->VerticalRecoil = 2.0f;
 }
 
-bool ARifleWeapon::Shoot(const FTransform& SpawnTransform, AController* Controller)
+bool ARifleWeapon::Shoot(const FTransform& SpawnTransform)
 {
 	if (CurrentAmmo <= 0) return false;
-	bool DidShoot = Super::Shoot(SpawnTransform, Controller);
+	bool DidShoot = Super::Shoot(SpawnTransform);
 	if(DidShoot) --CurrentAmmo;
 	return DidShoot;
 }

@@ -24,10 +24,10 @@ public:
 
 public:
 	UFUNCTION(BlueprintCallable, Category = "Weapons")
-	virtual bool Shoot(const FTransform& SpawnTransform, class AController* Controller);
+	virtual bool Shoot(const FTransform& SpawnTransform);
 
 	UFUNCTION(BlueprintCallable, Category = "Owner")
-	void SetOwningActor(AActor* Actor);
+	void SetWeaponOwner(APawn* WeaponOwner);
 
 	UFUNCTION(BlueprintCallable, Category = "Components")
 	UStaticMeshComponent* GetWeaponMesh();

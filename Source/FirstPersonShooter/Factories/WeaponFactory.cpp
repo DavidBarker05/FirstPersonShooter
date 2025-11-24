@@ -15,7 +15,7 @@ ABaseWeapon* UWeaponFactory::CreateWeapon(AActor* Owner, USkeletalMeshComponent*
 	Weapon->AttachToComponent(AttachMesh, FAttachmentTransformRules::SnapToTargetIncludingScale, FName("WeaponSocket"));
 	Weapon->GetWeaponMesh()->FirstPersonPrimitiveType = bIsFirstPerson ? EFirstPersonPrimitiveType::FirstPerson : EFirstPersonPrimitiveType::WorldSpaceRepresentation;
 	bIsFirstPerson ? Weapon->GetWeaponMesh()->SetOnlyOwnerSee(true) : Weapon->GetWeaponMesh()->SetOwnerNoSee(true);
-	Weapon->SetOwningActor(Owner);
+	Weapon->SetWeaponOwner(Cast<APawn>(Owner));
 	Weapon->GetWeaponMesh()->SetVisibility(bIsVisible);
 	return Weapon;
 }

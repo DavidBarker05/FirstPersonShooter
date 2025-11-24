@@ -25,24 +25,18 @@ void UWeaponHolderComponent::BeginPlay()
 	CurrentWeapon = Pistol;
 }
 
-bool UWeaponHolderComponent::Shoot(const FTransform& SpawnTransform, AController* Controller)
+bool UWeaponHolderComponent::Shoot(FTransform SpawnTransform, bool bDoBulletSpread)
 {
-	if (AFirstPersonCharacter* FirstPersonCharacter = Cast<AFirstPersonCharacter>(GetOwner()))
+	if (!SpawnTransform.IsValid()) return false;
+	if (bDoBulletSpread)
 	{
-		UCharacterMovementComponent* CharacterMovement = FirstPersonCharacter->GetCharacterMovement();
-		if (CharacterMovement->MaxWalkSpeed > FirstPersonCharacter->GetFastestWalkSpeed() || CharacterMovement->IsFalling()) return false;
-		FTransform BulletSpawnTransform(SpawnTransform);
-		if (CharacterMovement->Velocity.SizeSquared2D() > 1.0f)
-		{
-			FVector ForwardVector = BulletSpawnTransform.GetRotation().GetForwardVector();
-			float SpreadRadians = FMath::DegreesToRadians(MovementBulletSpread);
-			FVector ShootDirection = FMath::VRandCone(ForwardVector, SpreadRadians);
-			FRotator ShootRotation = ShootDirection.Rotation();
-			BulletSpawnTransform.SetRotation(ShootRotation.Quaternion());
-		}
-		return CurrentWeapon->Shoot(BulletSpawnTransform, Controller);
+		FVector ForwardVector = SpawnTransform.GetRotation().GetForwardVector();
+		float SpreadRadians = FMath::DegreesToRadians(MovementBulletSpread);
+		FVector ShootDirection = FMath::VRandCone(ForwardVector, SpreadRadians);
+		FRotator ShootRotation = ShootDirection.Rotation();
+		SpawnTransform.SetRotation(ShootRotation.Quaternion());
 	}
-	return false;
+	return CurrentWeapon->Shoot(SpawnTransform); // SpawnTransform isn't a reference because we would need to make a copy anyways so that we don't affect the original rotation
 }
 
 void UWeaponHolderComponent::PickUpRifle()

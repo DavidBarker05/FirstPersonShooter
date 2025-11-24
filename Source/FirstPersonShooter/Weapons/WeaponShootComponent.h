@@ -15,11 +15,10 @@ class FIRSTPERSONSHOOTER_API UWeaponShootComponent : public UActorComponent
 	float PitchWhenShot;
 	float RecoilPitch;
 	float LastAppliedPitch;
-	class APawn* Player;
 
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Character", meta = (AllowPrivateAccess = "true"))
-	AActor* OwningActor;
+	class APawn* WeaponOwner;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapons", meta = (ClampMin = 0.01f, ClampMax = 2.0f, Units = "s", AllowPrivateAccess = "true"))
 	float TimeBetweenShots;
@@ -51,7 +50,7 @@ public:
 
 public:
 	UFUNCTION(BlueprintCallable, Category = "Weapons")
-	bool Shoot(const FTransform& SpawnTransform, class AController* Controller);
+	bool Shoot(const FTransform& SpawnTransform);
 
 protected:
 	UFUNCTION(BlueprintCallable, Category = "Weapons")

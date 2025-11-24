@@ -40,7 +40,7 @@ class FIRSTPERSONSHOOTER_API UWeaponHolderComponent : public UActorComponent {
 
 	public:
 		UFUNCTION(BlueprintCallable, Category = "Weapons")
-		bool Shoot(const FTransform& SpawnTransform, class AController* Controller);
+		bool Shoot(FTransform SpawnTransform, bool bDoBulletSpread);
 
 		UFUNCTION(BlueprintCallable, Category = "Weapons")
 		void PickUpRifle();

@@ -116,7 +116,10 @@ void AFirstPersonCharacter::DoSprintEnd() { bIsPressingSprint = false; }
 
 void AFirstPersonCharacter::DoShoot()
 {
-	WeaponHolderComponent->Shoot(BulletSpawnTransform->GetComponentTransform(), GetController());
+	if (GetCharacterMovement()->MaxWalkSpeed > BaseWalkSpeed || GetCharacterMovement()->IsFalling()) return;
+	bool bDoBulletSpread = GetCharacterMovement()->Velocity.SizeSquared2D() > 1.0f;
+	bool bWasSuccessfulShot = WeaponHolderComponent->Shoot(BulletSpawnTransform->GetComponentTransform(), bDoBulletSpread);
+	if (!bWasSuccessfulShot) return;
 	float Loudness = 1.0f;
 	APawn* NoiseInstigator = this;
 	FVector NoiseLocation = GetActorLocation();
@@ -153,8 +156,6 @@ UCharacterHealthComponent* AFirstPersonCharacter::GetCharacterHealthComponent() 
 UWeaponHolderComponent* AFirstPersonCharacter::GetWeaponHolderComponent() { return WeaponHolderComponent; }
 
 USkeletalMeshComponent* AFirstPersonCharacter::GetFirstPersonMesh() { return FirstPersonMesh; }
-
-float AFirstPersonCharacter::GetFastestWalkSpeed() { return BaseWalkSpeed; }
 
 void AFirstPersonCharacter::OnEventReceived_Implementation(FName EventName, const TArray<FEventData>& Params)
 {

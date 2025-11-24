@@ -142,9 +142,6 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Components")
 	class USkeletalMeshComponent* GetFirstPersonMesh();
 
-	UFUNCTION(BlueprintCallable, Category = "Movement")
-	float GetFastestWalkSpeed();
-
 	UFUNCTION(BlueprintCallable)
 	virtual void OnEventReceived_Implementation(FName EventName, const TArray<FEventData>& Params) override;
 };

@@ -23,7 +23,7 @@ public:
 	ARifleWeapon();
 
 public:
-	virtual bool Shoot(const FTransform& SpawnTransform, class AController* Controller) override;
+	virtual bool Shoot(const FTransform& SpawnTransform) override;
 
 	UFUNCTION(BlueprintCallable)
 	void AddAmmo();
