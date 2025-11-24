@@ -16,7 +16,8 @@ public class FirstPersonShooter : ModuleRules
 			"FirstPersonShooter",
 			"FirstPersonShooter/Weapons",
 			"FirstPersonShooter/Interfaces",
-			"FirstPersonShooter/Events"
+			"FirstPersonShooter/Events",
+			"FirstPersonShooter/Factories"
 		});
 
 		// Uncomment if you are using Slate UI

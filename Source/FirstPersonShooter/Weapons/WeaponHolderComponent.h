@@ -59,6 +59,5 @@ class FIRSTPERSONSHOOTER_API UWeaponHolderComponent : public UActorComponent {
 
 	private:
 		void CreateWeapons();
-		class ABaseWeapon* CreateWeapon(FActorSpawnParameters& SpawnParams, FAttachmentTransformRules& AttachRules, TSubclassOf<class ABaseWeapon> WeaponBlueprint, bool bIsFirstPerson);
 		void SwitchWeapon();
 };

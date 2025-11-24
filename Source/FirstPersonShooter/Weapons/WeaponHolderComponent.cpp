@@ -6,6 +6,7 @@
 #include "Weapons/RifleWeapon.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Controller.h"
+#include "Factories/WeaponFactory.h"
 
 UWeaponHolderComponent::UWeaponHolderComponent()
 {
@@ -60,31 +61,13 @@ ARifleWeapon* UWeaponHolderComponent::GetRifle() { return Rifle; }
 
 void UWeaponHolderComponent::CreateWeapons()
 {
-	FActorSpawnParameters SpawnParams;
-	SpawnParams.Owner = GetOwner();
-	SpawnParams.Instigator = GetOwner()->GetInstigator();
-	EAttachmentRule LocationRule = EAttachmentRule::SnapToTarget;
-	EAttachmentRule RotationRule = EAttachmentRule::SnapToTarget;
-	EAttachmentRule ScaleRule = EAttachmentRule::SnapToTarget;
-	FAttachmentTransformRules AttachRules(LocationRule, RotationRule, ScaleRule, false);
-	Pistol = Cast<APistolWeapon>(CreateWeapon(SpawnParams, AttachRules, PistolBlueprint, false));
-	Rifle = Cast<ARifleWeapon>(CreateWeapon(SpawnParams, AttachRules, RifleBlueprint, false));
-	if(Rifle) Rifle->GetWeaponMesh()->SetVisibility(false);
-	PistolFirstPerson = Cast<APistolWeapon>(CreateWeapon(SpawnParams, AttachRules, PistolBlueprint, true));
-	RifleFirstPerson = Cast<ARifleWeapon>(CreateWeapon(SpawnParams, AttachRules, RifleBlueprint, true));
-	if(RifleFirstPerson) RifleFirstPerson->GetWeaponMesh()->SetVisibility(false);
-}
-
-ABaseWeapon* UWeaponHolderComponent::CreateWeapon(FActorSpawnParameters& SpawnParams, FAttachmentTransformRules& AttachRules, TSubclassOf<class ABaseWeapon> WeaponBlueprint, bool bIsFirstPerson)
-{
-	USkeletalMeshComponent* AttachMesh = bIsFirstPerson ? OwnerFirstPersonMesh : OwnerMesh;
-	if (!AttachMesh || !WeaponBlueprint) return nullptr;
-	ABaseWeapon* Weapon = GetOwner()->GetWorld()->SpawnActor<ABaseWeapon>(WeaponBlueprint, SpawnParams);
-	Weapon->AttachToComponent(AttachMesh, AttachRules, FName("WeaponSocket"));
-	Weapon->GetWeaponMesh()->FirstPersonPrimitiveType = bIsFirstPerson ? EFirstPersonPrimitiveType::FirstPerson : EFirstPersonPrimitiveType::WorldSpaceRepresentation;
-	bIsFirstPerson ? Weapon->GetWeaponMesh()->SetOnlyOwnerSee(true) : Weapon->GetWeaponMesh()->SetOwnerNoSee(true);
-	if (GetOwner()) Weapon->SetOwningActor(GetOwner());
-	return Weapon;
+	if (WEAPON_FACTORY_EXISTS)
+	{
+		Pistol = Cast<APistolWeapon>(CREATE_WEAPON(GetOwner(), OwnerMesh, PistolBlueprint, false, true));
+		Rifle = Cast<ARifleWeapon>(CREATE_WEAPON(GetOwner(), OwnerMesh, RifleBlueprint, false, false));
+		PistolFirstPerson = Cast<APistolWeapon>(CREATE_WEAPON(GetOwner(), OwnerFirstPersonMesh, PistolBlueprint, true, true));
+		RifleFirstPerson = Cast<ARifleWeapon>(CREATE_WEAPON(GetOwner(), OwnerFirstPersonMesh, RifleBlueprint, true, false));
+	}
 }
 
 void UWeaponHolderComponent::SwitchWeapon()
