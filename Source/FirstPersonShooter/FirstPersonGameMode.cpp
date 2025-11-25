@@ -2,6 +2,7 @@
 #include "GameFramework/PlayerStart.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/Controller.h"
+#include "MatchLeaderboard.h"
 
 AFirstPersonGameMode::AFirstPersonGameMode() { PrimaryActorTick.bCanEverTick = true; }
 
@@ -20,6 +21,7 @@ void AFirstPersonGameMode::BeginPlay()
 		RespawnHandles.FindOrAdd(AIBlueprint); // TimerHandles for respawning each AI
 		Spawn_Implementation(AIBlueprint);
 	}
+	ORDER_LEADERBOARD();
 	CurrentMatchState = GameMatchState::None;
 	MoveToNextPhase();
 }
@@ -123,9 +125,10 @@ void AFirstPersonGameMode::Spawn_Implementation(TSubclassOf<AActor> ActorToSpawn
 	if (!Actor) return;
 	if (Actor->IsA(PlayerBlueprint))
 	{
-		if (APlayerController* PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0))
+		if (AFirstPersonCharacter* Player = Cast<AFirstPersonCharacter>(Actor))
 		{
-			if (APawn* Player = Cast<APawn>(Actor)) PlayerController->Possess(Player);
+			ADD_CHARACTER_TO_LEADERBOARD(Player->GetLeaderboardName());
+			if (APlayerController* PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0)) PlayerController->Possess(Player);
 		}
 	}
 	else
@@ -136,7 +139,11 @@ void AFirstPersonGameMode::Spawn_Implementation(TSubclassOf<AActor> ActorToSpawn
 			if (!AIBlueprint || !Actor->IsA(AIBlueprint)) continue;
 			AAIController* AIController = GetWorld()->SpawnActor<AAIController>(AIControllerBlueprint, ValidSpawn);
 			if (!AIController) break;
-			if (APawn* AI = Cast<APawn>(Actor)) AIController->Possess(AI);
+			if (AFirstPersonCharacter* AI = Cast<AFirstPersonCharacter>(Actor))
+			{
+				ADD_CHARACTER_TO_LEADERBOARD(AI->GetLeaderboardName());
+				AIController->Possess(AI);
+			}
 			break;
 		}
 	}

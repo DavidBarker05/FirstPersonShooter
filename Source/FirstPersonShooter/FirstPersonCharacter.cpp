@@ -11,6 +11,7 @@
 #include "Events/EventBus.h"
 #include "Kismet/GameplayStatics.h"
 #include "Perception/AISense_Damage.h"
+#include "MatchLeaderboard.h"
 
 AFirstPersonCharacter::AFirstPersonCharacter()
 {
@@ -165,7 +166,11 @@ void AFirstPersonCharacter::OnEventReceived_Implementation(FName EventName, cons
 	}
 	else if (EVENT_MATCHES("DeathEvent", 1) && PARAMS_ARE_VALID && PARAMS_ARE_CORRECT_TYPES(FUObjectStruct))
 	{
-		if (*Params[0].Get<FUObjectStruct>() == this) BROADCAST_EVENT("RespawnEvent", FUObjectStruct((UObject*) UGameplayStatics::GetGameMode(GetWorld())), FUObjectStruct(this), FFloatStruct(CharacterHealthComponent->GetRespawnDelay()));
+		if (*Params[0].Get<FUObjectStruct>() == this)
+		{
+			ADD_KILL_TO_LEADERBOARD(CharacterThatLastShotThisCharacter, LeaderboardName);
+			BROADCAST_EVENT("RespawnEvent", FUObjectStruct((UObject*) UGameplayStatics::GetGameMode(GetWorld())), FUObjectStruct(this), FFloatStruct(CharacterHealthComponent->GetRespawnDelay()));
+		}
 	}
 	else if (EVENT_MATCHES("BulletHitEvent", 3) && PARAMS_ARE_VALID && PARAMS_ARE_CORRECT_TYPES(FUObjectStruct, FInt32Struct, FUObjectStruct))
 	{
@@ -181,6 +186,8 @@ void AFirstPersonCharacter::OnEventReceived_Implementation(FName EventName, cons
 				FVector EventLocation = DamageInstigator->GetActorLocation();
 				FVector HitLocation = GetActorLocation();
 				UAISense_Damage::ReportDamageEvent(WorldContextObject, DamagedActor, DamageInstigator, DamageAmount, EventLocation, HitLocation);
+				if (AFirstPersonCharacter* Character = Cast<AFirstPersonCharacter>(DamageInstigator)) CharacterThatLastShotThisCharacter = Character->GetLeaderboardName();
+				else CharacterThatLastShotThisCharacter = "Unknown";
 			}
 		}
 	}

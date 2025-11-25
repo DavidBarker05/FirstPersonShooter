@@ -14,6 +14,11 @@ class FIRSTPERSONSHOOTER_API AFirstPersonCharacter : public ACharacter, public I
 
 	bool bIsPressingSprint = false;
 
+	FName CharacterThatLastShotThisCharacter;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Leaderboard", meta = (AllowPrivateAccess = "true"))
+	FName LeaderboardName;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	class USkeletalMeshComponent* FirstPersonMesh;
 
@@ -144,4 +149,6 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	virtual void OnEventReceived_Implementation(FName EventName, const TArray<FEventData>& Params) override;
+
+	inline FName GetLeaderboardName() const { return LeaderboardName; }
 };
