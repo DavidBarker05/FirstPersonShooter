@@ -116,7 +116,7 @@ void AFirstPersonCharacter::DoSprintEnd() { bIsPressingSprint = false; }
 
 void AFirstPersonCharacter::DoShoot()
 {
-	if (GetCharacterMovement()->MaxWalkSpeed > BaseWalkSpeed || GetCharacterMovement()->IsFalling()) return;
+	if (GetCharacterMovement()->Velocity.SizeSquared2D() > BaseWalkSpeed * BaseWalkSpeed || GetCharacterMovement()->IsFalling()) return;
 	bool bDoBulletSpread = GetCharacterMovement()->Velocity.SizeSquared2D() > 1.0f;
 	bool bWasSuccessfulShot = WeaponHolderComponent->Shoot(BulletSpawnTransform->GetComponentTransform(), bDoBulletSpread);
 	if (!bWasSuccessfulShot) return;
@@ -167,7 +167,7 @@ void AFirstPersonCharacter::OnEventReceived_Implementation(FName EventName, cons
 	{
 		if (*Params[0].Get<FUObjectStruct>() == this) BROADCAST_EVENT("RespawnEvent", FUObjectStruct((UObject*) UGameplayStatics::GetGameMode(GetWorld())), FUObjectStruct(this), FFloatStruct(CharacterHealthComponent->GetRespawnDelay()));
 	}
-	else if (EVENT_MATCHES("BulletHitEvent", 3) && PARAMS_ARE_VALID && PARAMS_ARE_CORRECT_TYPES(FUObjectStruct, FInt32Struct, FUObjectStruct) )
+	else if (EVENT_MATCHES("BulletHitEvent", 3) && PARAMS_ARE_VALID && PARAMS_ARE_CORRECT_TYPES(FUObjectStruct, FInt32Struct, FUObjectStruct))
 	{
 		if (*Params[0].Get<FUObjectStruct>() != this) return;
 		if (const FInt32Struct* Damage = Params[1].Get<FInt32Struct>())
