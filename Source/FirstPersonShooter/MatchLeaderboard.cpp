@@ -39,7 +39,7 @@ void UMatchLeaderboard::OrderLeaderboardInternal()
 		if (KillsA != KillsB) return KillsA > KillsB; // Sort by kills descending first
 		int32 DeathsA = Deaths.FindRef(A);
 		int32 DeathsB = Deaths.FindRef(B);
-		if (DeathsA != DeathsB) return DeathsA < DeathsB; // Sort by deaths descending second
+		if (DeathsA != DeathsB) return DeathsA < DeathsB; // Sort by deaths ascending second
 		return A.LexicalLess(B); // Order alphabetically last
 	});
 }
