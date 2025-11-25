@@ -3,9 +3,11 @@
 
 ARiflePickupSpawner::ARiflePickupSpawner()
 {
+	Root = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
+	SetRootComponent(Root);
 	SpawnerBase = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Spawner Base"));
-	SetRootComponent(SpawnerBase);
 	SpawnerBase->SetCollisionProfileName(FName("NoCollision"));
+	SpawnerBase->SetupAttachment(RootComponent);
 	SpawnTransform = CreateDefaultSubobject<USceneComponent>(TEXT("Spawn Transform"));
 	SpawnTransform->SetupAttachment(RootComponent);
 }
@@ -43,5 +45,6 @@ void ARiflePickupSpawner::Spawn_Implementation(TSubclassOf<AActor> ActorToSpawn)
 	if (!ActorToSpawn || !ActorToSpawn->ImplementsInterface(URespawnable::StaticClass()) || !GetWorld()) return;
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.Owner = this;
+	SpawnParams.Instigator = GetInstigator();
 	AActor* Pickup = GetWorld()->SpawnActor<AActor>(ActorToSpawn, SpawnTransform->GetComponentTransform(), SpawnParams);
 }

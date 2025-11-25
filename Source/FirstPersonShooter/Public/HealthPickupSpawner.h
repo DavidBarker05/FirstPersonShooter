@@ -15,6 +15,8 @@ class FIRSTPERSONSHOOTER_API AHealthPickupSpawner : public AActor, public ISpawn
 
 	FTimerHandle RespawnHandle;
 
+	USceneComponent* Root;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	UStaticMeshComponent* SpawnerBase;
 

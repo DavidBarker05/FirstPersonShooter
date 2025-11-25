@@ -14,6 +14,8 @@ class FIRSTPERSONSHOOTER_API ARiflePickupSpawner : public AActor, public ISpawne
 	EVENTS_TO_LISTEN_TO("RespawnEvent")
 
 	FTimerHandle RespawnHandle;
+
+	USceneComponent* Root;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	UStaticMeshComponent* SpawnerBase;
