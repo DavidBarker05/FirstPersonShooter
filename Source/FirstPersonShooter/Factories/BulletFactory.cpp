@@ -38,13 +38,13 @@ ABullet* UBulletFactory::CreateBullet(TSubclassOf<ABullet> BulletBlueprint, cons
 			AvailableBullets.RemoveAt(i);
 			continue;
 		}
-		if (!BulletPool[Index] || !IsValid(BulletPool[Index])) // BulletPool point is
+		if (!BulletPool[Index] || !IsValid(BulletPool[Index])) // BulletPool at index either doesn't exist or is scheduled for deletion so we make a new one
 		{
 			BulletPool[Index] = GetWorld()->SpawnActor<ABullet>(BulletBlueprint);
 			Bullet = BulletPool[Index];
 			break;
 		}
-		else
+		else // A bullet is available so we make it the bullet for whoever shot it and make it no longer available
 		{
 			Bullet = BulletPool[Index];
 			AvailableBullets.RemoveAt(i);
