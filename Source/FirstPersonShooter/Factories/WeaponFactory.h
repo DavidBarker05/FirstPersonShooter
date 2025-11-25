@@ -6,18 +6,18 @@
 
 namespace Internal
 {
-    static UWeaponFactory* GetWeaponFactoryFromContext(const UObject* ContextObject)
+    static UWeaponFactory* GetWeaponFactoryFromContext(const UObject* contextObject)
     {
-        if (!ContextObject || !IsValid(ContextObject)) return nullptr;
-        const UWorld* World = nullptr;
-        if (const AActor* Actor = Cast<AActor>(ContextObject)) World = Actor->GetWorld();
-        else if (const USceneComponent* SceneComponent = Cast<USceneComponent>(ContextObject)) World = SceneComponent->GetWorld();
-        else if (const UActorComponent* Component = Cast<UActorComponent>(ContextObject))
+        if (!contextObject || !IsValid(contextObject)) return nullptr;
+        const UWorld* world = nullptr;
+        if (const AActor* actor = Cast<AActor>(contextObject)) world = actor->GetWorld();
+        else if (const USceneComponent* sceneComponent = Cast<USceneComponent>(contextObject)) world = sceneComponent->GetWorld();
+        else if (const UActorComponent* component = Cast<UActorComponent>(contextObject))
         {
-            if (AActor* Owner = Component->GetOwner()) World = Owner->GetWorld();
+            if (AActor* owner = component->GetOwner()) world = owner->GetWorld();
         }
-        if (!World) return nullptr;
-        if (UGameInstance* WeaponFactory = World->GetGameInstance()) return WeaponFactory->GetSubsystem<UWeaponFactory>();
+        if (!world) return nullptr;
+        if (UGameInstance* gameInstance = world->GetGameInstance()) return gameInstance->GetSubsystem<UWeaponFactory>();
         return nullptr;
     }
 }
@@ -26,11 +26,9 @@ namespace Internal
 	#define WEAPON_FACTORY_EXISTS UWeaponFactory* WeaponFactory = Internal::GetWeaponFactoryFromContext(this)
 #endif
 
-
 #ifndef CREATE_WEAPON
 	#define CREATE_WEAPON(Owner, AttachMesh, WeaponBlueprint, bIsFirstPerson, bIsVisible) WeaponFactory->CreateWeapon(Owner, AttachMesh, WeaponBlueprint, bIsFirstPerson, bIsVisible)
 #endif
-
 
 UCLASS()
 class FIRSTPERSONSHOOTER_API UWeaponFactory : public UGameInstanceSubsystem
@@ -38,5 +36,6 @@ class FIRSTPERSONSHOOTER_API UWeaponFactory : public UGameInstanceSubsystem
 	GENERATED_BODY()
 
 public:
+    UFUNCTION(BlueprintCallable)
 	class ABaseWeapon* CreateWeapon(AActor* Owner, USkeletalMeshComponent* AttachMesh, TSubclassOf<ABaseWeapon> WeaponBlueprint, bool bIsFirstPerson, bool bIsVisible);
 };

@@ -1,7 +1,7 @@
 #include "Weapons/WeaponShootComponent.h"
 #include "GameFramework/Controller.h"
 #include "Weapons/Bullet.h"
-
+#include "Factories/BulletFactory.h"
 
 UWeaponShootComponent::UWeaponShootComponent() : TimeBetweenShots(0.01f), GunDamage(0), BulletSpeed(1000.0f), VerticalRecoil(0.0f) { PrimaryComponentTick.bCanEverTick = true; }
 
@@ -27,21 +27,19 @@ void UWeaponShootComponent::TickComponent(float DeltaTime, ELevelTick TickType, 
 bool UWeaponShootComponent::Shoot(const FTransform& SpawnTransform)
 {
 	if (!bCanShoot || !BulletBlueprint || !WeaponOwner) return false;
-	FActorSpawnParameters SpawnParams;
-	SpawnParams.Owner = GetOwner();
-	SpawnParams.Instigator = GetOwner()->GetInstigator();
-	ABullet* Bullet = GetWorld()->SpawnActor<ABullet>(BulletBlueprint, SpawnTransform, SpawnParams);
-	if (!Bullet) return false;
-	Bullet->SetDamage(GunDamage);
-	Bullet->SetInitialSpeed(BulletSpeed);
-	Bullet->SetActorToIgnore(WeaponOwner);
-	bCanShoot = false;
-	GetOwner()->GetWorldTimerManager().SetTimer(ShootCooldownHandle, this, &UWeaponShootComponent::ResetShot, TimeBetweenShots, false);
-	RecoilTimer = 0.0f;
-	PitchWhenShot = WeaponOwner->GetController()->GetControlRotation().Pitch;
-	RecoilPitch = PitchWhenShot + VerticalRecoil;
-	LastAppliedPitch = PitchWhenShot;
-	return true;
+	if (BULLET_FACTORY_EXISTS)
+	{
+		ABullet* Bullet = CREATE_BULLET(BulletBlueprint, SpawnTransform, GunDamage, BulletSpeed, WeaponOwner);
+		if (!Bullet) return false;
+		bCanShoot = false;
+		GetOwner()->GetWorldTimerManager().SetTimer(ShootCooldownHandle, this, &UWeaponShootComponent::ResetShot, TimeBetweenShots, false);
+		RecoilTimer = 0.0f;
+		PitchWhenShot = WeaponOwner->GetController()->GetControlRotation().Pitch;
+		RecoilPitch = PitchWhenShot + VerticalRecoil;
+		LastAppliedPitch = PitchWhenShot;
+		return true;
+	}
+	return false;
 }
 
 void UWeaponShootComponent::ResetShot() { bCanShoot = true; }

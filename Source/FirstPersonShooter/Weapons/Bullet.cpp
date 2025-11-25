@@ -2,8 +2,9 @@
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Events/EventBus.h"
+#include "Factories/BulletFactory.h"
 
-ABullet::ABullet()
+ABullet::ABullet() : bIsActive(false)
 {
 	PrimaryActorTick.bCanEverTick = true;
 	BulletMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Bullet Mesh"));
@@ -23,26 +24,33 @@ void ABullet::BeginPlay()
 void ABullet::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	if (!bIsActive) return;
 	FHitResult OutHit;
 	if (CheckForHit(OutHit))
 	{
+		DeactivateBullet();
 		BROADCAST_EVENT("BulletHitEvent", FUObjectStruct(OutHit.GetActor()), FInt32Struct(Damage), FUObjectStruct(ActorToIgnore));
-		GetWorld()->DestroyActor(this);
 	}
 	LastPosition = GetActorLocation();
 }
 
-void ABullet::SetDamage(const int32 _Damage) { Damage = _Damage; }
+void ABullet::SetDamage(UPARAM(DisplayName = "Damage") const int32 _Damage) { Damage = _Damage; }
 
 void ABullet::SetInitialSpeed(const float Speed)
 {
 	ProjectileMovementComponent->InitialSpeed = Speed;
 	ProjectileMovementComponent->MaxSpeed = Speed;
 	ProjectileMovementComponent->Velocity = GetActorForwardVector() * Speed;
-	ProjectileMovementComponent->Activate(true);
 }
 
 void ABullet::SetActorToIgnore(AActor* Actor) { ActorToIgnore = Actor; }
+
+void ABullet::ActivateBullet()
+{
+	bIsActive = true;
+	if (BulletMesh) BulletMesh->SetVisibility(true);
+	ProjectileMovementComponent->Activate(true);
+}
 
 bool ABullet::CheckForHit(FHitResult& OutHit)
 {
@@ -53,5 +61,14 @@ bool ABullet::CheckForHit(FHitResult& OutHit)
 	TArray<AActor*> ActorsToIgnore;
 	if (ActorToIgnore) ActorsToIgnore.Add(ActorToIgnore);
 	bool bIgnoreSelf = true;
-	return UKismetSystemLibrary::LineTraceSingle(WorldContextObject, Start, End, ETraceTypeQuery::TraceTypeQuery1, bTraceComplex, ActorsToIgnore, EDrawDebugTrace::ForDuration, OutHit, bIgnoreSelf);
+	return UKismetSystemLibrary::LineTraceSingle(WorldContextObject, Start, End, ETraceTypeQuery::TraceTypeQuery1, bTraceComplex, ActorsToIgnore, EDrawDebugTrace::None, OutHit, bIgnoreSelf);
+}
+
+void ABullet::DeactivateBullet()
+{
+	bIsActive = false;
+	if (BulletMesh) BulletMesh->SetVisibility(false);
+	SetInitialSpeed(0.0f);
+	SetActorLocation(FVector(0.0f, 0.0f, 0.0f));
+	if (BULLET_FACTORY_EXISTS) DEACTIVATE_BULLET(this);
 }

@@ -12,6 +12,7 @@ class FIRSTPERSONSHOOTER_API ABullet : public AActor
 	int32 Damage;
 	FVector LastPosition;
 	AActor* ActorToIgnore;
+	bool bIsActive;
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
@@ -39,6 +40,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Weapons")
 	void SetActorToIgnore(AActor* Actor);
 
+	UFUNCTION()
+	void ActivateBullet();
+
 private:
 	bool CheckForHit(FHitResult& OutHit);
+	void DeactivateBullet();
 };

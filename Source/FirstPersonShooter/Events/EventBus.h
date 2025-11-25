@@ -7,18 +7,18 @@
 
 namespace Internal
 {
-    static UEventBus* GetEventBusFromContext(const UObject* ContextObject)
+    static UEventBus* GetEventBusFromContext(const UObject* contextObject)
     {
-        if (!ContextObject || !IsValid(ContextObject)) return nullptr;
-        const UWorld* World = nullptr;
-		if (const AActor* Actor = Cast<AActor>(ContextObject)) World = Actor->GetWorld();
-		else if (const USceneComponent* SceneComponent = Cast<USceneComponent>(ContextObject)) World = SceneComponent->GetWorld();
-        else if (const UActorComponent* Component = Cast<UActorComponent>(ContextObject))
+        if (!contextObject || !IsValid(contextObject)) return nullptr;
+        const UWorld* world = nullptr;
+        if (const AActor* actor = Cast<AActor>(contextObject)) world = actor->GetWorld();
+        else if (const USceneComponent* sceneComponent = Cast<USceneComponent>(contextObject)) world = sceneComponent->GetWorld();
+        else if (const UActorComponent* component = Cast<UActorComponent>(contextObject))
         {
-            if (AActor* Owner = Component->GetOwner()) World = Owner->GetWorld();
+            if (AActor* owner = component->GetOwner()) world = owner->GetWorld();
         }
-        if (!World) return nullptr;
-        if (UGameInstance* EventBus = World->GetGameInstance()) return EventBus->GetSubsystem<UEventBus>();
+        if (!world) return nullptr;
+        if (UGameInstance* gameInstance = world->GetGameInstance()) return gameInstance->GetSubsystem<UEventBus>();
         return nullptr;
     }
 }
