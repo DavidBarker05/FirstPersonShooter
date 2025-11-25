@@ -60,10 +60,10 @@ void UWeaponHolderComponent::CreateWeapons()
 {
 	if (WEAPON_FACTORY_EXISTS)
 	{
-		Pistol = Cast<APistolWeapon>(CREATE_WEAPON(GetOwner(), OwnerMesh, PistolBlueprint, false, true));
-		Rifle = Cast<ARifleWeapon>(CREATE_WEAPON(GetOwner(), OwnerMesh, RifleBlueprint, false, false));
-		PistolFirstPerson = Cast<APistolWeapon>(CREATE_WEAPON(GetOwner(), OwnerFirstPersonMesh, PistolBlueprint, true, true));
-		RifleFirstPerson = Cast<ARifleWeapon>(CREATE_WEAPON(GetOwner(), OwnerFirstPersonMesh, RifleBlueprint, true, false));
+		Pistol = Cast<APistolWeapon>(CREATE_VISIBLE_THIRD_PERSON_WEAPON(GetOwner(), OwnerMesh, PistolBlueprint));
+		Rifle = Cast<ARifleWeapon>(CREATE_INVISIBLE_THIRD_PERSON_WEAPON(GetOwner(), OwnerMesh, RifleBlueprint));
+		PistolFirstPerson = Cast<APistolWeapon>(CREATE_VISIBLE_FIRST_PERSON_WEAPON(GetOwner(), OwnerFirstPersonMesh, PistolBlueprint));
+		RifleFirstPerson = Cast<ARifleWeapon>(CREATE_INVISIBLE_FIRST_PERSON_WEAPON(GetOwner(), OwnerFirstPersonMesh, RifleBlueprint));
 	}
 }
 

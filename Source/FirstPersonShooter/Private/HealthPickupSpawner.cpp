@@ -1,5 +1,6 @@
 #include "HealthPickupSpawner.h"
 #include "HealthPickup.h"
+#include "Factories/PickupFactory.h"
 
 AHealthPickupSpawner::AHealthPickupSpawner()
 {
@@ -42,10 +43,7 @@ void AHealthPickupSpawner::OnEventReceived_Implementation(FName EventName, const
 
 void AHealthPickupSpawner::Spawn_Implementation(TSubclassOf<AActor> ActorToSpawn)
 {
-	if (!ActorToSpawn || !ActorToSpawn->ImplementsInterface(URespawnable::StaticClass()) || !GetWorld()) return;
-	FActorSpawnParameters SpawnParams;
-	SpawnParams.Owner = this;
-	SpawnParams.Instigator = GetInstigator();
-	AActor* Pickup = GetWorld()->SpawnActor<AActor>(ActorToSpawn, SpawnTransform->GetComponentTransform(), SpawnParams);
+	if (!ActorToSpawn || !ActorToSpawn->ImplementsInterface(URespawnable::StaticClass())) return;
+	if (PICKUP_FACTORY_EXISTS) CREATE_PICKUP_AND_ATTACH_TO_COMPONENT(this, SpawnTransform, ActorToSpawn);
 }
 

@@ -1,5 +1,4 @@
 #include "Factories/WeaponFactory.h"
-#include "Weapons/BaseWeapon.h"
 
 ABaseWeapon* UWeaponFactory::CreateWeapon(AActor* Owner, USkeletalMeshComponent* AttachMesh, TSubclassOf<ABaseWeapon> WeaponBlueprint, bool bIsFirstPerson, bool bIsVisible)
 {
