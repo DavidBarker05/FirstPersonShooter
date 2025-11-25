@@ -1,6 +1,7 @@
 #include "FirstPersonGameMode.h"
 #include "GameFramework/PlayerStart.h"
 #include "Kismet/GameplayStatics.h"
+#include "GameFramework/Controller.h"
 
 void AFirstPersonGameMode::BeginPlay()
 {
@@ -60,7 +61,11 @@ void AFirstPersonGameMode::OnEventReceived_Implementation(FName EventName, const
 						SpawnCharacterAfterDelay(AIBlueprint, *SpawnDelay, RespawnHandles[AIBlueprint]);
 						if (APawn* AI = Cast<APawn>(ActorToSpawn))
 						{
-							if (AController* AIController = AI->GetController()) GetWorld()->DestroyActor(AIController);
+							if (AController* AIController = AI->GetController())
+							{
+								AIController->UnPossess();
+								GetWorld()->DestroyActor(AIController);
+							}
 						}
 						GetWorldTimerManager().SetTimerForNextTick([this, ActorToDestroy = ActorToSpawn]()
 						{
@@ -98,7 +103,7 @@ void AFirstPersonGameMode::Spawn_Implementation(TSubclassOf<AActor> ActorToSpawn
 			if (!AIBlueprint || !Actor->IsA(AIBlueprint)) continue;
 			AAIController* AIController = GetWorld()->SpawnActor<AAIController>(AIControllerBlueprint, ValidSpawn);
 			if (!AIController) break;
-			if (APawn* AI = Cast<APawn>(ActorToSpawn)) AIController->Possess(AI);
+			if (APawn* AI = Cast<APawn>(Actor)) AIController->Possess(AI);
 			break;
 		}
 	}

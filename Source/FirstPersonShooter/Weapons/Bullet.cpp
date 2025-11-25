@@ -4,7 +4,7 @@
 #include "Events/EventBus.h"
 #include "Factories/BulletFactory.h"
 
-ABullet::ABullet() : bIsActive(false)
+ABullet::ABullet()
 {
 	PrimaryActorTick.bCanEverTick = true;
 	BulletMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Bullet Mesh"));
@@ -13,12 +13,6 @@ ABullet::ABullet() : bIsActive(false)
 	ProjectileMovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("Projectile Movement Component"));
 	ProjectileMovementComponent->bRotationFollowsVelocity = true;
 	ProjectileMovementComponent->bShouldBounce = false;
-}
-
-void ABullet::BeginPlay()
-{
-	Super::BeginPlay();
-	LastPosition = GetActorLocation();
 }
 
 void ABullet::Tick(float DeltaTime)
@@ -50,6 +44,7 @@ void ABullet::ActivateBullet()
 	bIsActive = true;
 	if (BulletMesh) BulletMesh->SetVisibility(true);
 	ProjectileMovementComponent->Activate(true);
+	LastPosition = GetActorLocation();
 }
 
 bool ABullet::CheckForHit(FHitResult& OutHit)
@@ -61,7 +56,7 @@ bool ABullet::CheckForHit(FHitResult& OutHit)
 	TArray<AActor*> ActorsToIgnore;
 	if (ActorToIgnore) ActorsToIgnore.Add(ActorToIgnore);
 	bool bIgnoreSelf = true;
-	return UKismetSystemLibrary::LineTraceSingle(WorldContextObject, Start, End, ETraceTypeQuery::TraceTypeQuery1, bTraceComplex, ActorsToIgnore, EDrawDebugTrace::None, OutHit, bIgnoreSelf);
+	return UKismetSystemLibrary::LineTraceSingle(WorldContextObject, Start, End, ETraceTypeQuery::TraceTypeQuery1, bTraceComplex, ActorsToIgnore, EDrawDebugTrace::ForDuration, OutHit, bIgnoreSelf);
 }
 
 void ABullet::DeactivateBullet()
