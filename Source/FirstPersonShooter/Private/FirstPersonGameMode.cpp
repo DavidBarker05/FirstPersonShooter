@@ -3,6 +3,8 @@
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/Controller.h"
 
+AFirstPersonGameMode::AFirstPersonGameMode() { PrimaryActorTick.bCanEverTick = true; }
+
 void AFirstPersonGameMode::BeginPlay()
 {
 	Super::BeginPlay();
@@ -18,12 +20,22 @@ void AFirstPersonGameMode::BeginPlay()
 		RespawnHandles.FindOrAdd(AIBlueprint); // TimerHandles for respawning each AI
 		Spawn_Implementation(AIBlueprint);
 	}
+	CurrentMatchState = GameMatchState::None;
+	MoveToNextPhase();
 }
 
 void AFirstPersonGameMode::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	UNSUBSCRIBE_FROM_EVENTS();
 	Super::EndPlay(EndPlayReason);
+}
+
+void AFirstPersonGameMode::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+	if (CurrentMatchState == GameMatchState::None || CurrentMatchState == GameMatchState::EndLeaderboardPhase) return;
+	CountdownTimer -= DeltaSeconds;
+	if (CountdownTimer <= 0.0f) MoveToNextPhase();
 }
 
 void AFirstPersonGameMode::SpawnCharacterAfterDelay(TSubclassOf<AActor> ActorToSpawn, float Delay, FTimerHandle& RespawnHandle)
@@ -80,6 +92,27 @@ void AFirstPersonGameMode::OnEventReceived_Implementation(FName EventName, const
 	}
 }
 
+void AFirstPersonGameMode::SetCurrentMatchState(GameMatchState NewState)
+{
+	CurrentMatchState = NewState;
+	switch (CurrentMatchState)
+	{
+		case GameMatchState::None:
+			break;
+		case GameMatchState::StartCountdownPhase:
+			DoStartCountdownPhase();
+			break;
+		case GameMatchState::MatchRoundPhase:
+			DoMatchRoundPhase();
+			break;
+		case GameMatchState::EndLeaderboardPhase:
+			DoEndLeaderboardPhase();
+			break;
+		default:
+			break;
+	}
+}
+
 void AFirstPersonGameMode::Spawn_Implementation(TSubclassOf<AActor> ActorToSpawn)
 {
 	if (!ActorToSpawn || !GetWorld()) return;
@@ -132,3 +165,59 @@ FTransform AFirstPersonGameMode::GetValidSpawnPoint()
 }
 
 void AFirstPersonGameMode::MakeSpawnValid(AActor* SpawnPoint) { if (SpawnPoint) OccupiedSpawns.Remove(SpawnPoint); }
+
+void AFirstPersonGameMode::MoveToNextPhase()
+{
+	switch (CurrentMatchState)
+	{
+		case GameMatchState::None:
+			SetCurrentMatchState(GameMatchState::StartCountdownPhase);
+			break;
+		case GameMatchState::StartCountdownPhase:
+			SetCurrentMatchState(GameMatchState::MatchRoundPhase);
+			break;
+		case GameMatchState::MatchRoundPhase:
+			SetCurrentMatchState(GameMatchState::EndLeaderboardPhase);
+			break;
+		case GameMatchState::EndLeaderboardPhase:
+			SetCurrentMatchState(GameMatchState::None);
+			break;
+		default:
+			break;
+	}
+}
+
+void AFirstPersonGameMode::DoStartCountdownPhase()
+{
+	bDisplayStartTimer = true;
+	bDisplayRoundTimer = false;
+	bDisplayEndLeaderboard = false;
+	CountdownTimer = MatchStartDuration;
+	if (!GetWorld()) return;
+	if (ACharacter* Player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0))
+	{
+		if (APlayerController* PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0))
+			Player->DisableInput(PlayerController);
+	}
+}
+
+void AFirstPersonGameMode::DoMatchRoundPhase()
+{
+	bDisplayStartTimer = false;
+	bDisplayRoundTimer = true;
+	bDisplayEndLeaderboard = false;
+	CountdownTimer = MatchRoundDuration;
+	if (!GetWorld()) return;
+	if (ACharacter* Player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0))
+	{
+		if (APlayerController* PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0))
+			Player->EnableInput(PlayerController);
+	}
+}
+
+void AFirstPersonGameMode::DoEndLeaderboardPhase()
+{
+	bDisplayStartTimer = false;
+	bDisplayRoundTimer = false;
+	bDisplayEndLeaderboard = true;
+}

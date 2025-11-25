@@ -8,6 +8,15 @@
 #include "AIController.h"
 #include "FirstPersonGameMode.generated.h"
 
+UENUM()
+enum class GameMatchState : uint8
+{
+	None,
+	StartCountdownPhase,
+	MatchRoundPhase,
+	EndLeaderboardPhase
+};
+
 UCLASS(Abstract)
 class FIRSTPERSONSHOOTER_API AFirstPersonGameMode : public AGameModeBase, public IEventListener, public ISpawner
 {
@@ -31,10 +40,37 @@ class FIRSTPERSONSHOOTER_API AFirstPersonGameMode : public AGameModeBase, public
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Spawning", meta = (ClampMin = 0.0f, Units = "s", AllowPrivateAccess = "true", ToolTip = "The time until a spawn point is considered as not occupied"))
 	float OccupiedDuration = 2.0f;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Match", meta = (AllowPrivateAccess = "true", ToolTip = "The current state that the match is in"))
+	GameMatchState CurrentMatchState = GameMatchState::None;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Match", meta = (AllowPrivateAccess = "true", Units = "s", ClampMin = 0.0))
+	float MatchStartDuration = 10.0f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Match", meta = (AllowPrivateAccess = "true", Units = "s", ClampMin = 0.0))
+	float MatchRoundDuration = 300.0f;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Match", meta = (AllowPrivateAccess = "true", Units = "s"))
+	float CountdownTimer;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Match", meta = (AllowPrivateAccess = "true"))
+	bool bDisplayStartTimer = false;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Match", meta = (AllowPrivateAccess = "true"))
+	bool bDisplayRoundTimer = false;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Match", meta = (AllowPrivateAccess = "true"))
+	bool bDisplayEndLeaderboard = false;
+
+public:
+	AFirstPersonGameMode();
+
 protected:
 	virtual void BeginPlay() override;
 
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+
+public:
+	virtual void Tick(float DeltaSeconds) override;
 	
 public:
 	UFUNCTION(BlueprintCallable)
@@ -42,6 +78,11 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	virtual void OnEventReceived_Implementation(FName EventName, const TArray<FEventData>& Params) override;
+
+	UFUNCTION(BlueprintCallable)
+	void SetCurrentMatchState(GameMatchState NewState);
+
+	inline GameMatchState GetCurrentMatchState() const { return CurrentMatchState; }
 
 protected:
 	UFUNCTION()
@@ -53,4 +94,9 @@ private:
 
 	UFUNCTION()
 	void MakeSpawnValid(AActor* SpawnPoint);
+
+	void MoveToNextPhase();
+	void DoStartCountdownPhase();
+	void DoMatchRoundPhase();
+	void DoEndLeaderboardPhase();
 };
