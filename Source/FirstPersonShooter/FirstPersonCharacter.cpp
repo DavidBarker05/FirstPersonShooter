@@ -12,6 +12,9 @@
 #include "Kismet/GameplayStatics.h"
 #include "Perception/AISense_Damage.h"
 #include "MatchLeaderboard.h"
+#include "FirstPersonGameMode.h"
+#include "Blueprint/UserWidget.h"
+#include "Kismet/GameplayStatics.h"
 
 AFirstPersonCharacter::AFirstPersonCharacter()
 {
@@ -75,6 +78,7 @@ void AFirstPersonCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInp
 		EnhancedInputComponent->BindAction(ShootAction, ETriggerEvent::Started, this, &AFirstPersonCharacter::DoShoot);
 		EnhancedInputComponent->BindAction(WeaponOneSelectAction, ETriggerEvent::Started, this, &AFirstPersonCharacter::DoSelectWeaponOne);
 		EnhancedInputComponent->BindAction(WeaponTwoSelectAction, ETriggerEvent::Started, this, &AFirstPersonCharacter::DoSelectWeaponTwo);
+		EnhancedInputComponent->BindAction(PauseAction, ETriggerEvent::Started, this, &AFirstPersonCharacter::DoPause);
 	}
 }
 
@@ -131,6 +135,38 @@ void AFirstPersonCharacter::DoShoot()
 void AFirstPersonCharacter::DoSelectWeaponOne() { WeaponHolderComponent->EquipPistol(); }
 
 void AFirstPersonCharacter::DoSelectWeaponTwo() { WeaponHolderComponent->EquipRifle(); }
+
+void AFirstPersonCharacter::DoPause()
+{
+	if (!PauseWidgetBlueprint || !IsValid(PauseWidgetBlueprint) || !GetWorld()) return;
+	if (AFirstPersonGameMode* FirstPersonGameMode = Cast<AFirstPersonGameMode>(UGameplayStatics::GetGameMode(GetWorld())))
+	{
+		if (FirstPersonGameMode->GetCurrentMatchState() != GameMatchState::MatchRoundPhase) return;
+		bIsPaused = !bIsPaused;
+		UGameplayStatics::SetGamePaused(GetWorld(), bIsPaused);
+		if (APlayerController* PlayerController = Cast<APlayerController>(GetController()))
+		{
+			if (bIsPaused && !WidgetInstance)
+			{
+				if (PlayerScreenWidgetInstance && IsValid(PlayerScreenWidgetInstance)) PlayerScreenWidgetInstance->RemoveFromParent();
+				WidgetInstance = CreateWidget<UUserWidget>(PlayerController, PauseWidgetBlueprint);
+				if (WidgetInstance) WidgetInstance->AddToPlayerScreen();
+			}
+			else if (!bIsPaused && WidgetInstance)
+			{
+				WidgetInstance->RemoveFromParent();
+				WidgetInstance = nullptr;
+				if (PlayerScreenWidgetInstance && IsValid(PlayerScreenWidgetInstance)) PlayerScreenWidgetInstance->AddToPlayerScreen();
+			}
+			else
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Red, TEXT("WidgetInstance was manipulated outside of FirstPersonCharacter.cpp"));
+				UE_LOG(LogTemp, Error, TEXT("WidgetInstance was manipulated outside of FirstPersonCharacter.cpp"));
+				return;
+			}
+		}
+	}
+}
 
 void AFirstPersonCharacter::UpdateBulletSpawnPos()
 {

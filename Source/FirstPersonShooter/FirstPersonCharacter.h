@@ -16,6 +16,17 @@ class FIRSTPERSONSHOOTER_API AFirstPersonCharacter : public ACharacter, public I
 
 	FName CharacterThatLastShotThisCharacter;
 
+	class UUserWidget* WidgetInstance;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Pause", meta = (AllowPrivateAccess = "true"))
+	bool bIsPaused = false;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Pause", meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<class UUserWidget> PauseWidgetBlueprint;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "UI", meta = (AllowPrivateAccess = "true"))
+	class UUserWidget* PlayerScreenWidgetInstance;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Leaderboard", meta = (AllowPrivateAccess = "true"))
 	FName LeaderboardName;
 
@@ -86,6 +97,9 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Input")
 	class UInputAction* WeaponTwoSelectAction;
 
+	UPROPERTY(EditAnywhere, Category = "Input")
+	class UInputAction* PauseAction;
+
 public:
 	AFirstPersonCharacter();
 
@@ -133,6 +147,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Input")
 	virtual void DoSelectWeaponTwo();
 
+	UFUNCTION(BlueprintCallable, Category = "Input")
+	virtual void DoPause();
+
 private:
 	void UpdateBulletSpawnPos();
 	float GetMaxMovementSpeed(const float Right, const float Forward);
@@ -151,4 +168,8 @@ public:
 	virtual void OnEventReceived_Implementation(FName EventName, const TArray<FEventData>& Params) override;
 
 	inline FName GetLeaderboardName() const { return LeaderboardName; }
+
+	inline bool IsPaused() const { return bIsPaused; }
+
+	inline void SetPaused(bool bPaused) { bIsPaused = bPaused; }
 };
