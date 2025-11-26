@@ -204,6 +204,11 @@ void AFirstPersonCharacter::OnEventReceived_Implementation(FName EventName, cons
 	{
 		if (*Params[0].Get<FUObjectStruct>() == this)
 		{
+			if (PlayerScreenWidgetInstance)
+			{
+				PlayerScreenWidgetInstance->RemoveFromParent();
+				PlayerScreenWidgetInstance = nullptr;
+			}
 			ADD_KILL_TO_LEADERBOARD(CharacterThatLastShotThisCharacter, LeaderboardName);
 			BROADCAST_EVENT("RespawnEvent", FUObjectStruct((UObject*) UGameplayStatics::GetGameMode(GetWorld())), FUObjectStruct(this), FFloatStruct(CharacterHealthComponent->GetRespawnDelay()));
 		}
