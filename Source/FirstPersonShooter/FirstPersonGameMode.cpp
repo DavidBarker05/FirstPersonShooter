@@ -30,6 +30,7 @@ void AFirstPersonGameMode::BeginPlay()
 void AFirstPersonGameMode::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	UNSUBSCRIBE_FROM_EVENTS();
+	CLEAR_LEADERBOARD();
 	Super::EndPlay(EndPlayReason);
 }
 

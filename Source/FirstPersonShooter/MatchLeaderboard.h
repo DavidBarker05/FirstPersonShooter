@@ -50,6 +50,15 @@ namespace Internal
 		} while (0)
 #endif
 
+#ifndef CLEAR_LEADERBOARD
+#define CLEAR_LEADERBOARD()\
+		do\
+		{\
+			if (UMatchLeaderboard* MatchLeaderboard = Internal::GetMatchLeaderboardFromContext(this))\
+				MatchLeaderboard->ClearLeaderboard();\
+		} while (0)
+#endif
+
 UCLASS()
 class FIRSTPERSONSHOOTER_API UMatchLeaderboard : public UGameInstanceSubsystem, public IEventListener
 {
@@ -73,6 +82,9 @@ public:
 
     UFUNCTION(BlueprintCallable)
     void OrderLeaderboard();
+
+    UFUNCTION(BlueprintCallable)
+    void ClearLeaderboard();
 
 private:
     void OrderLeaderboardInternal();

@@ -29,6 +29,13 @@ void UMatchLeaderboard::OrderLeaderboard()
 	OrderLeaderboardInternal();
 }
 
+void UMatchLeaderboard::ClearLeaderboard()
+{
+	Leaderboard.Empty();
+	Kills.Empty();
+	Deaths.Empty();
+}
+
 void UMatchLeaderboard::OrderLeaderboardInternal()
 {
 	if (Leaderboard.IsEmpty()) return;
