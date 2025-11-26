@@ -3,6 +3,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/Controller.h"
 #include "MatchLeaderboard.h"
+#include "BehaviorTree/BehaviorTreeComponent.h"
 
 AFirstPersonGameMode::AFirstPersonGameMode() { PrimaryActorTick.bCanEverTick = true; }
 
@@ -151,10 +152,9 @@ void AFirstPersonGameMode::Spawn_Implementation(TSubclassOf<AActor> ActorToSpawn
 
 FTransform AFirstPersonGameMode::GetValidSpawnPoint()
 {
-	UObject* WorldContextObject = GetWorld();
-	if (!WorldContextObject) return FTransform();
-	TArray<AActor*> SpawnPoints { };
-	UGameplayStatics::GetAllActorsOfClass(WorldContextObject, APlayerStart::StaticClass(), SpawnPoints);
+	if (!GetWorld()) return FTransform();
+	TArray<AActor*> SpawnPoints;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), APlayerStart::StaticClass(), SpawnPoints);
 	if (SpawnPoints.IsEmpty()) return FTransform();
 	AActor* PlayerStart;
 	do
@@ -200,12 +200,7 @@ void AFirstPersonGameMode::DoStartCountdownPhase()
 	bDisplayRoundTimer = false;
 	bDisplayEndLeaderboard = false;
 	CountdownTimer = MatchStartDuration;
-	if (!GetWorld()) return;
-	if (ACharacter* Player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0))
-	{
-		if (APlayerController* PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0))
-			Player->DisableInput(PlayerController);
-	}
+	PauseAllCharacters(TEXT("Countdown Phase Started"));
 }
 
 void AFirstPersonGameMode::DoMatchRoundPhase()
@@ -214,12 +209,7 @@ void AFirstPersonGameMode::DoMatchRoundPhase()
 	bDisplayRoundTimer = true;
 	bDisplayEndLeaderboard = false;
 	CountdownTimer = MatchRoundDuration;
-	if (!GetWorld()) return;
-	if (ACharacter* Player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0))
-	{
-		if (APlayerController* PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0))
-			Player->EnableInput(PlayerController);
-	}
+	ResumeAllCharacters(TEXT("Match Phase Started"));
 }
 
 void AFirstPersonGameMode::DoEndLeaderboardPhase()
@@ -227,4 +217,49 @@ void AFirstPersonGameMode::DoEndLeaderboardPhase()
 	bDisplayStartTimer = false;
 	bDisplayRoundTimer = false;
 	bDisplayEndLeaderboard = true;
+	PauseAllCharacters(TEXT("End Leaderboard Phase Started"));
+}
+
+void AFirstPersonGameMode::PauseAllCharacters(const FString& Reason)
+{
+	if (!GetWorld()) return;
+	if (ACharacter* Player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0))
+	{
+		if (APlayerController* PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0))
+			Player->DisableInput(PlayerController);
+	}
+	TArray<AActor*> AIControllers;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AAIController::StaticClass(), AIControllers);
+	for (AActor* Actor : AIControllers)
+	{
+		if (AAIController* AIController = Cast<AAIController>(Actor))
+		{
+			if (UBehaviorTreeComponent* BehaviorTreeComponent = Cast<UBehaviorTreeComponent>(AIController->GetBrainComponent()))
+			{
+				if (!BehaviorTreeComponent->IsPaused()) BehaviorTreeComponent->PauseLogic(Reason);
+			}
+		}
+	}
+}
+
+void AFirstPersonGameMode::ResumeAllCharacters(const FString& Reason)
+{
+	if (!GetWorld()) return;
+	if (ACharacter* Player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0))
+	{
+		if (APlayerController* PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0))
+			Player->EnableInput(PlayerController);
+	}
+	TArray<AActor*> AIControllers;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AAIController::StaticClass(), AIControllers);
+	for (AActor* Actor : AIControllers)
+	{
+		if (AAIController* AIController = Cast<AAIController>(Actor))
+		{
+			if (UBehaviorTreeComponent* BehaviorTreeComponent = Cast<UBehaviorTreeComponent>(AIController->GetBrainComponent()))
+			{
+				if (BehaviorTreeComponent->IsPaused()) BehaviorTreeComponent->ResumeLogic(Reason);
+			}
+		}
+	}
 }

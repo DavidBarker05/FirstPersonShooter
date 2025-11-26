@@ -24,9 +24,9 @@ class FIRSTPERSONSHOOTER_API AFirstPersonGameMode : public AGameModeBase, public
 
 	EVENTS_TO_LISTEN_TO("RespawnEvent")
 
-	TMap<TSubclassOf<AFirstPersonCharacter>, FTimerHandle> RespawnHandles { };
+	TMap<TSubclassOf<AFirstPersonCharacter>, FTimerHandle> RespawnHandles;
 
-	TMap<AActor*, FTimerHandle> OccupiedSpawns { };
+	TMap<AActor*, FTimerHandle> OccupiedSpawns;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Player Spawning", meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<AFirstPersonCharacter> PlayerBlueprint;
@@ -99,4 +99,7 @@ private:
 	void DoStartCountdownPhase();
 	void DoMatchRoundPhase();
 	void DoEndLeaderboardPhase();
+
+	void PauseAllCharacters(const FString& Reason);
+	void ResumeAllCharacters(const FString& Reason);
 };
