@@ -16,16 +16,8 @@ class FIRSTPERSONSHOOTER_API AFirstPersonCharacter : public ACharacter, public I
 
 	FName CharacterThatLastShotThisCharacter;
 
-	class UUserWidget* WidgetInstance;
-
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Pause", meta = (AllowPrivateAccess = "true"))
 	bool bIsPaused = false;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Pause", meta = (AllowPrivateAccess = "true"))
-	TSubclassOf<class UUserWidget> PauseWidgetBlueprint;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "UI", meta = (AllowPrivateAccess = "true"))
-	class UUserWidget* PlayerScreenWidgetInstance;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Leaderboard", meta = (AllowPrivateAccess = "true"))
 	FName LeaderboardName;
