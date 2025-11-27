@@ -13,8 +13,12 @@
 #include "Perception/AISense_Damage.h"
 #include "MatchLeaderboard.h"
 #include "FirstPersonGameMode.h"
+#include "CharacterStateMachine/CharacterState.h"
+#include "CharacterStateMachine/IdleState.h"
+#include "CharacterStateMachine/MoveState.h"
+#include "CharacterStateMachine/SprintState.h"
 
-AFirstPersonCharacter::AFirstPersonCharacter()
+AFirstPersonCharacter::AFirstPersonCharacter() : CurrentCharacterState(nullptr), IdleState(nullptr), MoveState(nullptr), SprintState(nullptr)
 {
 	PrimaryActorTick.bCanEverTick = true;
 	GetCapsuleComponent()->InitCapsuleSize(34.0f, 90.0f);
@@ -48,6 +52,10 @@ void AFirstPersonCharacter::BeginPlay()
 	SUBSCRIBE_TO_EVENTS();
 	GetCharacterMovement()->MaxWalkSpeed = BaseWalkSpeed;
 	bIsPressingSprint = false;
+	IdleState = NewObject<UIdleState>(this);
+	MoveState = NewObject<UMoveState>(this);
+	SprintState = NewObject<USprintState>(this);
+	SetCurrentCharacterState(IdleState);
 }
 
 void AFirstPersonCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -60,6 +68,7 @@ void AFirstPersonCharacter::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 	UpdateBulletSpawnPos();
+	if (CurrentCharacterState && IsValid(CurrentCharacterState)) CurrentCharacterState->Tick(this, DeltaSeconds);
 }
 
 void AFirstPersonCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -92,15 +101,7 @@ void AFirstPersonCharacter::Look(const FInputActionValue& Value)
 	DoLook(LookVector.X, LookVector.Y);
 }
 
-void AFirstPersonCharacter::DoMove(const float Right, const float Forward)
-{
-	if (!GetController()) return;
-	GetCharacterMovement()->MaxWalkSpeed = GetMaxMovementSpeed(Right, Forward);
-	bIsMovingLeft = Right < -MovementDeadzone;
-	bIsMovingRight = Right > MovementDeadzone;
-	AddMovementInput(GetActorRightVector(), Right);
-	AddMovementInput(GetActorForwardVector(), Forward);
-}
+void AFirstPersonCharacter::DoMove(const float Right, const float Forward) { if (GetController() && IsValid(GetController()) && CurrentCharacterState && IsValid(CurrentCharacterState)) CurrentCharacterState->Move(this, Right, Forward); }
 
 void AFirstPersonCharacter::DoLook(const float Yaw, const float Pitch)
 {
@@ -109,26 +110,15 @@ void AFirstPersonCharacter::DoLook(const float Yaw, const float Pitch)
 	AddControllerPitchInput(Pitch);
 }
 
-void AFirstPersonCharacter::DoJumpStart() { Jump(); }
+void AFirstPersonCharacter::DoJumpStart() { if (CurrentCharacterState&& IsValid(CurrentCharacterState)) CurrentCharacterState->JumpStart(this); }
 
-void AFirstPersonCharacter::DoJumpEnd() { StopJumping(); }
+void AFirstPersonCharacter::DoJumpEnd() { if (CurrentCharacterState && IsValid(CurrentCharacterState)) CurrentCharacterState->JumpEnd(this); }
 
-void AFirstPersonCharacter::DoSprintStart() { bIsPressingSprint = true; }
+void AFirstPersonCharacter::DoSprintStart() { if (CurrentCharacterState && IsValid(CurrentCharacterState)) CurrentCharacterState->SprintStart(this); }
 
-void AFirstPersonCharacter::DoSprintEnd() { bIsPressingSprint = false; }
+void AFirstPersonCharacter::DoSprintEnd() { if (CurrentCharacterState && IsValid(CurrentCharacterState)) CurrentCharacterState->SprintEnd(this); }
 
-void AFirstPersonCharacter::DoShoot()
-{
-	if (GetCharacterMovement()->Velocity.SizeSquared2D() > BaseWalkSpeed * BaseWalkSpeed || GetCharacterMovement()->IsFalling()) return;
-	bool bDoBulletSpread = GetCharacterMovement()->Velocity.SizeSquared2D() > 1.0f;
-	bool bWasSuccessfulShot = WeaponHolderComponent->Shoot(BulletSpawnTransform->GetComponentTransform(), bDoBulletSpread);
-	if (!bWasSuccessfulShot) return;
-	float Loudness = 1.0f;
-	APawn* NoiseInstigator = this;
-	FVector NoiseLocation = GetActorLocation();
-	float MaxRange = 2000.0f;
-	Super::MakeNoise(Loudness, NoiseInstigator, NoiseLocation, MaxRange);
-}
+void AFirstPersonCharacter::DoShoot() { if (CurrentCharacterState && IsValid(CurrentCharacterState)) CurrentCharacterState->Shoot(this); }
 
 void AFirstPersonCharacter::DoSelectWeaponOne() { WeaponHolderComponent->EquipPistol(); }
 
@@ -215,3 +205,19 @@ void AFirstPersonCharacter::OnEventReceived_Implementation(FName EventName, cons
 		if (const FInt32Struct* HealAmount = Params[1].Get<FInt32Struct>()) CharacterHealthComponent->ReceiveHealth(*HealAmount);
 	}
 }
+
+UCharacterState* AFirstPersonCharacter::GetCurrentCharacterState() const { return CurrentCharacterState; }
+
+void AFirstPersonCharacter::SetCurrentCharacterState(UCharacterState* NewState)
+{
+	if (!NewState || !IsValid(NewState)) return;
+	if (CurrentCharacterState) CurrentCharacterState->Exit(this);
+	CurrentCharacterState = NewState;
+	CurrentCharacterState->Enter(this);
+}
+
+UIdleState* AFirstPersonCharacter::GetIdleState() const { return IdleState; }
+
+UMoveState* AFirstPersonCharacter::GetMoveState() const { return MoveState; }
+
+USprintState* AFirstPersonCharacter::GetSprintState() const { return SprintState; }

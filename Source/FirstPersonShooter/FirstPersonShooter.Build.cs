@@ -16,7 +16,7 @@ public class FirstPersonShooter : ModuleRules
 			"EnhancedInput",
 			"AIModule",
 			"UMG"
-			});
+		});
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 		
@@ -25,7 +25,8 @@ public class FirstPersonShooter : ModuleRules
 			"FirstPersonShooter/Weapons",
 			"FirstPersonShooter/Interfaces",
 			"FirstPersonShooter/Events",
-			"FirstPersonShooter/Factories"
+			"FirstPersonShooter/Factories",
+			"FirstPersonShooter/CharacterStateMachine"
 		});
 
 		// Uncomment if you are using Slate UI

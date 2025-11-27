@@ -13,14 +13,6 @@ void UBulletFactory::Initialize(FSubsystemCollectionBase& Collection)
 
 void UBulletFactory::Deinitialize()
 {
-	if (GetWorld())
-	{
-		for (int32 i = BulletPool.Num() - 1; i > -1; --i)
-		{
-			if (BulletPool[i] && IsValid(BulletPool[i])) GetWorld()->DestroyActor(BulletPool[i]);
-			BulletPool[i] = nullptr;
-		}
-	}
 	BulletPool.Empty();
 	AvailableBullets.Empty();
 	Super::Deinitialize();

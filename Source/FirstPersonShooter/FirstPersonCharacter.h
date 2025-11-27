@@ -12,6 +12,18 @@ class FIRSTPERSONSHOOTER_API AFirstPersonCharacter : public ACharacter, public I
 
 	EVENTS_TO_LISTEN_TO("RiflePickupEvent", "BulletHitEvent", "HealthPickupEvent", "DeathEvent")
 
+	UPROPERTY()
+	class UCharacterState* CurrentCharacterState;
+
+	UPROPERTY()
+	class UIdleState* IdleState;
+
+	UPROPERTY()
+	class UMoveState* MoveState;
+
+	UPROPERTY()
+	class USprintState* SprintState;
+
 	bool bIsPressingSprint = false;
 
 	FName CharacterThatLastShotThisCharacter;
@@ -144,9 +156,10 @@ public:
 
 private:
 	void UpdateBulletSpawnPos();
-	float GetMaxMovementSpeed(const float Right, const float Forward);
 
 public:
+	float GetMaxMovementSpeed(const float Right, const float Forward);
+	
 	UFUNCTION(BlueprintCallable, Category = "Components")
 	class UCharacterHealthComponent* GetCharacterHealthComponent();
 
@@ -164,4 +177,24 @@ public:
 	inline bool IsPaused() const { return bIsPaused; }
 
 	inline void SetPaused(bool bPaused) { bIsPaused = bPaused; }
+
+	inline float GetMovementDeadzone() const { return MovementDeadzone; }
+
+	inline void SetIsPressingSprint(bool bPressingSprint) { bIsPressingSprint = bPressingSprint; }
+
+	inline void SetIsMovingLeft(bool bMovingLeft) { bIsMovingLeft = bMovingLeft; }
+
+	inline void SetIsMovingRight(bool bMovingRight) { bIsMovingRight = bMovingRight; }
+
+	inline USceneComponent* GetBulletSpawnTransform() const { return BulletSpawnTransform; }
+
+	class UCharacterState* GetCurrentCharacterState() const;
+
+	void SetCurrentCharacterState(class UCharacterState* NewState);
+
+	class UIdleState* GetIdleState() const;
+
+	class UMoveState* GetMoveState() const;
+
+	class USprintState* GetSprintState() const;
 };
