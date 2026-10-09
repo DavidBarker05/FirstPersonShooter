@@ -18,12 +18,13 @@ struct FIRSTPERSONSHOOTER_API FEventData
 
 	FEventData(FInstancedStruct InData) : Data(InData) { }
 
-	template<typename T>
+	// Constrained so it can't hijack copies of a non-const FEventData or construction from an FInstancedStruct lvalue (which would nest the struct inside another instanced struct)
+	template<typename T> requires (!std::is_same_v<std::decay_t<T>, FEventData> && !std::is_same_v<std::decay_t<T>, FInstancedStruct>)
 	FEventData(T&& InData) { Data = FInstancedStruct::Make(InData); }
 
 	bool IsValid() const { return Data.IsValid(); }
 
-	template<typename T>
+	template<typename T> requires (!std::is_same_v<std::decay_t<T>, FEventData> && !std::is_same_v<std::decay_t<T>, FInstancedStruct>)
 	void SetData(T&& InData) { Data = FInstancedStruct::Make(InData); }
 
 	template<typename T>
