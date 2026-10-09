@@ -1,55 +1,48 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
+#include "Any/Any.h"
+#include "Engine.h"
+#include "Engine/GameInstance.h"
+#include "Engine/World.h"
 #include "Subsystems/GameInstanceSubsystem.h"
-#include "Events/EventData.h"
+
 #include "EventBus.generated.h"
 
-namespace Internal
-{
-    static UEventBus* GetEventBusFromContext(const UObject* contextObject)
-    {
-        if (!contextObject || !IsValid(contextObject)) return nullptr;
-        const UWorld* world = nullptr;
-        if (const AActor* actor = Cast<AActor>(contextObject)) world = actor->GetWorld();
-        else if (const USceneComponent* sceneComponent = Cast<USceneComponent>(contextObject)) world = sceneComponent->GetWorld();
-        else if (const UActorComponent* component = Cast<UActorComponent>(contextObject))
-        {
-            if (AActor* owner = component->GetOwner()) world = owner->GetWorld();
-        }
-        if (!world) return nullptr;
-        if (UGameInstance* gameInstance = world->GetGameInstance()) return gameInstance->GetSubsystem<UEventBus>();
-        return nullptr;
-    }
-}
-
 #ifndef BROADCAST_EVENT
-	#define BROADCAST_EVENT(EventName, ...)\
-		do\
-		{\
-			if (UEventBus* EventBus = Internal::GetEventBusFromContext(this))\
-				EventBus->Broadcast(FName(EventName), { __VA_ARGS__ });\
-		} while (0)
+#define BROADCAST_EVENT(EventName, ...) \
+    do \
+    { \
+        if (const UWorld* World = GEngine->GetWorldFromContextObject(this, EGetWorldErrorMode::LogAndReturnNull); \
+            const UGameInstance* GameInstance = World->GetGameInstance()) \
+        { \
+            if (UEventBus* EventBus = GameInstance->GetSubsystem<UEventBus>()) \
+                EventBus->Broadcast(FName(EventName), {__VA_ARGS__}); \
+        } \
+    } while (0)
 #endif
 
-UCLASS(BlueprintType)
+class IEventListener;
+
+UCLASS()
 class FIRSTPERSONSHOOTER_API UEventBus : public UGameInstanceSubsystem
 {
-	GENERATED_BODY()
-
-	TMap<FName, TArray<TScriptInterface<class IEventListener>>> EventListeners;
+    GENERATED_BODY()
 
 public:
-	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
-	virtual void Deinitialize() override;
+    virtual void Initialize(FSubsystemCollectionBase& Collection) override;
+    virtual void Deinitialize() override;
 
-public:
-	UFUNCTION(BlueprintCallable)
-	void AddListener(FName EventName, TScriptInterface<class IEventListener> Listener);
+    UFUNCTION(BlueprintCallable)
+    void AddListener(const FName& EventName, TScriptInterface<IEventListener> Listener);
 
-	UFUNCTION(BlueprintCallable)
-	void RemoveListener(FName EventName, TScriptInterface<class IEventListener> Listener);
+    UFUNCTION(BlueprintCallable)
+    void RemoveListener(const FName& EventName, TScriptInterface<IEventListener> Listener);
 
-	UFUNCTION(BlueprintCallable)
-	void Broadcast(FName EventName, const TArray<FEventData>& Params);
+    UFUNCTION(BlueprintCallable)
+    void Broadcast(const FName& EventName, const TArray<FAny>& Params);
+
+private:
+    TMap<FName, TArray<TScriptInterface<IEventListener>>> EventListeners;
 };

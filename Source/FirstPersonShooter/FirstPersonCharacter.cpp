@@ -166,31 +166,31 @@ UWeaponHolderComponent* AFirstPersonCharacter::GetWeaponHolderComponent() { retu
 
 USkeletalMeshComponent* AFirstPersonCharacter::GetFirstPersonMesh() { return FirstPersonMesh; }
 
-void AFirstPersonCharacter::OnEventReceived_Implementation(FName EventName, const TArray<FEventData>& Params)
+void AFirstPersonCharacter::OnEventReceived_Implementation(const FName& EventName, const TArray<FAny>& Params)
 {
-	if (EVENT_MATCHES("RiflePickupEvent", 1) && PARAMS_ARE_VALID && PARAMS_ARE_CORRECT_TYPES(FUObjectStruct))
+	if (EVENT_MATCHES(TEXT("RiflePickupEvent"), 1) && PARAMS_ARE_VALID && PARAMS_ARE_CORRECT_TYPES(UObject*))
 	{
-		if (*Params[0].Get<FUObjectStruct>() == this) WeaponHolderComponent->PickUpRifle();
+		if (*Params[0].Get<UObject*>() == this) WeaponHolderComponent->PickUpRifle();
 	}
-	else if (EVENT_MATCHES("DeathEvent", 1) && PARAMS_ARE_VALID && PARAMS_ARE_CORRECT_TYPES(FUObjectStruct))
+	else if (EVENT_MATCHES(TEXT("DeathEvent"), 1) && PARAMS_ARE_VALID && PARAMS_ARE_CORRECT_TYPES(UObject*))
 	{
-		if (*Params[0].Get<FUObjectStruct>() == this)
+		if (*Params[0].Get<UObject*>() == this)
 		{
 			ADD_KILL_TO_LEADERBOARD(CharacterThatLastShotThisCharacter, LeaderboardName);
-			BROADCAST_EVENT("RespawnEvent", FUObjectStruct((UObject*) UGameplayStatics::GetGameMode(GetWorld())), FUObjectStruct(this), FFloatStruct(CharacterHealthComponent->GetRespawnDelay()));
+			BROADCAST_EVENT(TEXT("RespawnEvent"), UGameplayStatics::GetGameMode(GetWorld()), this, CharacterHealthComponent->GetRespawnDelay());
 		}
 	}
-	else if (EVENT_MATCHES("BulletHitEvent", 3) && PARAMS_ARE_VALID && PARAMS_ARE_CORRECT_TYPES(FUObjectStruct, FInt32Struct, FUObjectStruct))
+	else if (EVENT_MATCHES(TEXT("BulletHitEvent"), 3) && PARAMS_ARE_VALID && PARAMS_ARE_CORRECT_TYPES(AFirstPersonCharacter*, int32, AActor*))
 	{
-		if (*Params[0].Get<FUObjectStruct>() != this) return;
-		if (const FInt32Struct* Damage = Params[1].Get<FInt32Struct>())
+		if (*Params[0].Get<AFirstPersonCharacter*>() != this) return;
+		if (const int32 Damage = *Params[1].Get<int32>())
 		{
-			CharacterHealthComponent->TakeDamage(*Damage);
-			if (AActor* DamageInstigator = Params[2].Get<FUObjectStruct>()->CastAs<AActor>())
+			CharacterHealthComponent->TakeDamage(Damage);
+			if (AActor* DamageInstigator = *Params[2].Get<AActor*>())
 			{
 				UObject* WorldContextObject = GetWorld();
 				AActor* DamagedActor = this;
-				float DamageAmount = (float) Damage->Get();
+				float DamageAmount = Damage;
 				FVector EventLocation = DamageInstigator->GetActorLocation();
 				FVector HitLocation = GetActorLocation();
 				UAISense_Damage::ReportDamageEvent(WorldContextObject, DamagedActor, DamageInstigator, DamageAmount, EventLocation, HitLocation);
@@ -199,10 +199,10 @@ void AFirstPersonCharacter::OnEventReceived_Implementation(FName EventName, cons
 			}
 		}
 	}
-	else if (EVENT_MATCHES("HealthPickupEvent", 2) && PARAMS_ARE_VALID && PARAMS_ARE_CORRECT_TYPES(FUObjectStruct, FInt32Struct))
+	else if (EVENT_MATCHES(TEXT("HealthPickupEvent"), 2) && PARAMS_ARE_VALID && PARAMS_ARE_CORRECT_TYPES(AFirstPersonCharacter*, int32))
 	{
-		if (*Params[0].Get<FUObjectStruct>() != this) return;
-		if (const FInt32Struct* HealAmount = Params[1].Get<FInt32Struct>()) CharacterHealthComponent->ReceiveHealth(*HealAmount);
+		if (*Params[0].Get<AFirstPersonCharacter*>() != this) return;
+		if (const int32 HealAmount = *Params[1].Get<int32>()) CharacterHealthComponent->ReceiveHealth(HealAmount);
 	}
 }
 

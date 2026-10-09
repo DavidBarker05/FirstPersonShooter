@@ -50,23 +50,22 @@ void AFirstPersonGameMode::SpawnCharacterAfterDelay(TSubclassOf<AActor> ActorToS
 	GetWorldTimerManager().SetTimer(RespawnHandle, RespawnDelegate, Delay, false);
 }
 
-void AFirstPersonGameMode::OnEventReceived_Implementation(FName EventName, const TArray<FEventData>& Params)
+void AFirstPersonGameMode::OnEventReceived_Implementation(const FName& EventName, const TArray<FAny>& Params)
 {
-	if (EVENT_MATCHES("RespawnEvent", 3) && PARAMS_ARE_VALID && PARAMS_ARE_CORRECT_TYPES(FUObjectStruct, FUObjectStruct, FFloatStruct))
+	if (EVENT_MATCHES(TEXT("RespawnEvent"), 3) && PARAMS_ARE_VALID && PARAMS_ARE_CORRECT_TYPES(AFirstPersonGameMode*, AActor*, float))
 	{
-		if (*Params[0].Get<FUObjectStruct>() != this || !GetWorld()) return;
-		if (AActor* ActorToSpawn = Params[1].Get<FUObjectStruct>()->CastAs<AActor>())
+		if (*Params[0].Get<AFirstPersonGameMode*>() != this || !GetWorld()) return;
+		if (AActor* ActorToSpawn = *Params[1].Get<AActor*>())
 		{
-			if (const FFloatStruct* SpawnDelay = Params[2].Get<FFloatStruct>())
+			if (const float SpawnDelay = *Params[2].Get<float>())
 			{
 				if (PlayerBlueprint && ActorToSpawn->IsA(PlayerBlueprint))
 				{
 					if (!RespawnHandles.Contains(PlayerBlueprint)) return;
-					SpawnCharacterAfterDelay(PlayerBlueprint, *SpawnDelay, RespawnHandles[PlayerBlueprint]);
+					SpawnCharacterAfterDelay(PlayerBlueprint, SpawnDelay, RespawnHandles[PlayerBlueprint]);
 					GetWorldTimerManager().SetTimerForNextTick([this, ActorToDestroy = ActorToSpawn]()
 					{
-						if (IsValid(ActorToDestroy))
-							GetWorld()->DestroyActor(ActorToDestroy);
+						if (IsValid(ActorToDestroy)) GetWorld()->DestroyActor(ActorToDestroy);
 					});
 				}
 				else
@@ -74,7 +73,7 @@ void AFirstPersonGameMode::OnEventReceived_Implementation(FName EventName, const
 					for (const TSubclassOf<AFirstPersonCharacter>& AIBlueprint : AIBlueprints)
 					{
 						if (!AIBlueprint || !ActorToSpawn->IsA(AIBlueprint) || !RespawnHandles.Contains(AIBlueprint)) continue;
-						SpawnCharacterAfterDelay(AIBlueprint, *SpawnDelay, RespawnHandles[AIBlueprint]);
+						SpawnCharacterAfterDelay(AIBlueprint, SpawnDelay, RespawnHandles[AIBlueprint]);
 						if (APawn* AI = Cast<APawn>(ActorToSpawn))
 						{
 							if (AController* AIController = AI->GetController())
@@ -85,8 +84,7 @@ void AFirstPersonGameMode::OnEventReceived_Implementation(FName EventName, const
 						}
 						GetWorldTimerManager().SetTimerForNextTick([this, ActorToDestroy = ActorToSpawn]()
 						{
-							if (IsValid(ActorToDestroy))
-								GetWorld()->DestroyActor(ActorToDestroy);
+							if (IsValid(ActorToDestroy)) GetWorld()->DestroyActor(ActorToDestroy);
 						});
 						break;
 					}

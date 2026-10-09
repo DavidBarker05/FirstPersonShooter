@@ -10,7 +10,7 @@ class FIRSTPERSONSHOOTER_API AFirstPersonCharacter : public ACharacter, public I
 {
 	GENERATED_BODY()
 
-	EVENTS_TO_LISTEN_TO("RiflePickupEvent", "BulletHitEvent", "HealthPickupEvent", "DeathEvent")
+	EVENTS_TO_LISTEN_TO(TEXT("RiflePickupEvent"), TEXT("BulletHitEvent"), TEXT("HealthPickupEvent"), TEXT("DeathEvent"))
 
 	UPROPERTY()
 	class UCharacterState* CurrentCharacterState;
@@ -170,7 +170,7 @@ public:
 	class USkeletalMeshComponent* GetFirstPersonMesh();
 
 	UFUNCTION(BlueprintCallable)
-	virtual void OnEventReceived_Implementation(FName EventName, const TArray<FEventData>& Params) override;
+	virtual void OnEventReceived_Implementation(const FName& EventName, const TArray<FAny>& Params) override;
 
 	inline FName GetLeaderboardName() const { return LeaderboardName; }
 

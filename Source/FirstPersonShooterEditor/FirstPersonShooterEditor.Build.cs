@@ -18,5 +18,11 @@ public class FirstPersonShooterEditor : ModuleRules
 			"BlueprintGraph",
 			"KismetCompiler"
 		});
+		
+		PublicIncludePaths.AddRange(new string[]
+        {
+            "FirstPersonShooterEditor",
+            "FirstPersonShooterEditor/Any"
+        });
 	}
 }

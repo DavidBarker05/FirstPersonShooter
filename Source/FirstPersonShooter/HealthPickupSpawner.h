@@ -11,7 +11,7 @@ class FIRSTPERSONSHOOTER_API AHealthPickupSpawner : public AActor, public ISpawn
 {
 	GENERATED_BODY()
 
-	EVENTS_TO_LISTEN_TO("RespawnEvent")
+	EVENTS_TO_LISTEN_TO(TEXT("RespawnEvent"))
 
 	FTimerHandle RespawnHandle;
 
@@ -42,7 +42,7 @@ public:
 	void SpawnNewPickupAfterDelay();
 
 	UFUNCTION(BlueprintCallable)
-	void OnEventReceived_Implementation(FName EventName, const TArray<FEventData>& Params) override;
+	void OnEventReceived_Implementation(const FName& EventName, const TArray<FAny>& Params) override;
 
 protected:
 	UFUNCTION()

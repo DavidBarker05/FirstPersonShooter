@@ -1,6 +1,6 @@
 #include "Factories/WeaponFactory.h"
 
-ABaseWeapon* UWeaponFactory::CreateWeapon(AActor* Owner, USkeletalMeshComponent* AttachMesh, TSubclassOf<ABaseWeapon> WeaponBlueprint, bool bIsFirstPerson, bool bIsVisible)
+ABaseWeapon* UWeaponFactory::CreateWeapon(AActor* Owner, USkeletalMeshComponent* AttachMesh, const TSubclassOf<ABaseWeapon>& WeaponBlueprint, bool bIsFirstPerson, bool bIsVisible)
 {
 	if (!Owner || !AttachMesh || !WeaponBlueprint || !GetWorld()) return nullptr;
 	FActorSpawnParameters SpawnParams;

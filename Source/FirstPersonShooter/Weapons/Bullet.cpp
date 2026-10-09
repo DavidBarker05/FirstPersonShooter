@@ -23,7 +23,7 @@ void ABullet::Tick(float DeltaTime)
 	if (CheckForHit(OutHit))
 	{
 		DeactivateBullet();
-		BROADCAST_EVENT("BulletHitEvent", FUObjectStruct(OutHit.GetActor()), FInt32Struct(Damage), FUObjectStruct(ActorToIgnore));
+		BROADCAST_EVENT(TEXT("BulletHitEvent"), OutHit.GetActor(), Damage, ActorToIgnore);
 	}
 	LastPosition = GetActorLocation();
 }

@@ -33,11 +33,11 @@ void ARiflePickupSpawner::SpawnNewPickupAfterDelay()
 	GetWorldTimerManager().SetTimer(RespawnHandle, RespawnDelegate, RespawnDelay, false);
 }
 
-void ARiflePickupSpawner::OnEventReceived_Implementation(FName EventName, const TArray<FEventData>& Params)
+void ARiflePickupSpawner::OnEventReceived_Implementation(const FName& EventName, const TArray<FAny>& Params)
 {
-	if (EVENT_MATCHES("RespawnEvent", 1) && PARAMS_ARE_VALID && PARAMS_ARE_CORRECT_TYPES(FUObjectStruct))
+	if (EVENT_MATCHES(TEXT("RespawnEvent"), 1) && PARAMS_ARE_VALID && PARAMS_ARE_CORRECT_TYPES(UObject*))
 	{
-		if (*Params[0].Get<FUObjectStruct>() == this) SpawnNewPickupAfterDelay();
+		if (*Params[0].Get<UObject*>() == this) SpawnNewPickupAfterDelay();
 	}
 }
 

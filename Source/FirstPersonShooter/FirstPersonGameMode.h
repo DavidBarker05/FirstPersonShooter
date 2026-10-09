@@ -22,7 +22,7 @@ class FIRSTPERSONSHOOTER_API AFirstPersonGameMode : public AGameModeBase, public
 {
 	GENERATED_BODY()
 
-	EVENTS_TO_LISTEN_TO("RespawnEvent")
+	EVENTS_TO_LISTEN_TO(TEXT("RespawnEvent"))
 
 	TMap<TSubclassOf<AFirstPersonCharacter>, FTimerHandle> RespawnHandles;
 
@@ -77,7 +77,7 @@ public:
 	virtual void SpawnCharacterAfterDelay(TSubclassOf<AActor> ActorToSpawn, float Delay, FTimerHandle& RespawnHandle);
 
 	UFUNCTION(BlueprintCallable)
-	virtual void OnEventReceived_Implementation(FName EventName, const TArray<FEventData>& Params) override;
+	virtual void OnEventReceived_Implementation(const FName& EventName, const TArray<FAny>& Params) override;
 
 	UFUNCTION(BlueprintCallable)
 	void SetCurrentMatchState(GameMatchState NewState);

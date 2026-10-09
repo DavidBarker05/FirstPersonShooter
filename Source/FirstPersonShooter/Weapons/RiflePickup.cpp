@@ -13,15 +13,15 @@ void ARiflePickup::OnComponentBeginOverlap(UPrimitiveComponent* OverlappedCompon
 
 void ARiflePickup::OnPickup_Implementation(AActor* CollidedActor)
 {
-	if (ACharacter* Character = Cast<ACharacter>(CollidedActor))
+	if (IsValid(CollidedActor) && CollidedActor->IsA<ACharacter>())
 	{
-		BROADCAST_EVENT("RiflePickupEvent", FUObjectStruct(CollidedActor));
+		BROADCAST_EVENT(TEXT("RiflePickupEvent"), CollidedActor);
 		Respawn_Implementation();
 	}
 }
 
 void ARiflePickup::Respawn_Implementation()
 {
-	BROADCAST_EVENT("RespawnEvent", FUObjectStruct(GetOwner()));
+	BROADCAST_EVENT(TEXT("RespawnEvent"), GetOwner());
 	GetWorld()->DestroyActor(this);
 }

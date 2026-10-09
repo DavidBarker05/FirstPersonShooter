@@ -1,66 +1,68 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
+#include "Engine.h"
+#include "Engine/GameInstance.h"
+#include "Engine/World.h"
 #include "Subsystems/GameInstanceSubsystem.h"
-#include "Events/EventListener.h"
+
 #include "MatchLeaderboard.generated.h"
 
-namespace Internal
-{
-    static UMatchLeaderboard* GetMatchLeaderboardFromContext(const UObject* contextObject)
-    {
-        if (!contextObject || !IsValid(contextObject)) return nullptr;
-        const UWorld* world = nullptr;
-        if (const AActor* actor = Cast<AActor>(contextObject)) world = actor->GetWorld();
-        else if (const USceneComponent* sceneComponent = Cast<USceneComponent>(contextObject)) world = sceneComponent->GetWorld();
-        else if (const UActorComponent* component = Cast<UActorComponent>(contextObject))
-        {
-            if (AActor* owner = component->GetOwner()) world = owner->GetWorld();
-        }
-        if (!world) return nullptr;
-        if (UGameInstance* gameInstance = world->GetGameInstance()) return gameInstance->GetSubsystem<UMatchLeaderboard>();
-        return nullptr;
-    }
-}
-
 #ifndef ADD_CHARACTER_TO_LEADERBOARD
-#define ADD_CHARACTER_TO_LEADERBOARD(CharacterName)\
-		do\
-		{\
-			if (UMatchLeaderboard* MatchLeaderboard = Internal::GetMatchLeaderboardFromContext(this))\
-				MatchLeaderboard->AddCharacter(CharacterName);\
-		} while (0)
+#define ADD_CHARACTER_TO_LEADERBOARD(CharacterName) \
+    do \
+    { \
+        if (const UWorld* World = GEngine->GetWorldFromContextObject(this, EGetWorldErrorMode::LogAndReturnNull); \
+            const UGameInstance* GameInstance = World->GetGameInstance()) \
+        { \
+            if (UMatchLeaderboard* MatchLeaderboard = GameInstance->GetSubsystem<UMatchLeaderboard>()) \
+                MatchLeaderboard->AddCharacter(CharacterName); \
+        } \
+    } while (0)
 #endif
 
 #ifndef ADD_KILL_TO_LEADERBOARD
-#define ADD_KILL_TO_LEADERBOARD(CharacterThatKilled, CharacterThatDied)\
-		do\
-		{\
-			if (UMatchLeaderboard* MatchLeaderboard = Internal::GetMatchLeaderboardFromContext(this))\
-				MatchLeaderboard->AddKill(CharacterThatKilled, CharacterThatDied);\
-		} while (0)
+#define ADD_KILL_TO_LEADERBOARD(CharacterThatKilled, CharacterThatDied) \
+    do \
+    { \
+        if (const UWorld* World = GEngine->GetWorldFromContextObject(this, EGetWorldErrorMode::LogAndReturnNull); \
+            const UGameInstance* GameInstance = World->GetGameInstance()) \
+        { \
+            if (UMatchLeaderboard* MatchLeaderboard = GameInstance->GetSubsystem<UMatchLeaderboard>()) \
+                MatchLeaderboard->AddKill(CharacterThatKilled, CharacterThatDied); \
+        } \
+    } while (0)
 #endif
 
 #ifndef ORDER_LEADERBOARD
-#define ORDER_LEADERBOARD()\
-		do\
-		{\
-			if (UMatchLeaderboard* MatchLeaderboard = Internal::GetMatchLeaderboardFromContext(this))\
-				MatchLeaderboard->OrderLeaderboard();\
-		} while (0)
+#define ORDER_LEADERBOARD() \
+    do \
+    { \
+        if (const UWorld* World = GEngine->GetWorldFromContextObject(this, EGetWorldErrorMode::LogAndReturnNull); \
+            const UGameInstance* GameInstance = World->GetGameInstance()) \
+        { \
+            if (UMatchLeaderboard* MatchLeaderboard = GameInstance->GetSubsystem<UMatchLeaderboard>()) \
+                MatchLeaderboard->OrderLeaderboard(); \
+        } \
+    } while (0)
 #endif
 
 #ifndef CLEAR_LEADERBOARD
-#define CLEAR_LEADERBOARD()\
-		do\
-		{\
-			if (UMatchLeaderboard* MatchLeaderboard = Internal::GetMatchLeaderboardFromContext(this))\
-				MatchLeaderboard->ClearLeaderboard();\
-		} while (0)
+#define CLEAR_LEADERBOARD() \
+    do \
+    { \
+        if (const UWorld* World = GEngine->GetWorldFromContextObject(this, EGetWorldErrorMode::LogAndReturnNull); \
+            const UGameInstance* GameInstance = World->GetGameInstance()) \
+        { \
+            if (UMatchLeaderboard* MatchLeaderboard = GameInstance->GetSubsystem<UMatchLeaderboard>()) \
+                MatchLeaderboard->ClearLeaderboard(); \
+        } \
+    } while (0)
 #endif
 
 UCLASS()
-class FIRSTPERSONSHOOTER_API UMatchLeaderboard : public UGameInstanceSubsystem, public IEventListener
+class FIRSTPERSONSHOOTER_API UMatchLeaderboard : public UGameInstanceSubsystem
 {
 	GENERATED_BODY()
 

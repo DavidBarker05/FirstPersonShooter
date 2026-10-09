@@ -13,15 +13,15 @@ void AHealthPickup::OnComponentBeginOverlap(UPrimitiveComponent* OverlappedCompo
 
 void AHealthPickup::OnPickup_Implementation(AActor* CollidedActor)
 {
-	if (ACharacter* Character = Cast<ACharacter>(CollidedActor))
+	if (IsValid(CollidedActor) && CollidedActor->IsA<ACharacter>())
 	{
-		BROADCAST_EVENT("HealthPickupEvent", FUObjectStruct(CollidedActor), FInt32Struct(HealAmount));
+		BROADCAST_EVENT(TEXT("HealthPickupEvent"), CollidedActor, HealAmount);
 		Respawn_Implementation();
 	}
 }
 
 void AHealthPickup::Respawn_Implementation()
 {
-	BROADCAST_EVENT("RespawnEvent", FUObjectStruct(GetOwner()));
+	BROADCAST_EVENT(TEXT("RespawnEvent"), GetOwner());
 	GetWorld()->DestroyActor(this);
 }
