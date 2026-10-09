@@ -5,7 +5,7 @@
 #include "K2Node_EventData.generated.h"
 
 UCLASS()
-class FIRSTPERSONSHOOTER_API UK2Node_EventData : public UK2Node_CallFunction
+class FIRSTPERSONSHOOTEREDITOR_API UK2Node_EventData : public UK2Node_CallFunction
 {
 	GENERATED_BODY()
 

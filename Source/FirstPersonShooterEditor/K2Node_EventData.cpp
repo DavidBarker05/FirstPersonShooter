@@ -1,4 +1,4 @@
-#include "Events/K2Node_EventData.h"
+#include "K2Node_EventData.h"
 #include "EdGraphSchema_K2.h"
 #include "BlueprintNodeSpawner.h"
 #include "BlueprintActionDatabaseRegistrar.h"
@@ -39,7 +39,7 @@ void UK2Node_EventData::GetMenuActions(FBlueprintActionDatabaseRegistrar& Action
 		// StructToEventData()
 		UBlueprintNodeSpawner* ToNodeSpawner = UBlueprintNodeSpawner::Create(GetClass());
 		check(ToNodeSpawner != nullptr);
-		MakeNodeSpawner->CustomizeNodeDelegate = UBlueprintNodeSpawner::FCustomizeNodeDelegate::CreateStatic(CustomizeLambda, GET_FUNCTION_NAME_CHECKED(UCustomStructFunctionLibrary, StructToEventData));
+		ToNodeSpawner->CustomizeNodeDelegate = UBlueprintNodeSpawner::FCustomizeNodeDelegate::CreateStatic(CustomizeLambda, GET_FUNCTION_NAME_CHECKED(UCustomStructFunctionLibrary, StructToEventData));
 		ActionRegistrar.AddBlueprintAction(Action, ToNodeSpawner);
 	}
 }

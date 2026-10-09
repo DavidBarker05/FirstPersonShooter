@@ -4,11 +4,14 @@ Intermediate
 Saved
 .vscode
 .vs
+.idea
 *.VC.db
 *.opensdf
 *.opendb
 *.sdf
 *.sln
+*.slnx
 *.suo
 *.xcodeproj
 *.xcworkspace
+*.vscode-workspace
