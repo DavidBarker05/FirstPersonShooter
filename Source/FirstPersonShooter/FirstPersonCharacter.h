@@ -1,200 +1,248 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Character.h"
+
 #include "Events/EventListener.h"
+#include "GameFramework/Character.h"
+
 #include "FirstPersonCharacter.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FHitMarkerDelegate);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FHitEffectDelegate);
+
+struct FInputActionValue;
+class UCharacterHealthComponent;
+class UCharacterState;
+class UIdleState;
+class UInputAction;
+class UMoveState;
+class UNiagaraSystem;
+class USprintState;
+class UWeaponHolderComponent;
+
 UCLASS(Abstract)
-class FIRSTPERSONSHOOTER_API AFirstPersonCharacter : public ACharacter, public IEventListener
+class FIRSTPERSONSHOOTER_API AFirstPersonCharacter : public ACharacter,
+                                                     public IEventListener
 {
-	GENERATED_BODY()
+    GENERATED_BODY()
 
-	EVENTS_TO_LISTEN_TO(TEXT("RiflePickupEvent"), TEXT("BulletHitEvent"), TEXT("HealthPickupEvent"), TEXT("DeathEvent"))
-
-	UPROPERTY()
-	class UCharacterState* CurrentCharacterState;
-
-	UPROPERTY()
-	class UIdleState* IdleState;
-
-	UPROPERTY()
-	class UMoveState* MoveState;
-
-	UPROPERTY()
-	class USprintState* SprintState;
-
-	bool bIsPressingSprint = false;
-
-	FName CharacterThatLastShotThisCharacter;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Pause", meta = (AllowPrivateAccess = "true"))
-	bool bIsPaused = false;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Leaderboard", meta = (AllowPrivateAccess = "true"))
-	FName LeaderboardName;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
-	class USkeletalMeshComponent* FirstPersonMesh;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
-	class UCameraComponent* PlayerCamera;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
-	class UCharacterHealthComponent* CharacterHealthComponent;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
-	class UWeaponHolderComponent* WeaponHolderComponent;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
-	class USpringArmComponent* BulletSpawnOffset;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
-	USceneComponent* BulletSpawnTransform;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Movement", meta = (ClampMin = 0.0f, ClampMax = 1.0f, AllowPrivateAccess = "true", ToolTip = "Deadzone for movement key to be considered pressed"))
-	float MovementDeadzone = 0.05f;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Movement", meta = (ClampMin = 400.0f, ClampMax = 600.0f, Units = "cm/s", AllowPrivateAccess = "true", ToolTip = "The base movement speed of the character when walking forwards"))
-	float BaseWalkSpeed = 500.0f;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Movement", meta = (ClampMin = 350.0f, ClampMax = 550.0f, Units = "cm/s", AllowPrivateAccess = "true", ToolTip = "The movement speed of the character when walking diagonally forwards"))
-	float DiagonalWalkSpeed = 450.0f;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Movement", meta = (ClampMin = 325.0f, ClampMax = 525.0f, Units = "cm/s", AllowPrivateAccess = "true", ToolTip = "The movement speed of the character when walking sideways"))
-	float StrafeWalkSpeed = 425.0f;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Movement", meta = (ClampMin = 300.0f, ClampMax = 500.0f, Units = "cm/s", AllowPrivateAccess = "true", ToolTip = "The movement speed of the character when walking backwards"))
-	float BackwardsWalkSpeed = 400.0f;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Movement", meta = (ClampMin = 750.0f, ClampMax = 850.0f, Units = "cm/s", AllowPrivateAccess = "true", ToolTip = "The base movement speed of the character when sprinting forwards"))
-	float BaseSprintSpeed = 800.0f;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Movement", meta = (ClampMin = 700.0f, ClampMax = 800.0f, Units = "cm/s", AllowPrivateAccess = "true", ToolTip = "The base movement speed of the character when sprinting forwards"))
-	float DiagonalSprintSpeed = 750.0f;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement", meta = (AllowPrivateAccess = "true", ToolTip = "Indicates if the character is moving to the left"))
-	bool bIsMovingLeft = false;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement", meta = (AllowPrivateAccess = "true", ToolTip = "Indicates if the character is moving to the right"))
-	bool bIsMovingRight = false;
-
-protected:
-	UPROPERTY(EditAnywhere, Category = "Input")
-	class UInputAction* MoveAction;
-
-	UPROPERTY(EditAnywhere, Category = "Input")
-	class UInputAction* MouseLookAction;
-
-	UPROPERTY(EditAnywhere, Category = "Input")
-	class UInputAction* JumpAction;
-
-	UPROPERTY(EditAnywhere, Category = "Input")
-	class UInputAction* SprintAction;
-
-	UPROPERTY(EditAnywhere, Category = "Input")
-	class UInputAction* ShootAction;
-
-	UPROPERTY(EditAnywhere, Category = "Input")
-	class UInputAction* WeaponOneSelectAction;
-
-	UPROPERTY(EditAnywhere, Category = "Input")
-	class UInputAction* WeaponTwoSelectAction;
-
-	UPROPERTY(EditAnywhere, Category = "Input")
-	class UInputAction* PauseAction;
+    EVENTS_TO_LISTEN_TO(TEXT("RiflePickupEvent"), TEXT("BulletHitEvent"), TEXT("HealthPickupEvent"), TEXT("DeathEvent"))
 
 public:
-	AFirstPersonCharacter();
+    AFirstPersonCharacter();
+
+    virtual void BeginPlay() override;
+
+    virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+
+    virtual void Tick(float DeltaSeconds) override;
+
+    virtual void SetupPlayerInputComponent(UInputComponent* InputComponent) override;
+
+    UFUNCTION(BlueprintCallable)
+    virtual void OnEventReceived_Implementation(const FName& EventName, const TArray<FAny>& Params) override;
 
 protected:
-	virtual void BeginPlay() override;
+    void Move(const FInputActionValue& Value);
 
-	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+    void Look(const FInputActionValue& Value);
 
 public:
-	virtual void Tick(float DeltaSeconds) override;
+    UFUNCTION(BlueprintCallable, Category = "Input")
+    virtual void DoMove(const float Right, const float Forward);
 
-protected:
-	virtual void SetupPlayerInputComponent(class UInputComponent* InputComponent) override;
+    UFUNCTION(BlueprintCallable, Category = "Input")
+    virtual void DoLook(const float Yaw, const float Pitch);
 
-protected:
-	void Move(const struct FInputActionValue& Value);
+    UFUNCTION(BlueprintCallable, Category = "Input")
+    virtual void DoJumpStart();
 
-	void Look(const struct FInputActionValue& Value);
+    UFUNCTION(BlueprintCallable, Category = "Input")
+    virtual void DoJumpEnd();
 
-public:
-	UFUNCTION(BlueprintCallable, Category = "Input")
-	virtual void DoMove(const float Right, const float Forward);
+    UFUNCTION(BlueprintCallable, Category = "Input")
+    virtual void DoSprintStart();
 
-	UFUNCTION(BlueprintCallable, Category = "Input")
-	virtual void DoLook(const float Yaw, const float Pitch);
+    UFUNCTION(BlueprintCallable, Category = "Input")
+    virtual void DoSprintEnd();
 
-	UFUNCTION(BlueprintCallable, Category = "Input")
-	virtual void DoJumpStart();
+    UFUNCTION(BlueprintCallable, Category = "Input")
+    virtual void DoShoot();
 
-	UFUNCTION(BlueprintCallable, Category = "Input")
-	virtual void DoJumpEnd();
+    UFUNCTION(BlueprintCallable, Category = "Input")
+    virtual void DoSelectWeaponOne();
 
-	UFUNCTION(BlueprintCallable, Category = "Input")
-	virtual void DoSprintStart();
+    UFUNCTION(BlueprintCallable, Category = "Input")
+    virtual void DoSelectWeaponTwo();
 
-	UFUNCTION(BlueprintCallable, Category = "Input")
-	virtual void DoSprintEnd();
+    UFUNCTION(BlueprintCallable, Category = "Input")
+    virtual void DoPause();
 
-	UFUNCTION(BlueprintCallable, Category = "Input")
-	virtual void DoShoot();
+    UFUNCTION(BlueprintCallable, Category = "Speed")
+    float GetMaxMovementSpeed(const float Right, const float Forward) const;
 
-	UFUNCTION(BlueprintCallable, Category = "Input")
-	virtual void DoSelectWeaponOne();
+    const UCharacterHealthComponent* GetCharacterHealthComponent() const { return CharacterHealthComponent; }
+    UCharacterHealthComponent* GetCharacterHealthComponent() { return CharacterHealthComponent; }
 
-	UFUNCTION(BlueprintCallable, Category = "Input")
-	virtual void DoSelectWeaponTwo();
+    const UWeaponHolderComponent* GetWeaponHolderComponent() const { return WeaponHolderComponent; }
+    UWeaponHolderComponent* GetWeaponHolderComponent() { return WeaponHolderComponent; }
 
-	UFUNCTION(BlueprintCallable, Category = "Input")
-	virtual void DoPause();
+    const USkeletalMeshComponent* GetFirstPersonMesh() const { return FirstPersonMesh; }
+    USkeletalMeshComponent* GetFirstPersonMesh() { return FirstPersonMesh; }
+
+    const FName& GetLeaderboardName() const { return LeaderboardName; }
+
+    bool IsPaused() const { return bIsPaused; }
+
+    void SetPaused(bool bPaused) { bIsPaused = bPaused; }
+
+    float GetMovementDeadzone() const { return MovementDeadzone; }
+
+    void SetIsPressingSprint(bool bPressingSprint) { bIsPressingSprint = bPressingSprint; }
+
+    void SetIsMovingLeft(bool bMovingLeft) { bIsMovingLeft = bMovingLeft; }
+
+    void SetIsMovingRight(bool bMovingRight) { bIsMovingRight = bMovingRight; }
+
+    const USceneComponent* GetBulletSpawnTransform() const { return BulletSpawnTransform; }
+    USceneComponent* GetBulletSpawnTransform() { return BulletSpawnTransform; }
+
+    const UCharacterState* GetCurrentCharacterState() const { return CurrentCharacterState; }
+    UCharacterState* GetCurrentCharacterState() { return CurrentCharacterState; }
+
+    void SetCurrentCharacterState(UCharacterState* NewState);
+
+    const UIdleState* GetIdleState() const { return IdleState; }
+    UIdleState* GetIdleState() { return IdleState; }
+
+    const UMoveState* GetMoveState() const { return MoveState; }
+    UMoveState* GetMoveState() { return MoveState; }
+
+    const USprintState* GetSprintState() const { return SprintState; }
+    USprintState* GetSprintState() { return SprintState; }
 
 private:
-	void UpdateBulletSpawnPos();
+    void UpdateBulletSpawnPos() const;
 
 public:
-	float GetMaxMovementSpeed(const float Right, const float Forward);
-	
-	UFUNCTION(BlueprintCallable, Category = "Components")
-	class UCharacterHealthComponent* GetCharacterHealthComponent();
+    UPROPERTY(BlueprintAssignable)
+    FHitMarkerDelegate HitMarkerDelegate;
 
-	UFUNCTION(BlueprintCallable, Category = "Components")
-	class UWeaponHolderComponent* GetWeaponHolderComponent();
+    UPROPERTY(BlueprintAssignable)
+    FHitEffectDelegate HitEffectDelegate;
 
-	UFUNCTION(BlueprintCallable, Category = "Components")
-	class USkeletalMeshComponent* GetFirstPersonMesh();
+protected:
+    UPROPERTY(EditAnywhere, Category = "Input")
+    UInputAction* MoveAction;
 
-	UFUNCTION(BlueprintCallable)
-	virtual void OnEventReceived_Implementation(const FName& EventName, const TArray<FAny>& Params) override;
+    UPROPERTY(EditAnywhere, Category = "Input")
+    UInputAction* MouseLookAction;
 
-	inline FName GetLeaderboardName() const { return LeaderboardName; }
+    UPROPERTY(EditAnywhere, Category = "Input")
+    UInputAction* JumpAction;
 
-	inline bool IsPaused() const { return bIsPaused; }
+    UPROPERTY(EditAnywhere, Category = "Input")
+    UInputAction* SprintAction;
 
-	inline void SetPaused(bool bPaused) { bIsPaused = bPaused; }
+    UPROPERTY(EditAnywhere, Category = "Input")
+    UInputAction* ShootAction;
 
-	inline float GetMovementDeadzone() const { return MovementDeadzone; }
+    UPROPERTY(EditAnywhere, Category = "Input")
+    UInputAction* WeaponOneSelectAction;
 
-	inline void SetIsPressingSprint(bool bPressingSprint) { bIsPressingSprint = bPressingSprint; }
+    UPROPERTY(EditAnywhere, Category = "Input")
+    UInputAction* WeaponTwoSelectAction;
 
-	inline void SetIsMovingLeft(bool bMovingLeft) { bIsMovingLeft = bMovingLeft; }
+    UPROPERTY(EditAnywhere, Category = "Input")
+    UInputAction* PauseAction;
 
-	inline void SetIsMovingRight(bool bMovingRight) { bIsMovingRight = bMovingRight; }
+private:
+    UPROPERTY()
+    UCharacterState* CurrentCharacterState;
 
-	inline USceneComponent* GetBulletSpawnTransform() const { return BulletSpawnTransform; }
+    UPROPERTY()
+    UIdleState* IdleState;
 
-	class UCharacterState* GetCurrentCharacterState() const;
+    UPROPERTY()
+    UMoveState* MoveState;
 
-	void SetCurrentCharacterState(class UCharacterState* NewState);
+    UPROPERTY()
+    USprintState* SprintState;
 
-	class UIdleState* GetIdleState() const;
+    UPROPERTY(EditDefaultsOnly, Category = "Effects")
+    UNiagaraSystem* SparkSystem;
 
-	class UMoveState* GetMoveState() const;
+    UPROPERTY(EditDefaultsOnly, Category = "Effects")
+    UNiagaraSystem* BloodSystem;
 
-	class USprintState* GetSprintState() const;
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Pause", meta = (AllowPrivateAccess = true))
+    bool bIsPaused = false;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Leaderboard", meta = (AllowPrivateAccess = true))
+    FName LeaderboardName;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = true))
+    USkeletalMeshComponent* FirstPersonMesh;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = true))
+    UCameraComponent* PlayerCamera;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = true))
+    UCharacterHealthComponent* CharacterHealthComponent;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = true))
+    UWeaponHolderComponent* WeaponHolderComponent;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = true))
+    USpringArmComponent* BulletSpawnOffset;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = true))
+    USceneComponent* BulletSpawnTransform;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Movement",
+              meta = (ClampMin = 0.0f, ClampMax = 1.0f, AllowPrivateAccess = true,
+                      ToolTip = "Deadzone for movement key to be considered pressed"))
+    float MovementDeadzone = 0.05f;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Movement",
+              meta = (ClampMin = 400.0f, ClampMax = 600.0f, Units = "cm/s", AllowPrivateAccess = true,
+                      ToolTip = "The base movement speed of the character when walking forwards"))
+    float BaseWalkSpeed = 500.0f;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Movement",
+              meta = (ClampMin = 350.0f, ClampMax = 550.0f, Units = "cm/s", AllowPrivateAccess = true,
+                      ToolTip = "The movement speed of the character when walking diagonally forwards"))
+    float DiagonalWalkSpeed = 450.0f;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Movement",
+              meta = (ClampMin = 325.0f, ClampMax = 525.0f, Units = "cm/s", AllowPrivateAccess = true,
+                      ToolTip = "The movement speed of the character when walking sideways"))
+    float StrafeWalkSpeed = 425.0f;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Movement",
+              meta = (ClampMin = 300.0f, ClampMax = 500.0f, Units = "cm/s", AllowPrivateAccess = true,
+                      ToolTip = "The movement speed of the character when walking backwards"))
+    float BackwardsWalkSpeed = 400.0f;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Movement",
+              meta = (ClampMin = 750.0f, ClampMax = 850.0f, Units = "cm/s", AllowPrivateAccess = true,
+                      ToolTip = "The base movement speed of the character when sprinting forwards"))
+    float BaseSprintSpeed = 800.0f;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Movement",
+              meta = (ClampMin = 700.0f, ClampMax = 800.0f, Units = "cm/s", AllowPrivateAccess = true,
+                      ToolTip = "The base movement speed of the character when sprinting forwards"))
+    float DiagonalSprintSpeed = 750.0f;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement",
+              meta = (AllowPrivateAccess = true, ToolTip = "Indicates if the character is moving to the left"))
+    bool bIsMovingLeft = false;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement",
+              meta = (AllowPrivateAccess = true, ToolTip = "Indicates if the character is moving to the right"))
+    bool bIsMovingRight = false;
+
+    bool bIsPressingSprint = false;
+
+    FName CharacterThatLastShotThisCharacter;
 };

@@ -7,20 +7,23 @@ public class FirstPersonShooter : ModuleRules
 	public FirstPersonShooter(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
-	
-		PublicDependencyModuleNames.AddRange(new string[] {
+
+		PublicDependencyModuleNames.AddRange(new string[]
+		{
 			"Core",
 			"CoreUObject",
 			"Engine",
 			"InputCore",
 			"EnhancedInput",
 			"AIModule",
-			"UMG"
+			"UMG",
+			"Niagara"
 		});
 
-		PrivateDependencyModuleNames.AddRange(new string[] {  });
-		
-		PublicIncludePaths.AddRange(new string[] {
+		PrivateDependencyModuleNames.AddRange(new string[] { });
+
+		PublicIncludePaths.AddRange(new string[]
+		{
 			"FirstPersonShooter",
 			"FirstPersonShooter/Weapons",
 			"FirstPersonShooter/Interfaces",
@@ -31,7 +34,7 @@ public class FirstPersonShooter : ModuleRules
 
 		// Uncomment if you are using Slate UI
 		// PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });
-		
+
 		// Uncomment if you are using online features
 		// PrivateDependencyModuleNames.Add("OnlineSubsystem");
 
