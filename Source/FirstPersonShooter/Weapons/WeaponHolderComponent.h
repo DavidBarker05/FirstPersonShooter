@@ -1,66 +1,85 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
 #include "Components/ActorComponent.h"
+
 #include "WeaponHolderComponent.generated.h"
 
-UCLASS( ClassGroup=(Weapons), meta=(BlueprintSpawnableComponent) )
-class FIRSTPERSONSHOOTER_API UWeaponHolderComponent : public UActorComponent {
-	GENERATED_BODY()
+class ABaseWeapon;
+class APistolWeapon;
+class ARifleWeapon;
 
-	class USkeletalMeshComponent* OwnerMesh;
-	class USkeletalMeshComponent* OwnerFirstPersonMesh;
-	class ABaseWeapon* CurrentWeapon;
-	class APistolWeapon* Pistol;
-	class APistolWeapon* PistolFirstPerson;
-	class ARifleWeapon* Rifle;
-	class ARifleWeapon* RifleFirstPerson;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapons", meta = (AllowPrivateAccess = "true"))
-	bool bHasRifle = false;
+UCLASS(ClassGroup = (Weapons), meta = (BlueprintSpawnableComponent))
+class FIRSTPERSONSHOOTER_API UWeaponHolderComponent : public UActorComponent
+{
+    GENERATED_BODY()
 
 protected:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapons", meta = (AllowPrivateAccess = "true"))
-	TSubclassOf<class APistolWeapon> PistolBlueprint;
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapons", meta = (AllowPrivateAccess = "true"))
+    TSubclassOf<APistolWeapon> PistolBlueprint;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapons", meta = (AllowPrivateAccess = "true"))
-	TSubclassOf<class ARifleWeapon> RifleBlueprint;
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapons", meta = (AllowPrivateAccess = "true"))
+    TSubclassOf<ARifleWeapon> RifleBlueprint;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapons", meta = (AllowPrivateAccess = "true"))
-	bool bIsHoldingRifle = false;
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapons", meta = (AllowPrivateAccess = "true"))
+    bool bIsHoldingRifle = false;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapons", meta = (ClampMin = 0.0f, Units = "deg", AllowPrivateAccess = "true"))
-	float MovementBulletSpread = 3.0f;
-
-public:
-	UWeaponHolderComponent();
-
-protected:
-	virtual void BeginPlay() override;
-
-	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapons",
+              meta = (ClampMin = 0.0f, Units = "deg", AllowPrivateAccess = "true"))
+    float MovementBulletSpread = 3.0f;
 
 public:
-	UFUNCTION(BlueprintCallable, Category = "Weapons")
-	bool Shoot(FTransform SpawnTransform, bool bDoBulletSpread);
+    UWeaponHolderComponent();
 
-	UFUNCTION(BlueprintCallable, Category = "Weapons")
-	void PickUpRifle();
+    virtual void BeginPlay() override;
 
-	UFUNCTION(BlueprintCallable, Category = "Weapons")
-	void EquipPistol();
+    virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
-	UFUNCTION(BlueprintCallable, Category = "Weapons")
-	void EquipRifle();
+    UFUNCTION(BlueprintCallable, Category = "Weapons")
+    bool Shoot(FTransform SpawnTransform, bool bDoBulletSpread);
 
-	UFUNCTION(BlueprintCallable, Category = "Weapons")
-	class APistolWeapon* GetPistol();
+    UFUNCTION(BlueprintCallable, Category = "Weapons")
+    void PickUpRifle();
 
-	UFUNCTION(BlueprintCallable, Category = "Weapons")
-	class ARifleWeapon* GetRifle();
+    UFUNCTION(BlueprintCallable, Category = "Weapons")
+    void EquipPistol();
+
+    UFUNCTION(BlueprintCallable, Category = "Weapons")
+    void EquipRifle();
+
+    const ABaseWeapon* GetCurrentWeapon() const { return CurrentWeapon; }
+    ABaseWeapon* GetCurrentWeapon() { return CurrentWeapon; }
+
+    const APistolWeapon* GetPistol() const { return Pistol; }
+    APistolWeapon* GetPistol() { return Pistol; }
+
+    const ARifleWeapon* GetRifle() const { return Rifle; }
+    ARifleWeapon* GetRifle() { return Rifle; }
 
 private:
-	void CreateWeapons();
-	void SwitchWeapon();
-	void CleanupWeapons();
+    void CreateWeapons();
+    void SwitchWeapon();
+    void CleanupWeapons();
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapons", meta = (AllowPrivateAccess = true))
+    bool bHasRifle = false;
+
+    UPROPERTY()
+    USkeletalMeshComponent* OwnerMesh;
+    UPROPERTY()
+    USkeletalMeshComponent* OwnerFirstPersonMesh;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapons", meta = (AllowPrivateAccess = true))
+    ABaseWeapon* CurrentWeapon;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapons", meta = (AllowPrivateAccess = true))
+    APistolWeapon* Pistol;
+    UPROPERTY()
+    APistolWeapon* PistolFirstPerson;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Weapons", meta = (AllowPrivateAccess = true))
+    ARifleWeapon* Rifle;
+    UPROPERTY()
+    ARifleWeapon* RifleFirstPerson;
 };
