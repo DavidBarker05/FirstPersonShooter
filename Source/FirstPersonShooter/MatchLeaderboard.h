@@ -64,23 +64,14 @@
 UCLASS()
 class FIRSTPERSONSHOOTER_API UMatchLeaderboard : public UGameInstanceSubsystem
 {
-	GENERATED_BODY()
-
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-    TArray<FName> Leaderboard;
-
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-    TMap<FName, int32> Kills;
-
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-    TMap<FName, int32> Deaths;
+    GENERATED_BODY()
 
 public:
     UFUNCTION(BlueprintCallable)
-    void AddCharacter(FName CharacterName);
+    void AddCharacter(const FName& CharacterName);
 
     UFUNCTION(BlueprintCallable)
-    void AddKill(FName CharacterThatKilled, FName CharacterThatDied);
+    void AddKill(const FName& CharacterThatKilled, const FName& CharacterThatDied);
 
     UFUNCTION(BlueprintCallable)
     void OrderLeaderboard();
@@ -88,8 +79,23 @@ public:
     UFUNCTION(BlueprintCallable)
     void ClearLeaderboard();
 
+    const TArray<FName>& GetLeaderBoard() const { return Leaderboard; }
+
+    const TMap<FName, int32>& GetKills() const { return Kills; }
+
+    const TMap<FName, int32>& GetDeaths() const { return Deaths; }
+
 private:
     void OrderLeaderboardInternal();
 
     void EnsureStatsExist(const FName& CharacterName);
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+    TArray<FName> Leaderboard;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+    TMap<FName, int32> Kills;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+    TMap<FName, int32> Deaths;
 };

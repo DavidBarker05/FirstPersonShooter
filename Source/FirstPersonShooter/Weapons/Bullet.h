@@ -6,6 +6,8 @@
 
 #include "Bullet.generated.h"
 
+class UProjectileMovementComponent;
+
 UCLASS(Abstract)
 class FIRSTPERSONSHOOTER_API ABullet : public AActor
 {
@@ -16,17 +18,16 @@ public:
 
     virtual void Tick(float DeltaTime) override;
 
-    UFUNCTION(BlueprintCallable, Category = "Weapons")
-    void SetDamage(UPARAM(DisplayName = "Damage") const int32 _Damage);
+    const UStaticMeshComponent* GetBulletMesh() const { return BulletMesh; }
+    UStaticMeshComponent* GetBulletMesh() { return BulletMesh; }
+
+    const UProjectileMovementComponent* GetProjectileMovement() const { return ProjectileMovementComponent; }
+    UProjectileMovementComponent* GetProjectileMovement() { return ProjectileMovementComponent; }
+
+    int32 GetDamage() const { return Damage; }
 
     UFUNCTION(BlueprintCallable, Category = "Weapons")
-    void SetInitialSpeed(const float Speed);
-
-    UFUNCTION(BlueprintCallable, Category = "Weapons")
-    void SetActorToIgnore(AActor* Actor);
-
-    UFUNCTION()
-    void ActivateBullet();
+    void ActivateBullet(const int32 InDamage, const float Speed, AActor* InActorToIgnore);
 
 private:
     bool CheckForHit(FHitResult& OutHit);
@@ -34,13 +35,16 @@ private:
     void DeactivateBullet();
 
 protected:
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = true))
     UStaticMeshComponent* BulletMesh;
 
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
-    class UProjectileMovementComponent* ProjectileMovementComponent;
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = true))
+    UProjectileMovementComponent* ProjectileMovementComponent;
 
 private:
+    void SetInitialSpeed(const float Speed) const;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapons", meta = (AllowPrivateAccess = true))
     int32 Damage;
 
     FVector LastPosition;

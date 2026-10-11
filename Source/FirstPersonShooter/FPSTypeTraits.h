@@ -2,10 +2,6 @@
 
 #include "CoreMinimal.h"
 
-// This exists because TIsPointer<T>::Value uses an enum which doesn't
-// work with C++ requires, so I added TIsPointer_V and added some other nicer
-// type traits too
-
 template<typename T>
 constexpr bool TIsPointer_V = false;
 
@@ -31,10 +27,10 @@ template<typename T1, typename T2>
 constexpr bool TIsDerivedFrom_V = TIsDerivedFrom<T1, T2>::Value;
 
 template<typename T>
-using TDecay_T = typename TDecay<T>::Type;
+using TDecay_T = TDecay<T>::Type;
 
 template<typename T>
-using TRemoveObjectPointer_T = typename TRemoveObjectPointer<T>::Type;
+using TRemoveObjectPointer_T = TRemoveObjectPointer<T>::Type;
 
 template<typename T>
-using TRemovePointer_T = typename TRemovePointer<T>::Type;
+using TRemovePointer_T = TRemovePointer<T>::Type;

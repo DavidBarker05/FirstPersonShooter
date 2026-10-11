@@ -3,13 +3,16 @@
 
 void UBulletFactory::Deinitialize()
 {
-	ClearPool();
-	Super::Deinitialize();
+    ClearPool();
+    Super::Deinitialize();
 }
 
-ABullet* UBulletFactory::CreateBullet(const TSubclassOf<ABullet>& BulletBlueprint, const FTransform& SpawnTransform, int32 Damage, float StartingSpeed, AActor* ActorToIgnore)
+ABullet* UBulletFactory::CreateBullet(const TSubclassOf<ABullet>& BulletBlueprint, const FTransform& SpawnTransform,
+                                      int32 Damage, float StartingSpeed, AActor* ActorToIgnore)
 {
-	if (!IsValid(BulletBlueprint) || !SpawnTransform.IsValid() || !ActorToIgnore || !IsValid(ActorToIgnore) || !GetWorld()) return nullptr;
+    if (!IsValid(BulletBlueprint) || !SpawnTransform.IsValid() || !ActorToIgnore || !IsValid(ActorToIgnore) ||
+        !GetWorld())
+        return nullptr;
     if (AvailableBullets.IsEmpty() && UnavailableBullets.IsEmpty()) CreatePool(BulletBlueprint);
     FVector SpawnLocation = SpawnTransform.GetLocation();
     const FTransform SpawnLocationAndRotation(SpawnTransform.GetRotation(), SpawnLocation);
@@ -28,19 +31,16 @@ ABullet* UBulletFactory::CreateBullet(const TSubclassOf<ABullet>& BulletBlueprin
         Bullet = GetWorld()->SpawnActor<ABullet>(BulletBlueprint, SpawnLocationAndRotation, SpawnParams);
     }
     if (Bullet)
-	{
-		UnavailableBullets.Emplace(Bullet);
-		Bullet->SetDamage(Damage);
-		Bullet->SetInitialSpeed(StartingSpeed);
-		Bullet->SetActorToIgnore(ActorToIgnore);
-		Bullet->ActivateBullet();
-	}
+    {
+        UnavailableBullets.Emplace(Bullet);
+        Bullet->ActivateBullet(Damage, StartingSpeed, ActorToIgnore);
+    }
     return Bullet;
 }
 
 void UBulletFactory::DeactivateBullet(ABullet* Bullet)
 {
-	if (!IsValid(Bullet)) return;
+    if (!IsValid(Bullet)) return;
     const TStrongObjectPtr<ABullet> StrongBullet(Bullet);
     if (!UnavailableBullets.Contains(StrongBullet)) return;
     AvailableBullets.Add(StrongBullet);

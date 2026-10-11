@@ -31,19 +31,11 @@ void ABullet::Tick(float DeltaTime)
     LastPosition = GetActorLocation();
 }
 
-void ABullet::SetDamage(UPARAM(DisplayName = "Damage") const int32 _Damage) { Damage = _Damage; }
-
-void ABullet::SetInitialSpeed(const float Speed)
+void ABullet::ActivateBullet(const int32 InDamage, const float Speed, AActor* InActorToIgnore)
 {
-    ProjectileMovementComponent->InitialSpeed = Speed;
-    ProjectileMovementComponent->MaxSpeed = Speed;
-    ProjectileMovementComponent->Velocity = GetActorForwardVector() * Speed;
-}
-
-void ABullet::SetActorToIgnore(AActor* Actor) { ActorToIgnore = Actor; }
-
-void ABullet::ActivateBullet()
-{
+    Damage = InDamage;
+    SetInitialSpeed(Speed);
+    ActorToIgnore = InActorToIgnore;
     bIsActive = true;
     if (BulletMesh) BulletMesh->SetVisibility(true);
     ProjectileMovementComponent->Activate(true);
@@ -52,13 +44,8 @@ void ABullet::ActivateBullet()
 
 bool ABullet::CheckForHit(FHitResult& OutHit)
 {
-    const UObject* WorldContextObject = GetWorld();
-    const FVector Start = LastPosition;
-    const FVector End = GetActorLocation();
-    const bool bTraceComplex = false;
-    const bool bIgnoreSelf = true;
-    return UKismetSystemLibrary::LineTraceSingle(WorldContextObject, Start, End, TraceTypeQuery1, bTraceComplex,
-                                                 {ActorToIgnore}, EDrawDebugTrace::None, OutHit, bIgnoreSelf);
+    return UKismetSystemLibrary::LineTraceSingle(this, LastPosition, GetActorLocation(), TraceTypeQuery1, false,
+                                                 {ActorToIgnore}, EDrawDebugTrace::None, OutHit, true);
 }
 
 void ABullet::DeactivateBullet()
@@ -68,4 +55,11 @@ void ABullet::DeactivateBullet()
     SetInitialSpeed(0.0f);
     SetActorLocation(FVector(0.0f, 0.0f, 0.0f));
     if (BULLET_FACTORY_EXISTS) DEACTIVATE_BULLET(this);
+}
+
+void ABullet::SetInitialSpeed(const float Speed) const
+{
+    ProjectileMovementComponent->InitialSpeed = Speed;
+    ProjectileMovementComponent->MaxSpeed = Speed;
+    ProjectileMovementComponent->Velocity = GetActorForwardVector() * Speed;
 }

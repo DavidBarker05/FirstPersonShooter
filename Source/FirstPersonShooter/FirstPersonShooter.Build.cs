@@ -25,11 +25,19 @@ public class FirstPersonShooter : ModuleRules
 		PublicIncludePaths.AddRange(new string[]
 		{
 			"FirstPersonShooter",
-			"FirstPersonShooter/Weapons",
-			"FirstPersonShooter/Interfaces",
+			"FirstPersonShooter/Any",
+			"FirstPersonShooter/Character",
+			"FirstPersonShooter/Character/StateMachine",
+			"FirstPersonShooter/Character/Components",
 			"FirstPersonShooter/Events",
 			"FirstPersonShooter/Factories",
-			"FirstPersonShooter/CharacterStateMachine"
+			"FirstPersonShooter/HealthPickup",
+			"FirstPersonShooter/Interfaces",
+			"FirstPersonShooter/Weapons",
+			"FirstPersonShooter/Weapons/Components",
+			"FirstPersonShooter/Weapons/Pistol",
+			"FirstPersonShooter/Weapons/Rifle",
+			"FirstPersonShooter/Weapons/Rifle/RiflePickup"
 		});
 
 		// Uncomment if you are using Slate UI
