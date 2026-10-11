@@ -51,26 +51,21 @@ void AFirstPersonGameMode::OnEventReceived_Implementation(const FName& EventName
           PARAMS_ARE_CORRECT_TYPES(AFirstPersonGameMode*, AActor*, float)))
         return;
     if (*Params[0].Get<AFirstPersonGameMode*>() != this || !GetWorld()) return;
-    AActor* ActorToSpawn = *Params[1].Get<AActor*>();
-    if (!IsValid(ActorToSpawn)) return;
+    AActor* ActorThatDied = *Params[1].Get<AActor*>();
+    if (!IsValid(ActorThatDied)) return;
     const float SpawnDelay = *Params[2].Get<float>();
-    auto DestroyActorOnNextTick = [this, ActorToSpawn]() -> void
-    {
-        if (IsValid(ActorToSpawn)) GetWorld()->DestroyActor(ActorToSpawn);
-    };
-    if (PlayerBlueprint && ActorToSpawn->IsA(PlayerBlueprint))
+    if (PlayerBlueprint && ActorThatDied->IsA(PlayerBlueprint))
     {
         if (!RespawnHandles.Contains(PlayerBlueprint)) return;
         SpawnCharacterAfterDelay(PlayerBlueprint, SpawnDelay, RespawnHandles[PlayerBlueprint]);
-        GetWorldTimerManager().SetTimerForNextTick(DestroyActorOnNextTick);
     }
     else
     {
         for (const TSubclassOf<AFirstPersonCharacter>& AIBlueprint : AIBlueprints)
         {
-            if (!AIBlueprint || !ActorToSpawn->IsA(AIBlueprint) || !RespawnHandles.Contains(AIBlueprint)) continue;
+            if (!AIBlueprint || !ActorThatDied->IsA(AIBlueprint) || !RespawnHandles.Contains(AIBlueprint)) continue;
             SpawnCharacterAfterDelay(AIBlueprint, SpawnDelay, RespawnHandles[AIBlueprint]);
-            if (const APawn* AI = Cast<APawn>(ActorToSpawn))
+            if (const APawn* AI = Cast<APawn>(ActorThatDied))
             {
                 if (AController* AIController = AI->GetController())
                 {
@@ -78,10 +73,10 @@ void AFirstPersonGameMode::OnEventReceived_Implementation(const FName& EventName
                     GetWorld()->DestroyActor(AIController);
                 }
             }
-            GetWorldTimerManager().SetTimerForNextTick(DestroyActorOnNextTick);
             break;
         }
     }
+    GetWorld()->DestroyActor(ActorThatDied);
 }
 
 void AFirstPersonGameMode::SpawnCharacterAfterDelay(TSubclassOf<AActor> ActorToSpawn, float Delay,
@@ -136,6 +131,8 @@ void AFirstPersonGameMode::Spawn_Implementation(TSubclassOf<AActor> ActorToSpawn
     if (!IsValid(Controller)) return;
     ADD_CHARACTER_TO_LEADERBOARD(Character->GetLeaderboardName());
     Controller->Possess(Character);
+    if (CurrentMatchState == EGameMatchState::MatchRoundPhase && Controller->IsA<APlayerController>())
+        BROADCAST_EVENT(TEXT("DisplayPlayerScreenEvent"), Controller);
 }
 
 FTransform AFirstPersonGameMode::GetValidSpawnPoint()
@@ -195,6 +192,7 @@ void AFirstPersonGameMode::DoStartCountdownPhase()
     bDisplayEndLeaderboard = false;
     CountdownTimer = MatchStartDuration;
     PauseAllCharacters(TEXT("Countdown Phase Started"));
+    BROADCAST_EVENT(TEXT("DisplayStartCountdownEvent"));
 }
 
 void AFirstPersonGameMode::DoMatchRoundPhase()
@@ -204,6 +202,7 @@ void AFirstPersonGameMode::DoMatchRoundPhase()
     bDisplayEndLeaderboard = false;
     CountdownTimer = MatchRoundDuration;
     ResumeAllCharacters(TEXT("Match Phase Started"));
+    BROADCAST_EVENT(TEXT("DisplayPlayerScreenEvent"), UGameplayStatics::GetPlayerController(GetWorld(), 0));
 }
 
 void AFirstPersonGameMode::DoEndLeaderboardPhase()
@@ -212,6 +211,7 @@ void AFirstPersonGameMode::DoEndLeaderboardPhase()
     bDisplayRoundTimer = false;
     bDisplayEndLeaderboard = true;
     PauseAllCharacters(TEXT("End Leaderboard Phase Started"));
+    BROADCAST_EVENT(TEXT("DisplayEndLeaderboardEvent"));
 }
 
 void AFirstPersonGameMode::PauseAllCharacters(const FString& Reason) const

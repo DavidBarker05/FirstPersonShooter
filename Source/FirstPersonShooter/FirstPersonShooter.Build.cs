@@ -17,7 +17,8 @@ public class FirstPersonShooter : ModuleRules
 			"EnhancedInput",
 			"AIModule",
 			"UMG",
-			"Niagara"
+			"Niagara",
+			"Slate"
 		});
 
 		PrivateDependencyModuleNames.AddRange(new string[] { });
@@ -40,8 +41,7 @@ public class FirstPersonShooter : ModuleRules
 			"FirstPersonShooter/Weapons/Rifle/RiflePickup"
 		});
 
-		// Uncomment if you are using Slate UI
-		// PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });
+		PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });
 
 		// Uncomment if you are using online features
 		// PrivateDependencyModuleNames.Add("OnlineSubsystem");

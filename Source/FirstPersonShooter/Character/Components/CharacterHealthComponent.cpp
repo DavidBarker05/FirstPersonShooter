@@ -20,7 +20,7 @@ void UCharacterHealthComponent::TakeDamage(const int32 Damage)
     if (CurrentHealth <= 0)
     {
         bIsDead = true;
-        BROADCAST_EVENT("DeathEvent", GetOwner());
+        BROADCAST_EVENT(TEXT("DeathEvent"), GetOwner());
     }
 }
 

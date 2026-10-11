@@ -235,10 +235,14 @@ void AFirstPersonCharacter::DoPause()
         bIsPaused = !bIsPaused;
         if (bIsPaused)
         {
-            // Delay until next tick to guarantee that pause screen will be added
-            GetWorldTimerManager().SetTimerForNextTick([this]() { UGameplayStatics::SetGamePaused(GetWorld(), true); });
+            UGameplayStatics::SetGamePaused(GetWorld(), true);
+            BROADCAST_EVENT(TEXT("DisplayPauseScreenEvent"));
         }
-        else UGameplayStatics::SetGamePaused(GetWorld(), false);
+        else
+        {
+            UGameplayStatics::SetGamePaused(GetWorld(), false);
+            BROADCAST_EVENT(TEXT("DisplayPlayerScreenEvent"), GetController());
+        }
     }
 }
 
